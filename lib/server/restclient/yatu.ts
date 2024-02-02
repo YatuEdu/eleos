@@ -1,15 +1,49 @@
 import { sysConstants }     from "@/lib/server/const/sysConst";
-import { YatuRequest }      from "@/lib/server/model/sysType";
-import sha256          		from 'crypto-js/sha256'
+import { YatuRequest, YatuResponse }      
+							from "@/lib/server/model/sysType";
+import CryptoJS           	from 'crypto-js'
+import { YatuUser } 		from "@/lib/server/model/authenticatedUser";
 
+// REMOVE THIS BEFORE PRODUCT SHIPMENT
+process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
+
+/**
+ * Yatu API Client
+ */
 class Yatu {
 	/**
 		Yatu API for user-login
 	**/
-	static async login(userName: string, userPassword: string) {
+	static async login(userName: string, userPassword: string) : Promise<YatuResponse>{
 		const req = Yatu.#composeRequestDataForLogin(userName, userPassword);
-		// remote call
-		return await Yatu.#remoteCall(sysConstants.YATU_AUTH_URL, req);
+		const ret = await Yatu.#remoteCall(Yatu.yatuUrl, req);
+		if (ret.code || ret.data === null) {
+			return {
+				ok: false,
+				error: {
+					code: ret.code,
+					message: ret.err
+				},
+				payload: {}
+			};
+		}
+		else {
+			// @ts-ignore: ts(18046)
+			const payload = ret.data[0] 
+			return {
+				ok: true,
+				payload: {
+					id:    			payload.security_token,
+					email: 			payload.email,
+					token: 			payload.token,
+					lastName: 		payload.last_name,
+					middleName: 	payload.middle_name,
+					firstName:  	payload.first_name,
+					role: 			payload.role,
+					isAnonymous: 	payload.is_anonymous,
+				}
+			} 
+		}
 	}
 	
 	/**
@@ -21,8 +55,21 @@ class Yatu {
                             password: string) {
 		const req = Yatu.#composeRequestDataForAnonSignUp(userFirstName, userMiddleName, userLastName, password);
 		// remote call
-		return await Yatu.#remoteCall(sysConstants.YATU_AUTH_URL, req);
+		return await Yatu.#remoteCall(Yatu.yatuUrl, req);
 	}
+
+	/**
+		Yatu API for none-anonymous user sign up
+	**/
+	static async signUp(email: string,
+						userFirstName:string, 
+						userMiddleName:string, 
+						userLastName:string, 
+						password: string) {
+		const req = Yatu.#composeRequestDataForSignUp(email, userFirstName, userMiddleName, userLastName, password);
+		// remote call
+		return await Yatu.#remoteCall(Yatu.yatuUrl, req);
+		}
 
     /********** Private methods for composing request data for Async public API above *******/
 
@@ -63,34 +110,57 @@ class Yatu {
 		const signupData = {
 			header: {
 				token: "",
-				api_id: sysConstants.API_FOR_REGISTER
+				api_id: Yatu.API_FOR_REGISTER
 			},
 			
 			data: {					
-				name: null,
-				email: null,
+				name: '',
+				email: '',
 				firstName: userFirstName,
                 middleName: userMiddleName,
 				lastName: userLastName,
-				pwh: sha256(sha256(password))
+				pwh: Yatu.#hash(password)
 			}
 		};
 		return Yatu.#composePostRequestFromData_private(signupData);
 	}
 	
-	
+	static #composeRequestDataForSignUp(email: string,
+		userFirstName:string, 
+		userMiddleName:string, 
+		userLastName:string, 
+		password: string) {
+		const signupData = {
+			header: {
+				token: "",
+				api_id: Yatu.API_FOR_REGISTER
+			},
+			
+			data: {					
+				name: email,
+				email: email,
+				firstName: userFirstName,
+				middleName: userMiddleName,
+				lastName: userLastName,
+				pwh: Yatu.#hash(password)
+			}
+		};
+		return Yatu.#composePostRequestFromData_private(signupData);			
+	}
+
 	/*
 		Yatu API request format for Login (with email) API
 	*/
 	static #composeRequestDataForLogin(email: string, password: string) {
+		
 		const loginData = {
 			header: {
 				token: "",
-				api_id: sysConstants.API_FOR_LOGIN
+				api_id: Yatu.API_FOR_LOGIN
 			},
 			data: {					
 				name: email,
-				pwh:sha256(sha256(password))
+				pwh: Yatu.#hash(password)
 			}
 		};
 		return Yatu.#composePostRequestFromData_private(loginData);
@@ -105,6 +175,27 @@ class Yatu {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(data),
 		};
+	}
+
+	static #hash(word: string) : string {
+		const hash1 = CryptoJS.SHA256(word).toString()
+		const hashed = CryptoJS.SHA256(hash1).toString()
+		return hashed
+	}
+
+	/**
+	 * getters and setter
+	 */
+	static get yatuUrl(): string {
+		return process.env.YATU_AUTH_URL as string
+	}
+
+	static get API_FOR_REGISTER(): number {
+		return parseInt(process.env.API_FOR_REGISTER as string) 
+	}
+
+	static get API_FOR_LOGIN(): number {
+		return parseInt(process.env.API_FOR_LOGIN as string) 
 	}
 }
 

@@ -1,13 +1,16 @@
-export type User =  {
+export type YatuUser =  {
     id: string,
     email: string,
+    token: string,
+    lastName: string,
+    middleName: string,
+    firstName: string,
     role: string,
-    age: number,
-    org: string
+    isAnonymous: boolean,
 }
 
 export type AuthenticatedResponse = {
-    user: User
+    user: YatuUser
 }
 
 export type Credentials = {
