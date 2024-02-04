@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // call yatu API to get yatu token for authenticated users
-        const {ok, payload, error} = await Yatu.login(email, password)
+        const {ok, data, error} = await Yatu.login(email, password)
 
         if (!ok) {
           // @ts-ignore
@@ -39,12 +39,12 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const user: YatuUser = payload as YatuUser
+        const user: YatuUser = data as YatuUser
         return {
             yatuToken: user.token,
             id: user.id,
             email: user.email,
-            name: `${user.firstName} ${user.middleName} ${user.lastName}`,
+            name: `${user.firstName.trim()} ${user.middleName} ${user.lastName.trim()}`,
             role: user.role,
             isAnonymous: user.isAnonymous,
         }

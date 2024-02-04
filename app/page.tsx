@@ -21,7 +21,8 @@ export default async function page({}) {
         <div className="mt-4">
           <LoginButton />
           <LogoutButton />
-          <ProfileButton />
+          <ProfileButton /> <br />
+          <RegisterButton />
         </div>
 
         <Card className="mt-4">

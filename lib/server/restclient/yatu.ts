@@ -17,30 +17,23 @@ class Yatu {
 	static async login(userName: string, userPassword: string) : Promise<YatuResponse>{
 		const req = Yatu.#composeRequestDataForLogin(userName, userPassword);
 		const ret = await Yatu.#remoteCall(Yatu.yatuUrl, req);
-		if (ret.code || ret.data === null) {
-			return {
-				ok: false,
-				error: {
-					code: ret.code,
-					message: ret.err
-				},
-				payload: {}
-			};
+		if (ret.error?.code || ret.data === null) {
+			return ret
 		}
 		else {
 			// @ts-ignore: ts(18046)
-			const payload = ret.data[0] 
+			const data: unknowm = ret.data
 			return {
 				ok: true,
-				payload: {
-					id:    			payload.security_token,
-					email: 			payload.email,
-					token: 			payload.token,
-					lastName: 		payload.last_name,
-					middleName: 	payload.middle_name,
-					firstName:  	payload.first_name,
-					role: 			payload.role,
-					isAnonymous: 	payload.is_anonymous,
+				data: {
+					id:    			data.security_token,
+					email: 			data.email,
+					token: 			data.token,
+					lastName: 		data.last_name,
+					middleName: 	data.middle_name,
+					firstName:  	data.first_name,
+					role: 			data.role,
+					isAnonymous: 	data.is_anonymous,
 				}
 			} 
 		}
@@ -49,12 +42,11 @@ class Yatu {
 	/**
 		Yatu API for anonymous user sign up
 	**/
-	static async signUpAnon(userFirstName:string, 
-                            userMiddleName:string, 
-                            userLastName:string, 
-                            password: string) {
-		const req = Yatu.#composeRequestDataForAnonSignUp(userFirstName, userMiddleName, userLastName, password);
-		// remote call
+	static async signUpAnon(firstName:string, 
+							middleName:string, 
+							lastName:string): Promise<YatuResponse> {
+		const password = Yatu.anonymousRegistrationKey
+		const req = Yatu.#composeRequestDataForAnonSignUp(firstName, middleName, lastName, password);
 		return await Yatu.#remoteCall(Yatu.yatuUrl, req);
 	}
 
@@ -62,41 +54,53 @@ class Yatu {
 		Yatu API for none-anonymous user sign up
 	**/
 	static async signUp(email: string,
-						userFirstName:string, 
-						userMiddleName:string, 
-						userLastName:string, 
-						password: string) {
-		const req = Yatu.#composeRequestDataForSignUp(email, userFirstName, userMiddleName, userLastName, password);
-		// remote call
+						firstName:string, 
+						middleName:string, 
+						lastName:string, 
+						password: string): Promise<YatuResponse> {
+		const req = Yatu.#composeRequestDataForSignUp(email, firstName, middleName, lastName, password);
 		return await Yatu.#remoteCall(Yatu.yatuUrl, req);
-		}
+	}
 
     /********** Private methods for composing request data for Async public API above *******/
 
     /**
-		Main method for doing Yatu post API calls
+		Main method for calling Yatu API calls
 	**/
-	static async #remoteCall(url: string, requestOptions: RequestInit) {
-		const ret: YatuRequest = {data: null, code: 0, err: "" };
-		
+	static async #remoteCall(url: string, requestOptions: RequestInit): Promise<YatuResponse>{
 		try {		
 			const response = await fetch(url, requestOptions);			
 			if (!response.ok) {
-				ret.err = response.status + '' //uiMan.getTextWithParams(languageConstants.SERVER_ERROR_WITH_RESPONSE, response.status);
+				return { 
+					ok: false, 
+					data: null,
+					error: {
+						code:  response.status,
+						message: response.statusText
+					}} 
 			}
 			else {
-				const data = await response.json();
-				ret.data = data.data;
-				ret.code = data.result.code
-				if (ret.code !== 0) {
-					ret.err = data.result.code + '' // uiMan.getErrMsg(data.result.code);
-				}
+				const res = await response.json();
+				return { 
+					ok: res.err_code === 0, 
+					data: res.data?.length === 1 ? res.data[0] : res.data,
+					dataSize: res.data?.length,
+					error: {
+						code:  res.code,
+						message: res.err
+					}
+				} 
 			}
 		}
-		catch (e) {
-			ret.err = JSON.stringify(e);
+		catch (e: unknown) {
+			return { 
+				ok: false, 
+				data: null,
+				error: {
+					code:  -1,
+					message: JSON.stringify(e)
+				}} 
 		}
-		return ret;
 	}
 
     
@@ -151,8 +155,7 @@ class Yatu {
 	/*
 		Yatu API request format for Login (with email) API
 	*/
-	static #composeRequestDataForLogin(email: string, password: string) {
-		
+	static #composeRequestDataForLogin(email: string, password: string) {	
 		const loginData = {
 			header: {
 				token: "",
@@ -186,6 +189,10 @@ class Yatu {
 	/**
 	 * getters and setter
 	 */
+	static get anonymousRegistrationKey(): string {
+		return process.env.ANONYMOUS_REGISTRATION_KEY as string
+	}
+
 	static get yatuUrl(): string {
 		return process.env.YATU_AUTH_URL as string
 	}
