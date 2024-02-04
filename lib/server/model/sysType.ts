@@ -5,8 +5,9 @@ export type YatuRequest = {
 }
 
 export type YatuResponse = {
-    payload: unknown,
-    ok:      boolean,
+    dataSize?:  number,
+    data:       unknown,
+    ok:         boolean,
     error?: {
         code: number,
         message: string
