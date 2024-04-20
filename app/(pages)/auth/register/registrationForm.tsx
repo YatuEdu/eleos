@@ -57,6 +57,8 @@ export const RegisterForm = () => {
       if (!anonymous) {
         signIn('email', { callbackUrl: '/' })
       } else {
+        // sign in inexplicitly for anonymou users
+
         // @ts-ignore
         const returnedEmail = yatuResponse.data.email
         console.log("returned email is:", returnedEmail)
@@ -65,7 +67,7 @@ export const RegisterForm = () => {
         const credential = {
           csrfToken: '9c49e17d58a2ef985b5afe80a9eaa68f0cacc25506adf135544110111ba0de2c',
           email: returnedEmail,
-          password: 'yatu8838@anon'
+          password: 'yatu8838@anon'  // tbd store this somewhere on the server
         }
         const signinResponse = await fetch(signInUrl, {
           method: 'POST',
