@@ -7,6 +7,11 @@ import { NextAuthProvider }
         from './providers'
 import { Card } 
         from '@mui/material'
+import { EleosAppProvider } 
+        from '@/lib/providers/EleosAppProvider'
+import { WizardProvider } 
+        from '@/lib/providers/WizardProvider'
+import TitleBar from '@/components/client/functional/TitleBar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,9 +28,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Card className="p-4" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <NextAuthProvider>{children}</NextAuthProvider>
-        </Card>
+        <TitleBar />
+        <div id="outer" style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', height: '100vh' }}>
+          <NextAuthProvider>
+            <EleosAppProvider>
+              <WizardProvider>
+                {children}
+              </WizardProvider>
+            </EleosAppProvider>
+          </NextAuthProvider>
+        </div>
       </body>
     </html>
   )

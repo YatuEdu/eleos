@@ -13,21 +13,38 @@ import ElesoPersonWithRoles
  */
 class Eleos {
 
-    #principal: EleosPrincipal
+    #principal: EleosPrincipal | null
+    #spouse: string | null 
     #people: ElesoPersonWithRoles[] 
+    #step: number = 0
 
-    constructor(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState) {
-        this.#principal = new EleosPrincipal(firstName, middleName, lastName, suffix, email, state)
+    constructor() {
+        this.#principal = null
+        this.#spouse = null
         this.#people = []
     }
-    
+
+    init(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState) {
+        this.#principal = new EleosPrincipal(firstName, middleName, lastName, suffix, email, state)
+        console.log(`principal added ${email}, ${this.#principal.lastName} ---`)
+        this.#step = 1
+    }
+
      /**
      * getters
      */
+    get step() { return this.#step}
 
-     get principal() { return this.#principal}
+    nextStep() { this.#step += 1}
 
-     get people() { return this.#people}
+    prevStep() { this.#step -= 1}
+
+    get principal() { return this.#principal}
+
+    get spouse(): string | null { return this.#spouse}
+
+    set spouse(spouse: string) { this.#spouse = spouse}
+     
 
     /**
      * setters

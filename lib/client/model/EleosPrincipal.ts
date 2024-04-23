@@ -4,7 +4,7 @@ import { EleosState }
                 from "./EleosState"
 
 class EleosPrincipal extends EleosPerson {
-    #email: String
+    #email: string
     #residenceState: EleosState
 
     constructor(firstName: string, 
