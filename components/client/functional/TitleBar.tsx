@@ -8,17 +8,17 @@ const StyledTitleBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #228B22; /* Ocean blue background */
-  padding: 10px 20px;
+  background-color: #36454F; /* Ocean blue background */
+  padding: 4px 8px;
 `;
 
 const Logo = styled.img`
-  height: 138px;
+  height: 148px;
   width: auto;
 `;
 
 const LoginButton = styled.button`
-  padding: 8px 16px;
+  padding: 4px 4px;
   background-color: white;
   border: none;
   cursor: pointer;
@@ -35,7 +35,7 @@ const LoginButton = styled.button`
 const TitleBar: React.FC = () => {
   return (
     <StyledTitleBar>
-      <Logo src="icon.png" alt="Site Logo" />
+      <Logo src="/image/logo.png" alt="Site Logo" />
       <LoginButton>Log In</LoginButton>
     </StyledTitleBar>
   );

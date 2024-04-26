@@ -1,5 +1,6 @@
 'use client'
 
+import AddChildren from '@/components/client/wizard/AddChildren';
 import BasicInfo 
                 from '@/components/client/wizard/BasicInfo'
 import MarriageInfo 
@@ -22,11 +23,12 @@ export default function Page() {
 
     return (
         <>
-            <Card className="p-4" style={{ backgroundColor: 'pink', width: '80%', height: '32rem', overflow: 'auto'}}>
+            <Card className="p-4 mt-4" style={{ backgroundColor: '#36454F', color: '#FFD700', width: '80%', height: 'auto', overflow: 'auto'}}>
                 <div>
                     { (currentStep === 0) && (<BasicInfo />) }
                     { (currentStep === 1) && (<MarriageInfo />) }
-                    { (currentStep === 2) && (<MarriedPackage />) }
+                    { (currentStep === 2) && (<AddChildren />) }
+                    { (currentStep === 3) && (<MarriedPackage />) }
                 </div>
             </Card>
           

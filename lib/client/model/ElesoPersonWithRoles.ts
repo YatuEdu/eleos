@@ -2,8 +2,8 @@ import EleosPerson
                 from "./EleosPerson"
 
 class ElesoPersonWithRoles extends EleosPerson {
-    #role: EleosRole
-    #relation: EleosRelation
+    private _role: EleosRole
+    private _relation: EleosRelation
 
     constructor(firstName: string, 
                 middleName: string,
@@ -12,8 +12,8 @@ class ElesoPersonWithRoles extends EleosPerson {
                 role: EleosRole,
                 relation: EleosRelation) {
         super(firstName, middleName, lastName, suffix)
-        this.#role = role
-        this.#relation = relation
+        this._role = role
+        this._relation = relation
     }
 
     /**
@@ -24,17 +24,17 @@ class ElesoPersonWithRoles extends EleosPerson {
         this.middleName === other.middleName &&
         this.lastName === other.lastName &&
         this.suffix === other.suffix &&
-        this.#role === other.#role &&
-        this.#relation === other.relation
+        this._role === other._role &&
+        this._relation === other.relation
     }
 
     /**
      * getters
      */
 
-    get role() { return this.#role }
+    get role() { return this._role }
 
-    get relation() { return this.#relation }
+    get relation() { return this._relation }
 }
 
 export default ElesoPersonWithRoles

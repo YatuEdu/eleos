@@ -1,8 +1,11 @@
-import React from 'react';
+import React 
+                from 'react';
 import Button 
-        from '@mui/material/Button';
+                from '@mui/material/Button';
 import { Tooltip } 
-        from '@mui/material';
+                from '@mui/material';
+import { BUTTON_CLASS_RED, BUTTON_CLASS_RED_DISABLED } 
+                from '@/lib/common/constant/TailwindClasses';
 
 type EleosButtonProps = {
     text: string,
@@ -16,6 +19,8 @@ type EleosButtonProps = {
 const EleosButton: React.FC<EleosButtonProps> = ({className, disabled, tipDisable, tipEnabled, text, onClick}) => {
     const [disabledState, setDisabledState] = React.useState(disabled || false)
 
+    const btnEnabledClasses = className ? BUTTON_CLASS_RED + " " + className : BUTTON_CLASS_RED
+
     React.useEffect(() => {
         setDisabledState(disabled || false);
     }, [disabled]);
@@ -24,9 +29,8 @@ const EleosButton: React.FC<EleosButtonProps> = ({className, disabled, tipDisabl
         <Tooltip title={disabledState ? tipDisable : tipEnabled} disableHoverListener={true}>
             <span>
             <Button
-                className={className}
+                className={disabledState ? BUTTON_CLASS_RED_DISABLED : btnEnabledClasses}
                 disabled={disabledState}
-                style={{ backgroundColor: 'purple', color: 'white', opacity: disabledState ? 0.5 : 1 }} 
                 onClick={onClick}>
                 {text}
             </Button>

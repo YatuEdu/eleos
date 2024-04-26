@@ -4,12 +4,8 @@ import EleosButton
                 from "@/components/client/atoms/EleosButton"
 import EleosInputBase 
                 from "@/components/client/atoms/EleosInputBase"
-import EleosInputEmail 
-                from "@/components/client/atoms/EleosInputEmail"
 import EleosLabel 
                 from "@/components/client/atoms/EleosLabel"
-import Eleos 
-                from "@/lib/client/model/Eleos"
 import { EleosState, allEleosStates } 
                 from "@/lib/client/model/EleosState"
 import { useElos } 
@@ -18,12 +14,10 @@ import { useState }
                 from "react"
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
+import { REGEX_EMAIL } from "@/lib/common/constant/StringConst"
+import EleosName from "../functional/EleosName"
 
 const NAME_EMAIL = 'email'
-const NAME_FIRSTNAME = 'firstname'
-const NAME_MIDDLENAME = 'middlename'
-const NAME_LASTNAME = 'lastname'
-const NAME_SUFFIX = 'suffix'
 
 const BasicInfo: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -38,46 +32,23 @@ const BasicInfo: React.FC = () => {
     const [suffix2, setSuffix] = useState(suffix)
     const [state, setState] = useState('Washington')
     const [email2, setEmail] = useState(email)
-    const [emailVlid, setEmailValid] = useState(email ? true : false)
-    const [valid, setValid] = useState(email ? true : false)
-   
-    const {currentStep, nextStep} = useWizard()
+    const [valid, setValid] = useState(email && firstName && lastName ? true : false)
+    const [validName, setValidName] = useState(firstName && lastName ? true : false)
+    const {nextStep} = useWizard()
 
-    if (ref && ref.current && ref.current.principal) {
-        console.log('principal', ref.current.principal)
-    } else {
-        console.log('principal', null)
+    const onNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
+        console.log({ firstName, middleName, lastName, suffix, isValid })
+        setFirstName(firstName)
+        setMiddleName(middleName)
+        setLastName(lastName)
+        setSuffix(suffix)
+        setValidName(isValid)
+        setValid(isValid && !!email2)
     }
 
-    const onchange = (name:string, value: string, isValid: boolean) => {
-        console.log({ name, value })
-        let isValidNow = false
-        switch(name) {
-            case NAME_EMAIL:
-                isValidNow = isValid && firstName2 !== '' && lastName2 !== ''
-                setEmail(value)
-                setEmailValid(isValid)
-                break
-            case NAME_FIRSTNAME:
-                isValidNow = isValid && emailVlid && lastName2 !== ''
-                setFirstName(value)
-                break
-            case NAME_MIDDLENAME:
-                isValidNow = isValid
-                setMiddleName(value)
-                break
-            case NAME_LASTNAME:
-                isValidNow = isValid && emailVlid && firstName2 !== ''
-                setLastName(value)
-                break
-            case NAME_SUFFIX:
-                isValidNow = isValid
-                setSuffix(value)
-                break
-        }
-    
-        //console.log('is valid', isValidNow ? 'yes' : 'no')
-        setValid(isValidNow)
+    const onEmailChange = (value: string, isValid: boolean) => {
+        setEmail(value)
+        setValid(isValid && validName)
     }
 
     /**
@@ -111,21 +82,25 @@ const BasicInfo: React.FC = () => {
     return (
         <>
         <div className="mb-8">
-            <h1 style={{ fontSize: '2rem', color: 'white' }}>Enter your basic information</h1>
+            <h1 style={{ fontSize: '2rem', color: 'inherit' }}>Enter your basic information</h1>
         </div>
-        <main style={{ backgroundColor: 'pink', position: 'relative' }}>
+        <main style={{ position: 'relative' }}>
             <div>
                 <EleosLabel text="Your email" />
-                <EleosInputEmail value={email2} mustHave={true} name={NAME_EMAIL} onTextEntered={(value, isValid) => onchange(NAME_EMAIL, value, isValid)} />
-                <EleosLabel text="First Name" />
-                <EleosInputBase value={firstName2} mustHave={true} name={NAME_FIRSTNAME} onTextEntered={(value, isValid) => onchange(NAME_FIRSTNAME, value, isValid)} />
-                <EleosLabel text="Middle Name" />
-                <EleosInputBase value={middleName2} mustHave={false}  name={NAME_MIDDLENAME} onTextEntered={(value, isValid) => onchange(NAME_MIDDLENAME, value, isValid)} />
-                <EleosLabel text="Last Name" />
-                <EleosInputBase value={lastName2} mustHave={true} name={NAME_LASTNAME} onTextEntered={(value, isValid) => onchange(NAME_LASTNAME, value, isValid)} />
-                <EleosLabel text="Suffix" />
-                <EleosInputBase value={suffix2} mustHave={false} name={NAME_SUFFIX} onTextEntered={(value, isValid) => onchange(NAME_SUFFIX, value, isValid)} />
-            </div>
+                <EleosInputBase 
+                    value={email2} 
+                    mustHave={true} 
+                    name={NAME_EMAIL} 
+                    regEx={REGEX_EMAIL} 
+                    onTextEntered={(value, isValid) => onEmailChange(value, isValid)} />
+                <EleosName 
+                    firstNameInput={firstName2}
+                    middleNameInput={middleName2}
+                    lastNameInput={lastName2}
+                    suffixInput={suffix2}
+                    onNameChange={onNameChange}
+                />
+               </div>
             <div className="mt-1" style={{ position: 'absolute', bottom: '0', right: '0' }}>
                 <EleosButton
                     disabled={!valid}

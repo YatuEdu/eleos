@@ -1,6 +1,6 @@
 import { EleosInputBaseProps } 
                 from '@/lib/client/model/EleosMisc';
-import React, { Component, ChangeEvent } 
+import React, { useState, useRef, ChangeEvent } 
                 from 'react';
 
 
@@ -10,63 +10,67 @@ interface InputState {
     isValid: boolean;
   }
 
-class EleosInputBase extends Component<EleosInputBaseProps, InputState> {
-    protected inputRef: React.RefObject<HTMLInputElement>;
+const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
+    const [value, setValue] = useState<string>(props.value);
+    const [isValid, setIsValid] = useState<number>(validate(props.value)); // 0 = empty, -1 = in valid, 1 = valid
+    const inputRef = useRef<HTMLInputElement>(null);
 
-    constructor(props: EleosInputBaseProps) {
-        super(props);
-        this.state = {
-            value: props.value || '',
-            isValid:  true
-        };
-        console.log('EleosInputBase props', props)
-        this.inputRef = React.createRef();
-    }
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const valid = validate(event.target.value);
+        setValue(event.target.value);
+        setIsValid(valid);
+        props.onTextEntered(event.target.value, valid === 1);
+    };
 
-    handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const valid = this.validate(event.target.value);
-        this.setState({ value: event.target.value, isValid: valid});
-        this.props.onTextEntered(event.target.value, valid);
-    }
-
-    validate = (value: string) => {
-        if (this.props.mustHave && value === '') {
-            return false;
-        } else {
-            return true;
-        }       
-    }
-
-    componentDidMount() {
-        if (this.inputRef.current) {
-            // Access the input element using the ref
-            // console.log(this.inputRef.current);
+    /**
+     * VALIDATE THE value of text field by reg ext and must have rules
+     * 
+     * @param value 
+     * @returns 
+     */
+    function validate( value: string) {
+        if (value === '') {
+            if (props.mustHave) {
+                return 0;
+            }
+            return 1;
         }
-    }
+        
+        if (props.regEx && !props.regEx.test(value)) {
+            return -1;
+        }
+        return 1;
+    };
 
-    render() {
-        // Define styles based on the input text length
-        const inputStyle = {
-            borderColor: !this.state.isValid ? 'red' : 'black',
-            borderRadius: '5px', 
-            padding: '5px',
-            width: '75%', 
-        };
+    const componentDidMount = () => {
+        if (inputRef.current) {
+            // Access the input element using the ref
+            // console.log(inputRef.current);
+        }
+    };
 
-        return (
-            <div>
+    // Define styles based on the input text length
+    const inputStyle = {
+        borderColor: !isValid ? 'red' : 'black',
+        borderRadius: '5px',
+        color: 'black',
+        padding: '5px',
+        width: '75%',
+    };
+
+    return (
+        <div>
             <input
-                name={this.props.name}
+                name={props.name}
                 type="text"
-                value={this.state.value}
-                onChange={this.handleChange}
-                style={{ ...inputStyle, }} 
-                ref={this.inputRef} 
+                value={value}
+                onChange={handleChange}
+                style={{ ...inputStyle }}
+                ref={inputRef}
             />
-            {!this.state.isValid && <span style={{color: 'red', marginLeft: 2} }>Invalid {this.props.name}</span>}
-            </div>
-        );
-    }
-}
+            {1 !== isValid && <span style={{ color: '#FF7F50', marginLeft: 2 }}>{isValid === 0 ? `required` : `invalid`}</span>}
+        </div>
+    );
+};
 
 export default EleosInputBase;
