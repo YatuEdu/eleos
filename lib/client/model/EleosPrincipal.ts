@@ -4,8 +4,8 @@ import { EleosState }
                 from "./EleosState"
 
 class EleosPrincipal extends EleosPerson {
-    #email: string
-    #residenceState: EleosState
+    private _email: string
+    private _residenceState: EleosState
 
     constructor(firstName: string, 
                 middleName: string,
@@ -14,17 +14,17 @@ class EleosPrincipal extends EleosPerson {
                 email: string, 
                 state: EleosState) {
         super(firstName, middleName, lastName, suffix)
-        this.#email = email
-        this.#residenceState = state
+        this._email = email
+        this._residenceState = state
     }
 
     /**
      * getters
      */
 
-    get email() { return this.#email }
+    get email() { return this._email }
 
-    get residenceState() { return this.#residenceState }
+    get residenceState() { return this._residenceState }
 }
 
 export default EleosPrincipal
