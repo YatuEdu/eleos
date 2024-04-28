@@ -3,13 +3,6 @@ import { EleosInputBaseProps }
 import React, { useState, useRef, ChangeEvent } 
                 from 'react';
 
-
-// Define the state interface
-interface InputState {
-    value: string;
-    isValid: boolean;
-  }
-
 const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     const [value, setValue] = useState<string>(props.value);
     const [isValid, setIsValid] = useState<number>(validate(props.value)); // 0 = empty, -1 = in valid, 1 = valid
@@ -28,7 +21,7 @@ const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
      * @param value 
      * @returns 
      */
-    function validate( value: string) {
+    function validate(value: string) {
         if (value === '') {
             if (props.mustHave) {
                 return 0;
@@ -59,7 +52,7 @@ const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     };
 
     return (
-        <div>
+        <div className={props.className}>
             <input
                 name={props.name}
                 type="text"
