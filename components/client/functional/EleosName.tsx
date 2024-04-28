@@ -60,33 +60,41 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
     }
 
     return (
-        <div>
-            <EleosLabel text="First Name" />
-            <EleosInputBase 
-                value={firstName} 
-                mustHave={true} 
-                name={NAME_FIRSTNAME} 
-                regEx={REGEX_NAME} 
-                onTextEntered={(value, isValid) => onchange(NAME_FIRSTNAME, value, isValid)} />
-            <EleosLabel text="Middle Name" />
-            <EleosInputBase 
-                value={middleName} 
-                mustHave={false}  
-                name={NAME_MIDDLENAME} 
-                onTextEntered={(value, isValid) => onchange(NAME_MIDDLENAME, value, isValid)} />
-            <EleosLabel text="Last Name" />
-            <EleosInputBase
-                value={lastName} 
-                mustHave={true} 
-                name={NAME_LASTNAME}
-                regEx={REGEX_NAME} 
-                onTextEntered={(value, isValid) => onchange(NAME_LASTNAME, value, isValid)} />
-            <EleosLabel text="Suffix" />
-            <EleosInputBase 
-                value={suffix} 
-                mustHave={false} 
-                name={NAME_SUFFIX} 
-                onTextEntered={(value, isValid) => onchange(NAME_SUFFIX, value, isValid)} />
+        <div className="grid grid-cols-2 gap-1">
+            <div>
+                <EleosLabel text="First Name" />
+                <EleosInputBase 
+                    value={firstName} 
+                    mustHave={true} 
+                    name={NAME_FIRSTNAME} 
+                    regEx={REGEX_NAME} 
+                    onTextEntered={(value, isValid) => onchange(NAME_FIRSTNAME, value, isValid)} />
+            </div>
+            <div>
+                <EleosLabel text="Middle Name" />
+                <EleosInputBase 
+                    value={middleName} 
+                    mustHave={false}  
+                    name={NAME_MIDDLENAME} 
+                    onTextEntered={(value, isValid) => onchange(NAME_MIDDLENAME, value, isValid)} />
+            </div>
+            <div>
+                <EleosLabel text="Last Name" />
+                <EleosInputBase
+                    value={lastName} 
+                    mustHave={true} 
+                    name={NAME_LASTNAME}
+                    regEx={REGEX_NAME} 
+                    onTextEntered={(value, isValid) => onchange(NAME_LASTNAME, value, isValid)} />
+            </div>
+            <div>
+                <EleosLabel text="Suffix" />
+                <EleosInputBase 
+                    value={suffix} 
+                    mustHave={false} 
+                    name={NAME_SUFFIX} 
+                    onTextEntered={(value, isValid) => onchange(NAME_SUFFIX, value, isValid)} />
+            </div>
         </div>
     );
 };

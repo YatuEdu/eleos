@@ -2,6 +2,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import LoginButton from './LoginButton';
 
 // Styled components
 const StyledTitleBar = styled.div`
@@ -17,7 +18,7 @@ const Logo = styled.img`
   width: auto;
 `;
 
-const LoginButton = styled.button`
+const LoginButton2 = styled.button`
   padding: 4px 4px;
   background-color: white;
   border: none;
@@ -36,7 +37,7 @@ const TitleBar: React.FC = () => {
   return (
     <StyledTitleBar>
       <Logo src="/image/logo.png" alt="Site Logo" />
-      <LoginButton>Log In</LoginButton>
+      <LoginButton />
     </StyledTitleBar>
   );
 }

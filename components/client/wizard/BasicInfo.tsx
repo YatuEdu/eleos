@@ -14,27 +14,37 @@ import { useState }
                 from "react"
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-import { REGEX_EMAIL } from "@/lib/common/constant/StringConst"
-import EleosName from "../functional/EleosName"
+import { REGEX_EMAIL } 
+                from "@/lib/common/constant/StringConst"
+import EleosName 
+                from "../functional/EleosName"
+import { Autocomplete, TextField } 
+                from "@mui/material"
+import EleosAutoComplete from "../atoms/EleosAutoComplete"
 
 const NAME_EMAIL = 'email'
+const NAME_STATE = 'state'
 
 const BasicInfo: React.FC = () => {
     const {ref} = useElos() ?? {};
 
     // initialize the form with the current values saved earlier
-    const {firstName, middleName, lastName, suffix, email} = (ref && ref.current && ref.current.principal) ? ref.current.principal 
-        : {firstName: '', middleName: '', lastName: '', suffix: '', email: ''}
+    const {firstName, middleName, lastName, suffix, email, residenceState} = (ref && ref.current && ref.current.principal) ? ref.current.principal 
+        : {firstName: '', middleName: '', lastName: '', suffix: '', email: '', residenceState: null}
 
     const [firstName2, setFirstName] = useState(firstName)
     const [middleName2, setMiddleName] = useState(middleName)
     const [lastName2, setLastName] = useState(lastName)
     const [suffix2, setSuffix] = useState(suffix)
-    const [state, setState] = useState('Washington')
+    const [state, setState] = useState(residenceState ? residenceState.name : '')
     const [email2, setEmail] = useState(email)
     const [valid, setValid] = useState(email && firstName && lastName ? true : false)
     const [validName, setValidName] = useState(firstName && lastName ? true : false)
     const {nextStep} = useWizard()
+
+    const onStateSelection = (value: string) => {
+        setState(value)
+    }
 
     const onNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
         console.log({ firstName, middleName, lastName, suffix, isValid })
@@ -85,23 +95,33 @@ const BasicInfo: React.FC = () => {
             <h1 style={{ fontSize: '2rem', color: 'inherit' }}>Enter your basic information</h1>
         </div>
         <main style={{ position: 'relative' }}>
-            <div>
-                <EleosLabel text="Your email" />
-                <EleosInputBase 
-                    value={email2} 
-                    mustHave={true} 
-                    name={NAME_EMAIL} 
-                    regEx={REGEX_EMAIL} 
-                    onTextEntered={(value, isValid) => onEmailChange(value, isValid)} />
-                <EleosName 
-                    firstNameInput={firstName2}
-                    middleNameInput={middleName2}
-                    lastNameInput={lastName2}
-                    suffixInput={suffix2}
-                    onNameChange={onNameChange}
-                />
-               </div>
-            <div className="mt-1" style={{ position: 'absolute', bottom: '0', right: '0' }}>
+            <div className="grid grid-cols-2 gap-1">
+                    <div>
+                        <EleosLabel text="Select the state you live in" />
+                        <EleosAutoComplete
+                            selectedOption={state}
+                            onOptionSelect={onStateSelection}
+                            options={allEleosStates.map(s => s.name)}
+                        />
+                    </div>
+                <div>
+                    <EleosLabel text="Your email" />
+                    <EleosInputBase 
+                        value={email2} 
+                        mustHave={true} 
+                        name={NAME_EMAIL} 
+                        regEx={REGEX_EMAIL} 
+                        onTextEntered={(value, isValid) => onEmailChange(value, isValid)} />
+                </div>
+            </div>
+            <EleosName 
+                firstNameInput={firstName2}
+                middleNameInput={middleName2}
+                lastNameInput={lastName2}
+                suffixInput={suffix2}
+                onNameChange={onNameChange}
+            />
+            <div className="mt-1" >
                 <EleosButton
                     disabled={!valid}
                     text="Save and Continue" 

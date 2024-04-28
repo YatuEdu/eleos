@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TitleBar />
-        <div id="outer" style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', height: '100vh' }}>
+        <div id="outer" style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', height: '100vh', backgroundImage: 'url(/image/serene.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
           <NextAuthProvider>
             <EleosAppProvider>
               <WizardProvider>
