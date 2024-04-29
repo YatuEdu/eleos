@@ -96,11 +96,10 @@ const EleosAutoComplete: React.FC<AutoCompleteDropdownProps> = ({selectedOption,
                     value={{label: selected}}
                     id="combo-box-demo"
                     options={optionObjects}
-                    sx={{ width: '75%' }}
+                    sx={{ width: '99%' }}
                     renderInput={(params) => <StyledTextField {...params} variant="outlined" placeholder='enter the state name ...' borderColor={borderColor} theme={theme}/>}
                     onChange={handleChange}
                 />
-                {selected === '' && <span style={{ color: '#FF7F50', marginLeft: 2 }}>required</span>}
             </div>
         </>
     )

@@ -1,13 +1,15 @@
 import React, { useState } 
                 from 'react';
 import EleosInputBase 
-                from '../atoms/EleosInputBase';
+                from '@/components/client//atoms/EleosInputBase';
 import EleosButton 
-                from '../atoms/EleosButton';
+                from '@/components/client//atoms/EleosButton';
 import { useElos } 
                 from '@/lib/providers/EleosAppProvider';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
+import EleosPhoneInput 
+                from '@/components/client/atoms/ElesoPhoneInput';
 
 const NAME_NAME = 'name';
 
@@ -17,6 +19,7 @@ const MarriedPackage: React.FC = () => {
     const [valid, setValid] = useState(false)
     const {ref} = useElos() ?? {};
     const {currentStep, nextStep, prevStep} = useWizard()
+
     const handleMarriageStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsMarried(event.target.checked);
     };
@@ -55,6 +58,7 @@ const MarriedPackage: React.FC = () => {
 
     return (
         <div>
+            <EleosPhoneInput />
             <label>
                 Are you married?
                 <input type="checkbox" checked={isMarried} onChange={handleMarriageStatusChange} />
@@ -63,7 +67,8 @@ const MarriedPackage: React.FC = () => {
             {isMarried && (
                 <label>
                     Spouse Name:
-                    <EleosInputBase value={spouseName} mustHave={true} name='name' onTextEntered={(value, isValid) => onchange(NAME_NAME, value, isValid)} />
+                    <EleosInputBase value={spouseName} mustHave={true} name='name'
+                     onTextEntered={(value, validCode) => onchange(NAME_NAME, value, validCode === 1)} />
              
                 </label>
             )}

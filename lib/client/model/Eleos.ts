@@ -1,5 +1,7 @@
 import EleosChild 
                 from "./EleosChild"
+import EleosGuardian 
+                from "./EleosGuardian"
 import { EleosIApiResult } 
                 from "./EleosMisc"
 import EleosPerson 
@@ -20,6 +22,7 @@ class Eleos {
     private _principal: EleosPrincipal | null = null
     private _spouse: EleosPerson | null = null
     private _children: EleosChild[] = []
+    private _guardians: EleosGuardian[] = []
     private _people: ElesoPersonWithRoles[] = []
     private _step: number = 0
 
@@ -53,6 +56,12 @@ class Eleos {
     get people() { return this._people}
     
     get children() {return  this._children  }
+
+    get minors(): EleosChild[] {
+        return this._children.filter(c => c.isMinor)
+    }
+
+    get guardians() { return this._guardians}
 
 
     /**
@@ -106,6 +115,31 @@ class Eleos {
             return {succeeded: false, error: 'Child cannot be the same as the spouse'}
         }
         this._children = children
+        return {succeeded: true};
+    }
+
+    addGuardians(guardians: EleosGuardian[]): EleosIApiResult {
+        // need to have minors
+        if (this._children.length === 0 || this.minors.length === 0) {
+            return {succeeded: false, error: 'Need to have at least a minor child to have guardians'}
+        }  
+        
+        // make sure that none of the guardian is princal himself
+        if (this._principal && guardians.find(c => this._principal && EleosPerson.equealTo(this._principal, c))) {
+            return {succeeded: false, error: 'Guardian must be an adult other than the parents'}
+        }
+         // make sure that none of the guardian is spouse himself
+        if (this._spouse && guardians.find(c => this._spouse && EleosPerson.equealTo(this._spouse, c))) {
+            return {succeeded: false, error: 'Guardian must be an adult other than the parents'}
+        }
+          
+        // make sure that none of the guardian is a child himself
+        const filteredArray = guardians.filter( g => !this._children.find(c => EleosPerson.equealTo(c, g)))
+        if (filteredArray.length !== guardians.length) {
+            return {succeeded: false, error: 'Guardian cannot be a one of the child'}
+        }
+      
+        this._guardians = guardians
         return {succeeded: true};
     }
 

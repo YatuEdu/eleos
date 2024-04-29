@@ -13,12 +13,3 @@ export interface EleosInitInfo {
     userSuffix: string
     userState: EleosState
 }
-
-export interface EleosInputBaseProps {
-    name: string;
-    value: string;
-    className?: string;
-    regEx?: RegExp;
-    mustHave?: boolean;
-    onTextEntered: (value: string, isValid: boolean) => void;
-}

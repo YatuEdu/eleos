@@ -22,10 +22,10 @@ const EleosNamesList: React.FC<EleosNamesProps> = ({people, onDelete}) => {
     return (
         <div>
             {people.length > 0 
-             && <div className="w-full max-w-md ml-0 pl-4">
-                <ul className="list-none p-0">
+             && <div >
+                <ul className="w-full list-none p-0">
                     {people.map((p, index) => (
-                        <li key={"ELEOSNAMES" + index} className="flex justify-between items-left bg-white px-4 py-1 shadow rounded my-2">
+                        <li key={"ELEOSNAMES" + index} className="flex w-full justify-between items-left bg-white px-4 py-1 shadow rounded my-2">
                             <span className="text-black text-sm">{p.display()}</span>
                             <button
                                 onClick={() => handleDelete(index)}
