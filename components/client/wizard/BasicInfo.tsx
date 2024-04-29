@@ -18,9 +18,12 @@ import { REGEX_EMAIL, WARNING_INVALID, WARNING_REQUIRED }
                 from "@/lib/common/constant/StringConst"
 import EleosName 
                 from "../functional/EleosName"
-import { Autocomplete, TextField } 
-                from "@mui/material"
-import EleosAutoComplete from "../atoms/EleosAutoComplete"
+import EleosAutoComplete 
+                from "../atoms/EleosAutoComplete"
+import { EleosHelpTips } 
+                from "../functional/EleosHelpTips"
+import { HelpTextId } 
+                from "@/lib/client/model/EleosMisc"
 
 const NAME_EMAIL = 'email'
 const NAME_STATE = 'state'
@@ -102,8 +105,9 @@ const BasicInfo: React.FC = () => {
  
     return (
         <>
-        <div className="mb-8">
-            <h1 style={{ fontSize: '2rem', color: 'inherit' }}>Enter your basic information</h1>
+        <div className="mb-8 flex items-center">
+            <h1 style={{ fontSize: '2rem', color: 'inherit', marginRight: '1rem', display: 'inline-block' }}>Enter your basic information</h1>
+            <EleosHelpTips helpTextEnId={HelpTextId.EmailUsage} />
         </div>
         <main style={{ position: 'relative' }}>
             <div className="grid grid-cols-2 gap-1">

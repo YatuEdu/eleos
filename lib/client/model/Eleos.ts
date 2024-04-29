@@ -2,7 +2,8 @@ import EleosChild
                 from "./EleosChild"
 import EleosGuardian 
                 from "./EleosGuardian"
-import { EleosIApiResult } 
+import EleosHelpText from "./EleosHelpText"
+import { EleosIApiResult, Language } 
                 from "./EleosMisc"
 import EleosPerson 
                 from "./EleosPerson"
@@ -18,7 +19,7 @@ import ElesoPersonWithRoles
  * other people related to this will
  */
 class Eleos {
-
+    private _helpText: EleosHelpText = new EleosHelpText()
     private _principal: EleosPrincipal | null = null
     private _spouse: EleosPerson | null = null
     private _children: EleosChild[] = []
@@ -49,6 +50,10 @@ class Eleos {
 
     prevStep() { this._step -= 1}
 
+    get lang() { return this._helpText.language} 
+
+    set lang(lang: Language) { this._helpText.setLanguage(lang)}
+
     get principal() { return this._principal}
 
     get spouse(): EleosPerson | null { return this._spouse}
@@ -72,6 +77,16 @@ class Eleos {
      * 
      * public methods
      */
+
+    /**
+     * get help text by id
+     * 
+     * @param id 
+     * @returns 
+     */
+    public getHelpText(id: number): string | undefined {
+        return this._helpText.getHelpText(id)
+    }
 
     setSpouse(spouse: EleosPerson | null): EleosIApiResult { 
         if (!spouse) {

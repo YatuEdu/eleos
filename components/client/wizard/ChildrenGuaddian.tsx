@@ -13,6 +13,8 @@ import { useElos }
                 from '@/lib/providers/EleosAppProvider';
 import EleosLabel from '../atoms/EleosLabel';
 import EleosGuardian from '@/lib/client/model/EleosGuardian';
+import { EleosHelpTips } from '../functional/EleosHelpTips';
+import { HelpTextId } from '@/lib/client/model/EleosMisc';
 
 const ChildrenGuardian: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -88,12 +90,16 @@ const ChildrenGuardian: React.FC = () => {
                 )}
                 {/* Add your controls here */}
                 {guardians.length < 3 && (
+                    <>
                     <AddPersonModal
                         buttonText={buttonText}
                         needEmail={true}
                         needDob={false}
                         onSave={onAddGaudian}
                     />
+                    <EleosHelpTips helpTextEnId={HelpTextId.Guardians} />
+                    </>
+ 
                 )}
             </div>
             <div className='col-span-5'>

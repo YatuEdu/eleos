@@ -1,8 +1,9 @@
 'use client'
 
-import Eleos from "@/lib/client/model/Eleos"
-import { EleosInitInfo } from "@/lib/client/model/EleosMisc"
-import { FC, useContext, useRef, useState } from "react"
+import Eleos 
+                from "@/lib/client/model/Eleos"
+import { FC, useContext, useRef, useState } 
+                from "react"
 
 import React from 'react';
 import { EleosContext } from '@/lib/context/EleosContext';
@@ -17,10 +18,12 @@ export function useElos() {
 }
 
 export const EleosAppProvider = ({children}: EleosAppProviderProps) => {
-    const ref = useRef(new Eleos() )
+    const eleos = new Eleos()
+    const ref = useRef(eleos)
+    const [language, setLanguage] = React.useState(eleos.lang);
 
     return (
-        <EleosContext.Provider value={{ ref }}>
+        <EleosContext.Provider value={{ref, language, setLanguage}}>
             {children}
         </EleosContext.Provider>
     )
