@@ -10,11 +10,11 @@ import { EleosState, allEleosStates }
                 from "@/lib/client/model/EleosState"
 import { useElos } 
                 from "@/lib/providers/EleosAppProvider"
-import { useState } 
+import { useRef, useState } 
                 from "react"
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-import { REGEX_EMAIL } 
+import { REGEX_EMAIL, WARNING_INVALID, WARNING_REQUIRED } 
                 from "@/lib/common/constant/StringConst"
 import EleosName 
                 from "../functional/EleosName"
@@ -32,6 +32,9 @@ const BasicInfo: React.FC = () => {
     const {firstName, middleName, lastName, suffix, email, residenceState} = (ref && ref.current && ref.current.principal) ? ref.current.principal 
         : {firstName: '', middleName: '', lastName: '', suffix: '', email: '', residenceState: null}
 
+    const [invalidEmail, setInvalidEmail] = useState(email ? '' : WARNING_REQUIRED)
+    const [invalidState, setInvalidState] = useState(residenceState ? '' : WARNING_REQUIRED)
+
     const [firstName2, setFirstName] = useState(firstName)
     const [middleName2, setMiddleName] = useState(middleName)
     const [lastName2, setLastName] = useState(lastName)
@@ -44,6 +47,7 @@ const BasicInfo: React.FC = () => {
 
     const onStateSelection = (value: string) => {
         setState(value)
+        value !== '' ?  setInvalidState('') : WARNING_REQUIRED
     }
 
     const onNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
@@ -56,9 +60,16 @@ const BasicInfo: React.FC = () => {
         setValid(isValid && !!email2)
     }
 
-    const onEmailChange = (value: string, isValid: boolean) => {
+    const onEmailChange = (value: string, validCode: number) => {
         setEmail(value)
-        setValid(isValid && validName)
+        setValid(validCode === 1 && validName)
+        if (validCode === 0) {
+            setInvalidEmail(WARNING_REQUIRED)
+        } else if (validCode === -1) {
+            setInvalidEmail(WARNING_INVALID)
+        } else {
+            setInvalidEmail('')
+        }  
     }
 
     /**
@@ -97,7 +108,7 @@ const BasicInfo: React.FC = () => {
         <main style={{ position: 'relative' }}>
             <div className="grid grid-cols-2 gap-1">
                     <div>
-                        <EleosLabel text="Select the state you live in" />
+                        <EleosLabel text="Select the state you live in" invalidMessage={invalidState} />
                         <EleosAutoComplete
                             selectedOption={state}
                             onOptionSelect={onStateSelection}
@@ -105,13 +116,13 @@ const BasicInfo: React.FC = () => {
                         />
                     </div>
                 <div>
-                    <EleosLabel text="Your email" />
+                    <EleosLabel text="Your email" invalidMessage={invalidEmail} />
                     <EleosInputBase 
                         value={email2} 
                         mustHave={true} 
                         name={NAME_EMAIL} 
                         regEx={REGEX_EMAIL} 
-                        onTextEntered={(value, isValid) => onEmailChange(value, isValid)} />
+                        onTextEntered={(value, validCode) => onEmailChange(value, validCode)} />
                 </div>
             </div>
             <EleosName 

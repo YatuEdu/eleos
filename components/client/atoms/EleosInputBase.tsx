@@ -1,7 +1,14 @@
-import { EleosInputBaseProps } 
-                from '@/lib/client/model/EleosMisc';
-import React, { useState, useRef, ChangeEvent } 
+import React, { useState, useRef, ChangeEvent, useEffect } 
                 from 'react';
+
+interface EleosInputBaseProps {
+                    name: string;
+                    value: string;
+                    className?: string;
+                    regEx?: RegExp;
+                    mustHave?: boolean;
+                    onTextEntered: (value: string, validCode: number) => void;
+}
 
 const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     const [value, setValue] = useState<string>(props.value);
@@ -9,10 +16,10 @@ const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const valid = validate(event.target.value);
+        const validCode = validate(event.target.value);
         setValue(event.target.value);
-        setIsValid(valid);
-        props.onTextEntered(event.target.value, valid === 1);
+        setIsValid(validCode);
+        props.onTextEntered(event.target.value, validCode);
     };
 
     /**
@@ -42,26 +49,15 @@ const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
         }
     };
 
-    // Define styles based on the input text length
-    const inputStyle = {
-        borderColor: !isValid ? 'red' : 'black',
-        borderRadius: '5px',
-        color: 'black',
-        padding: '5px',
-        width: '75%',
-    };
-
     return (
-        <div className={props.className}>
+        <div >
             <input
-                name={props.name}
+                className={`border ${!isValid ? 'border-red-500' : 'border-black'} rounded-md text-black p-1 w-full `  + props.className}
                 type="text"
                 value={value}
                 onChange={handleChange}
-                style={{ ...inputStyle }}
                 ref={inputRef}
             />
-            {1 !== isValid && <span style={{ color: '#FF7F50', marginLeft: 2 }}>{isValid === 0 ? `required` : `invalid`}</span>}
         </div>
     );
 };

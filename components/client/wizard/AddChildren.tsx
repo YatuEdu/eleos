@@ -114,67 +114,67 @@ const AddChildren: React.FC = () => {
     return (
         <div>
             <div className="grid grid-cols-12 gap-1">
-            <div className="col-span-8 border border-gray-600 rounded-md shadow-md">
-                <div className="mb-8">
-                    <h1 className="text-2xl">Add your children as heirs</h1>
-                </div>
-                <div className="flex items-left ml-4">
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={hasChildren}
-                                onChange={handleHasChildren}
-                                name="checkedB"
-                                className={`
-                                    text-yellow-500
-                                    ${hasChildren ? 'bg-gray-200 rounded-md' : ''}
-                                    hover:bg-gray-300
-                                `}
-                            />
-                        }
-                        label="Do you have children?" 
-                    />
+                <div className="col-span-7 border border-gray-600 rounded-md shadow-md">
+                    <div className="mb-8">
+                        <h1 className="text-2xl">Add your children as heirs</h1>
+                    </div>
+                    <div className="flex items-left ml-4">
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={hasChildren}
+                                    onChange={handleHasChildren}
+                                    name="checkedB"
+                                    className={`
+                                        text-yellow-500
+                                        ${hasChildren ? 'bg-gray-200 rounded-md' : ''}
+                                        hover:bg-gray-300
+                                    `}
+                                />
+                            }
+                            label="Do you have children?" 
+                        />
+                        {hasChildren && (
+                            <AddPersonModal 
+                                buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
+                                needDob={true} 
+                                onSave={onAddChild} />
+                        )}
+                    </div>
+
                     {hasChildren && (
-                        <AddPersonModal 
-                            buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
-                            needDob={true} 
-                            onSave={onAddChild} />
+                        <div>
+                            {childrenList.length > 0 && <EleosLabel text="List of children" />}
+                            <EleosNamesList people={childrenList} onDelete={onDeleteName} />
+                        </div>
                     )}
                 </div>
-
-                {hasChildren && (
-                    <div>
-                        {childrenList.length > 0 && <EleosLabel text="List of children" />}
-                        <EleosNamesList people={childrenList} onDelete={onDeleteName} />
-                    </div>
-                )}
+                <div className="col-span-5">
+                    <p>
+                        This is where you can add your children as heirs. It is import to add all your children so that they can be included in your estate plan.
+                    </p>
+                    <p>
+                        If you do not have children, you can skip this step.
+                    </p>
+                </div>
             </div>
-            <div className="col-span-4">
-                <p>
-                    This is where you can add your children as heirs. It is import to add all your children so that they can be included in your estate plan.
-                </p>
-                <p>
-                    If you do not have children, you can skip this step.
-                </p>
-            </div>
-        </div> 
-        <div className="w-full max-w-md ml-1">
-            <div className="flex justify-between">
-                <EleosButton
-                    className="mr-1 mt-2"
-                    disabled={false}
-                    text=" < Back" 
-                    onClick={onPrev}
-                    tipDisable="Enter all the required info and then submit" 
-                    tipEnabled="Click to save and continue" />
-                <EleosButton
-                    className="mt-2"
-                    disabled={!valid}
-                    text="Save and Continue >" 
-                    onClick={onNext}
-                    tipDisable="Enter all the required info and then submit" 
-                    tipEnabled="Click to save and continue" />
-            </div>
+            <div className="grid grid-cols-12 gap-1">
+                <div className="col-span-7 flex justify-between">
+                    <EleosButton
+                        className="mr-1 mt-2"
+                        disabled={false}
+                        text=" < Back" 
+                        onClick={onPrev}
+                        tipDisable="Enter all the required info and then submit" 
+                        tipEnabled="Click to save and continue" />
+                    <EleosButton
+                        className="mt-2"
+                        disabled={!valid}
+                        text="Save and Continue >" 
+                        onClick={onNext}
+                        tipDisable="Enter all the required info and then submit" 
+                        tipEnabled="Click to save and continue" />
+                </div>
         </div>
     </div>
     );

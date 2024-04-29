@@ -3,6 +3,7 @@
 import AddChildren from '@/components/client/wizard/AddChildren';
 import BasicInfo 
                 from '@/components/client/wizard/BasicInfo'
+import ChildrenGuardian from '@/components/client/wizard/ChildrenGuaddian';
 import MarriageInfo 
                 from '@/components/client/wizard/MarriageInfo';
 import MarriedPackage 
@@ -28,7 +29,9 @@ export default function Page() {
                     { (currentStep === 0) && (<BasicInfo />) }
                     { (currentStep === 1) && (<MarriageInfo />) }
                     { (currentStep === 2) && (<AddChildren />) }
-                    { (currentStep === 3) && (<MarriedPackage />) }
+                    { (currentStep === 3) && (<ChildrenGuardian />) }
+                    { (currentStep === 4) && (<MarriedPackage />) }
+                    { (currentStep === 5) && (<BasicInfo />) }
                 </div>
             </Card>
           

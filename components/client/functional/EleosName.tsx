@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
-import EleosLabel from '../atoms/EleosLabel';
-import EleosInputBase from '../atoms/EleosInputBase';
-import { REGEX_NAME } from '@/lib/common/constant/StringConst';
+import React, { useState } 
+                from 'react';
+import EleosLabel 
+                from '../atoms/EleosLabel';
+import EleosInputBase 
+                from '../atoms/EleosInputBase';
+import { REGEX_NAME, WARNING_REQUIRED } 
+                from '@/lib/common/constant/StringConst';
 
 interface EleosNameProps {
     firstNameInput: string;
@@ -22,6 +26,8 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
     const [middleName, setMiddleName] = useState(middleNameInput ?? '');
     const [firstName, setFirstName] = useState(firstNameInput);
     const [valid, setValid] = useState<boolean>((lastNameInput && firstNameInput) ? true : false)
+    const [invalidFirstName, setInvalidFirstName] = useState(firstName ? '' : WARNING_REQUIRED)
+    const [invalidLastName, setInvalidLastName] = useState(lastNameInput ? '' : WARNING_REQUIRED)
 
     /**
      * Set name value and check if the form is valid
@@ -38,6 +44,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
                 isValidNow = isValid && !!lastName
                 setFirstName(value)
                 onNameChange(value, middleName, lastName, suffix, isValidNow)
+                setInvalidFirstName(value ? '' : WARNING_REQUIRED)
                 break
             case NAME_MIDDLENAME:
                 isValidNow = isValid && valid
@@ -48,6 +55,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
                 isValidNow = isValid && !!firstName
                 setLastName(value)
                 onNameChange(firstName, middleName, value, suffix, isValidNow)
+                setInvalidLastName(value ? '' : WARNING_REQUIRED)
                 break
             case NAME_SUFFIX:
                 isValidNow = isValid && valid
@@ -62,13 +70,13 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
     return (
         <div className="grid grid-cols-2 gap-1">
             <div>
-                <EleosLabel text="First Name" />
+                <EleosLabel text="First Name" invalidMessage={invalidFirstName}/>
                 <EleosInputBase 
                     value={firstName} 
                     mustHave={true} 
                     name={NAME_FIRSTNAME} 
                     regEx={REGEX_NAME} 
-                    onTextEntered={(value, isValid) => onchange(NAME_FIRSTNAME, value, isValid)} />
+                    onTextEntered={(value, validCode) => onchange(NAME_FIRSTNAME, value, validCode === 1)} />
             </div>
             <div>
                 <EleosLabel text="Middle Name" />
@@ -76,16 +84,16 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
                     value={middleName} 
                     mustHave={false}  
                     name={NAME_MIDDLENAME} 
-                    onTextEntered={(value, isValid) => onchange(NAME_MIDDLENAME, value, isValid)} />
+                    onTextEntered={(value, validCode) => onchange(NAME_MIDDLENAME, value, validCode === 1)} />
             </div>
             <div>
-                <EleosLabel text="Last Name" />
+                <EleosLabel text="Last Name" invalidMessage={invalidLastName} />
                 <EleosInputBase
                     value={lastName} 
                     mustHave={true} 
                     name={NAME_LASTNAME}
                     regEx={REGEX_NAME} 
-                    onTextEntered={(value, isValid) => onchange(NAME_LASTNAME, value, isValid)} />
+                    onTextEntered={(value, validCode) => onchange(NAME_LASTNAME, value, validCode === 1)} />
             </div>
             <div>
                 <EleosLabel text="Suffix" />
@@ -93,7 +101,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
                     value={suffix} 
                     mustHave={false} 
                     name={NAME_SUFFIX} 
-                    onTextEntered={(value, isValid) => onchange(NAME_SUFFIX, value, isValid)} />
+                    onTextEntered={(value, validCode) => onchange(NAME_SUFFIX, value, validCode === 1)} />
             </div>
         </div>
     );
