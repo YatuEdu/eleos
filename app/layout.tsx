@@ -28,16 +28,24 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <TitleBar />
-        <div id="outer" style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', height: '100vh', backgroundImage: 'url(/image/serene.png)', backgroundSize: 'cover', backgroundPosition: 'bottom' }}>
-          <NextAuthProvider>
-            <EleosAppProvider>
-              <WizardProvider>
-                {children}
-              </WizardProvider>
+      <NextAuthProvider>
+          <EleosAppProvider>
+            <TitleBar />
+              <div id="outer" 
+                style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'flex-start', 
+                  height: '100vh', 
+                  backgroundImage: 'url(/image/serene.png)', 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'bottom' }}>
+                <WizardProvider>
+                  {children}
+                </WizardProvider>
+              </div>
             </EleosAppProvider>
-          </NextAuthProvider>
-        </div>
+        </NextAuthProvider>
       </body>
     </html>
   )

@@ -1,8 +1,16 @@
 "use client"
 
-import React from 'react';
-import styled from 'styled-components';
-import LoginButton from './LoginButton';
+import React 
+        from 'react';
+import styled 
+        from 'styled-components';
+import LoginButton 
+        from './LoginButton';
+import EleosLanguageButton 
+        from './EleosLanguageButton';
+import { useElos } 
+        from '@/lib/providers/EleosAppProvider';
+import { Language } from '@/lib/client/model/EleosMisc';
 
 // Styled components
 const StyledTitleBar = styled.div`
@@ -34,9 +42,25 @@ const LoginButton2 = styled.button`
 
 // Component
 const TitleBar: React.FC = () => {
+
+  const {ref, language, setLanguage} = useElos() ?? {};
+  if (!ref || !ref.current || !setLanguage || !language) {
+    throw Error('Eleos is not initialized');
+  }
+
+  const handleLanguageChange = (language: Language) => {
+    if (!ref || !ref.current || !setLanguage || !language) {
+      throw Error('Eleos is not initialized');
+    }
+  
+    ref.current.lang = language;
+    setLanguage(language);
+  }
+
   return (
     <StyledTitleBar>
       <Logo src="/image/logo.png" alt="Site Logo" />
+      <EleosLanguageButton language={language} setLanguage={handleLanguageChange} />
       <LoginButton />
     </StyledTitleBar>
   );

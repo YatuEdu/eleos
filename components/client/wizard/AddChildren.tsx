@@ -20,7 +20,12 @@ import AddPersonModal
                 from '../functional/dialog/AddPersonModal';
 import EleosChild 
                 from '@/lib/client/model/EleosChild';
-import { IntegerConst } from '@/lib/common/constant/IntegerConst';
+import { IntegerConst } 
+                from '@/lib/common/constant/IntegerConst';
+import { EleosHelpTips } 
+                from '../functional/EleosHelpTips';
+import { HelpTextId } 
+                from '@/lib/client/model/EleosMisc';
 
 
 const AddChildren: React.FC = () => {
@@ -135,10 +140,13 @@ const AddChildren: React.FC = () => {
                             label="Do you have children?" 
                         />
                         {hasChildren && (
+                            <>
                             <AddPersonModal 
                                 buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
                                 needDob={true} 
                                 onSave={onAddChild} />
+                            <EleosHelpTips helpTextEnId={HelpTextId.Childrens} />
+                            </>
                         )}
                     </div>
 
