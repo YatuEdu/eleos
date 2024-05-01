@@ -34,7 +34,7 @@ const MarriageInfo: React.FC = () => {
         console.log('principal', null)
     }
     
-    const {currentStep, nextStep, prevStep} = useWizard()
+    const {setStep} = useWizard()
 
     const handleMarriageStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsMarried(event.target.checked);
@@ -68,9 +68,9 @@ const MarriageInfo: React.FC = () => {
         if (!ref || !ref.current)  {
             throw Error('Eleos is not initialized')  
         }
-        console.log('current step', currentStep)
-        ref.current.prevStep()
-        prevStep()
+        // go back to the previous step
+        const step = ref.current.prevStep()
+        setStep(step)
     }
        
     const onNext = () => {  
@@ -92,7 +92,10 @@ const MarriageInfo: React.FC = () => {
                 return;
             }
         }    
-        nextStep()
+         
+        // move to the next step
+        const step = ref.current.nextStep()
+        setStep(step)
     } 
 
     return (

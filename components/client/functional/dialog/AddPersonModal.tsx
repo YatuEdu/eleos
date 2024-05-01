@@ -102,7 +102,9 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, needDob, ne
                 text={buttonText} 
                 onClick={handleClickOpen}
             />
-            <Dialog open={open} onClose={handleClose} PaperProps={{ style: { backgroundColor: '#3B6978', color: '#FFD700', } }}>
+            <Dialog open={open} 
+                    onClose={handleClose} 
+                    PaperProps={{ style: { backgroundColor: '#3B6978', color: '#FFD700', } }}>
                 <DialogTitle>Enter Your Name</DialogTitle>
                 <DialogContent>
                 <EleosName

@@ -6,12 +6,21 @@ interface WizardData {
     name?: string;
 }
 
+export enum WizardStep {
+    BASIC_INFO = 1,
+    MARRIAGE_INFO = 2,
+    ADD_CHILDREN = 3,
+    CHILDREN_GUARDIAN = 4,
+    MARRIED_PACKAGE = 5,
+    ASSET_DISTRIBUTION_QUESTIONS = 6,
+    COMPLETE_AND_PAYMENT = 100,
+}
+
 interface WizardContextType {
-    currentStep: number;
+    currentStep: WizardStep;
     wizardData: WizardData;
     updateWizardData: (data: Partial<WizardData>) => void;
-    nextStep: () => void;
-    prevStep: () => void;
+    setStep: (step: WizardStep) => void;
 }
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
@@ -27,18 +36,17 @@ interface Props {
 }
 
 export const WizardProvider: React.FC<Props> = ({ children }) => {
-    const [currentStep, setCurrentStep] = useState<number>(0);
+    const [currentStep, setCurrentStep] = useState<number>(WizardStep.BASIC_INFO);
     const [wizardData, setWizardData] = useState<WizardData>({});
-
-    const nextStep = () => setCurrentStep(currentStep + 1);
-    const prevStep = () => setCurrentStep(currentStep - 1);
     
     const updateWizardData = (data: Partial<WizardData>) => {
         setWizardData(prev => ({ ...prev, ...data }));
-    };
+    }
+
+    const setStep = (step: WizardStep) => setCurrentStep(step);
 
     return (
-        <WizardContext.Provider value={{ currentStep, wizardData, updateWizardData, nextStep, prevStep }}>
+        <WizardContext.Provider value={{ currentStep, wizardData, updateWizardData, setStep}}>
             {children}
         </WizardContext.Provider>
     );

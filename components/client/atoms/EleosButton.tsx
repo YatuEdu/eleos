@@ -8,6 +8,7 @@ import { BUTTON_CLASS_RED, BUTTON_CLASS_RED_DISABLED }
                 from '@/lib/common/constant/TailwindClasses';
 
 type EleosButtonProps = {
+    ref?: React.RefObject<HTMLButtonElement>
     text: string,
     className?: string
     disabled?: boolean
@@ -16,7 +17,7 @@ type EleosButtonProps = {
     onClick: () => void
 };
 
-const EleosButton: React.FC<EleosButtonProps> = ({className, disabled, tipDisable, tipEnabled, text, onClick}) => {
+const EleosButton: React.FC<EleosButtonProps> = ({ref, className, disabled, tipDisable, tipEnabled, text, onClick}) => {
     const [disabledState, setDisabledState] = React.useState(disabled || false)
 
     const btnEnabledClasses = className ? BUTTON_CLASS_RED + " " + className : BUTTON_CLASS_RED
@@ -29,6 +30,7 @@ const EleosButton: React.FC<EleosButtonProps> = ({className, disabled, tipDisabl
         <Tooltip title={disabledState ? tipDisable : tipEnabled} disableHoverListener={true}>
             <span>
             <Button
+                ref={ref ? ref : null}
                 className={disabledState ? BUTTON_CLASS_RED_DISABLED : btnEnabledClasses}
                 disabled={disabledState}
                 onClick={onClick}>

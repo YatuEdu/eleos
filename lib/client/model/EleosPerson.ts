@@ -1,3 +1,6 @@
+import { normalizeName } 
+                from '@/lib/common/utilities/StringUtil'
+                
 class EleosPerson {
     private _firstName: string
     private _middleName: string
@@ -8,10 +11,10 @@ class EleosPerson {
                 middleName: string,
                 lastName: string,
                 suffix: string) {
-        this._firstName = firstName
-        this._middleName = middleName ? middleName : ''
-        this._lastName = lastName
-        this._suffix = suffix ? suffix : ''
+        this._firstName = normalizeName(firstName)
+        this._middleName = middleName ? normalizeName(middleName) : ''
+        this._lastName = normalizeName(lastName)
+        this._suffix = suffix ? normalizeName(suffix) : ''
     }
 
     /**

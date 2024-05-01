@@ -45,7 +45,7 @@ class EleosHelpText {
 
     public getHelpText(id: number): string | undefined {
         const textEntry: HelpText | undefined = EleosHelpText.helpTextMap.get(id);
-        console.log(`textEntry: ${textEntry}`, textEntry)
+        //console.log(`textEntry: ${textEntry}`, textEntry)
 
         if (!textEntry) {
             return undefined;

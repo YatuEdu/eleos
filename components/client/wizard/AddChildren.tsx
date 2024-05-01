@@ -26,6 +26,8 @@ import { EleosHelpTips }
                 from '../functional/EleosHelpTips';
 import { HelpTextId } 
                 from '@/lib/client/model/EleosMisc';
+import ConfirmationDialog 
+                from '../functional/dialog/ConfirmationDialog';
 
 
 const AddChildren: React.FC = () => {
@@ -35,7 +37,8 @@ const AddChildren: React.FC = () => {
     const [hasChildren, setHasChildren] = useState(hasChildrenInit);
     const [childrenList, setChildrenList] = useState(children ? children : []); 
     const [valid, setValid] = useState(true)
-    const {currentStep, nextStep, prevStep} = useWizard()
+    const {setStep} = useWizard()
+    const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
 
     const handleHasChildren = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHasChildren(event.target.checked);
@@ -83,7 +86,18 @@ const AddChildren: React.FC = () => {
         setValid(true)
      }
 
+     const handleConfirmDeletion = () => {
+        console.log('Action confirmed!');
+        setOpenConfirmationDialog(false);
+      };
+    
+      const handleCancelDeletion = () => {
+        console.log('Action canceled!');
+        setOpenConfirmationDialog(false);
+      };
+
      const onDeleteName = (index: number) => {
+        setOpenConfirmationDialog(true);
      }
 
     /**
@@ -93,9 +107,9 @@ const AddChildren: React.FC = () => {
         if (!ref || !ref.current)  {
             throw Error('Eleos is not initialized')  
         }
-        console.log('current step', currentStep)
-        ref.current.prevStep()
-        prevStep()
+       
+        const step = ref.current.prevStep()
+        step && setStep(step)
     }
        
     const onNext = () => {  
@@ -113,7 +127,10 @@ const AddChildren: React.FC = () => {
         } else {
             ref.current.addChildren(childrenList)
         }    
-        nextStep()
+         
+        // move to the next step
+        const step = ref.current.nextStep()
+        setStep(step)
     } 
 
     return (
@@ -154,6 +171,13 @@ const AddChildren: React.FC = () => {
                         <div>
                             {childrenList.length > 0 && <EleosLabel text="List of children" />}
                             <EleosNamesList people={childrenList} onDelete={onDeleteName} />
+                            <ConfirmationDialog
+                                open={openConfirmationDialog}
+                                title="Are you sure you want remove this child?"
+                                message="Are you sure you want to do this?"
+                                onConfirm={handleConfirmDeletion}
+                                onCancel={handleCancelDeletion}
+                            />
                         </div>
                     )}
                 </div>

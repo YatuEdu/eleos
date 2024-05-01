@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 interface EleosNamesProps {
     people: EleosPerson[];
-    onDelete: (index: number) => void;
+    onDelete?: (index: number) => void;
 }
 
 const EleosNamesList: React.FC<EleosNamesProps> = ({people, onDelete}) => {
@@ -16,7 +16,7 @@ const EleosNamesList: React.FC<EleosNamesProps> = ({people, onDelete}) => {
     }, [people]);
 
     const handleDelete = (index: number) => {
-        onDelete(index); 
+        onDelete && onDelete(index); 
     };
 
     return (
@@ -27,10 +27,10 @@ const EleosNamesList: React.FC<EleosNamesProps> = ({people, onDelete}) => {
                     {people.map((p, index) => (
                         <li key={"ELEOSNAMES" + index} className="flex w-full justify-between items-left bg-white px-4 py-1 shadow rounded my-2">
                             <span className="text-black text-sm">{p.display()}</span>
-                            <button
+                            {onDelete !== undefined && <button
                                 onClick={() => handleDelete(index)}
                                 className="py-1 px-3 bg-red-500 text-white rounded hover:bg-red-700 transition-colors text-xs"
-                            >Remove</button>
+                            >Remove</button>}
                         </li>
                     ))}
                 </ul>

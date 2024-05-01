@@ -18,7 +18,7 @@ const MarriedPackage: React.FC = () => {
     const [spouseName, setSpouseName] = useState('');
     const [valid, setValid] = useState(false)
     const {ref} = useElos() ?? {};
-    const {currentStep, nextStep, prevStep} = useWizard()
+    const {setStep} = useWizard()
 
     const handleMarriageStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsMarried(event.target.checked);
@@ -46,14 +46,22 @@ const MarriedPackage: React.FC = () => {
      * Submit the form and goes to the seconds page
      */
     const onPrev = () => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
         // go back to the previous step
-        prevStep()
+        const step = ref.current.prevStep()
+        step && setStep(step)
     }
 
     const onNext = () => {  
-
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+        
         // go to the next step
-        nextStep()
+        const step = ref.current.nextStep()
+        setStep(step)
     }
 
     return (

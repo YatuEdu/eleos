@@ -46,7 +46,14 @@ const BasicInfo: React.FC = () => {
     const [email2, setEmail] = useState(email)
     const [valid, setValid] = useState(email && firstName && lastName ? true : false)
     const [validName, setValidName] = useState(firstName && lastName ? true : false)
-    const {nextStep} = useWizard()
+    const {setStep} = useWizard()
+    const submitRef = useRef<HTMLButtonElement | null>(null)
+
+    const checkValid = () => {
+       if (valid) {
+        submitRef.current?.focus()
+       }
+    }
 
     const onStateSelection = (value: string) => {
         setState(value)
@@ -61,6 +68,7 @@ const BasicInfo: React.FC = () => {
         setSuffix(suffix)
         setValidName(isValid)
         setValid(isValid && !!email2)
+        checkValid()
     }
 
     const onEmailChange = (value: string, validCode: number) => {
@@ -72,7 +80,8 @@ const BasicInfo: React.FC = () => {
             setInvalidEmail(WARNING_INVALID)
         } else {
             setInvalidEmail('')
-        }  
+        } 
+        checkValid()
     }
 
     /**
@@ -94,13 +103,11 @@ const BasicInfo: React.FC = () => {
             return
         }
         
-        // initialize eleose object
-        // @ts-ignore
+        // initialize eleose object with the current values
         ref.current.init(firstName2, middleName2, lastName2, suffix2, email2, mystate)
-        ref.current.nextStep()
-        console.log('principal set', ref.current.principal)
-        nextStep()
-        console.log('eleos', ref.current.principal?.email, ref.current.principal?.firstName, ref.current.principal?.lastName)
+        // move to the next step
+        const step = ref.current.nextStep()
+        setStep(step)
     }
  
     return (
@@ -111,14 +118,14 @@ const BasicInfo: React.FC = () => {
         </div>
         <main style={{ position: 'relative' }}>
             <div className="grid grid-cols-2 gap-1">
-                    <div>
-                        <EleosLabel text="Select the state you live in" invalidMessage={invalidState} />
-                        <EleosAutoComplete
-                            selectedOption={state}
-                            onOptionSelect={onStateSelection}
-                            options={allEleosStates.map(s => s.name)}
-                        />
-                    </div>
+                <div>
+                    <EleosLabel text="Select the state you live in" invalidMessage={invalidState} />
+                    <EleosAutoComplete
+                        selectedOption={state}
+                        onOptionSelect={onStateSelection}
+                        options={allEleosStates.map(s => s.name)}
+                    />
+                </div>
                 <div>
                     <EleosLabel text="Your email" invalidMessage={invalidEmail} />
                     <EleosInputBase 
@@ -138,6 +145,7 @@ const BasicInfo: React.FC = () => {
             />
             <div className="mt-1" >
                 <EleosButton
+                    ref={submitRef}
                     disabled={!valid}
                     text="Save and Continue" 
                     onClick={onSubmit}

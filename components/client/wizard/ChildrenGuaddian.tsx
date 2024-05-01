@@ -18,12 +18,12 @@ import { HelpTextId } from '@/lib/client/model/EleosMisc';
 
 const ChildrenGuardian: React.FC = () => {
     const {ref} = useElos() ?? {};
-    if (!ref || !ref.current || !ref.current.principal || ref.current.minors.length === 0)  {
+    if (!ref || !ref.current || !ref.current.principal || !ref.current.minors || !ref.current.minors.length)  {
         throw Error('Eleos is not initialized')  
     }
    
     const {minors} = ref.current;
-    const { currentStep, nextStep, prevStep } = useWizard();
+    const { setStep } = useWizard();
     const [valid, setValid] = useState(ref.current.guardians.length > 0);
     const [guardians, setGuardians] = useState(ref.current.guardians.sort((a, b) => a.order - b.order));
     const [buttonText, setButtonText] = useState(ref.current.guardians.length === 0 ? 
@@ -33,8 +33,13 @@ const ChildrenGuardian: React.FC = () => {
      * Submit the form and goes to the seconds page
      */
     const onPrev = () => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+
         // go back to the previous step
-        prevStep();
+        const step = ref.current.prevStep()
+        step && setStep(step)
     };
 
     const onNext = () => {
@@ -47,7 +52,6 @@ const ChildrenGuardian: React.FC = () => {
         }
 
         // go to the next step
-       
         const result = ref.current.addGuardians(guardians);
         if (!result.succeeded) {
             alert(result.error);
@@ -55,7 +59,8 @@ const ChildrenGuardian: React.FC = () => {
         }   
 
         // go to the next step
-        nextStep();
+        const step = ref.current.nextStep()
+        setStep(step)
     };
 
     const onAddGaudian = (firstName: string, middleName: string, lastName: string, suffix: string, birthYear?: string, email?: string) => {
@@ -103,8 +108,8 @@ const ChildrenGuardian: React.FC = () => {
                 )}
             </div>
             <div className='col-span-5'>
-                {/* Right column with <p> element */}
-                <p>It is important to designate guardians for your minor children.</p>
+                <EleosLabel text="List of minor children" />
+                <EleosNamesList people={minors} />
             </div>
         </div>
         <div className="flex justify-between mt-4">
