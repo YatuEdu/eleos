@@ -29,8 +29,13 @@ const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Them
     // Add border styling
     '& .MuiInputBase-root': {
         padding: '0px', 
+        marginTop: '2px',
+        marginBottom: '-2px',
         '& input': {
-          padding: '8px 14px', 
+          padding: '2px 0px', 
+         
+          marginTop: '-2px',
+          marginBottom: '-3px',
         }
     },
     '& .MuiInputBase-input': {
@@ -38,12 +43,10 @@ const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Them
     
     },
     '& .MuiOutlinedInput-root': {
-        borderRadius: '5px',
+        borderRadius: '4px',
         '& fieldset': {
             borderColor: {borderColor},
             borderWidth: '1px',
-            border: '1px solid', // Add border styling
-            padding: '0',
         },
         '&:hover fieldset': {
             borderColor:  {borderColor} 
@@ -61,7 +64,7 @@ const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Them
     '& label.Mui-focused': {
         color: 'red',
     },
-}));
+}))
 
 const EleosAutoComplete: React.FC<AutoCompleteDropdownProps> = ({selectedOption, options, onOptionSelect }) => {
     // Convert string array to an array of objects expected by MUI Autocomplete
@@ -90,13 +93,13 @@ const EleosAutoComplete: React.FC<AutoCompleteDropdownProps> = ({selectedOption,
 
     return (
         <>
-            <div style={{ display: 'flex', alignItems: 'left', marginLeft: 0,  overflow: 'visible'}}>
+            <div style={{ display: 'flex', alignItems: 'left', marginLeft: 0,  overflow: 'visible', backgroundColor: 'white', borderRadius: '4px'}}>
                 <Autocomplete
                     disablePortal={false}
                     value={{label: selected}}
                     id="combo-box-demo"
                     options={optionObjects}
-                    sx={{ width: '99%' }}
+                    sx={{ width: '100%' }}
                     renderInput={(params) => <StyledTextField {...params} variant="outlined" placeholder='enter the state name ...' borderColor={borderColor} theme={theme}/>}
                     onChange={handleChange}
                 />

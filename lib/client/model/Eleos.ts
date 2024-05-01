@@ -1,3 +1,4 @@
+import { WizardStep } from "@/lib/providers/WizardProvider"
 import EleosChild 
                 from "./EleosChild"
 import EleosGuardian 
@@ -25,30 +26,60 @@ class Eleos {
     private _children: EleosChild[] = []
     private _guardians: EleosGuardian[] = []
     private _people: ElesoPersonWithRoles[] = []
-    private _step: number = 0
-
-    constructor() {
-        this._principal = null
-        this._spouse = null
-        this._children = []
-        this._people = []
-        this._step = 0
-    }
+    private _steps: number[] = []
 
     init(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState) {
         this._principal = new EleosPrincipal(firstName, middleName, lastName, suffix, email, state)
         console.log(`principal added ${email}, ${this._principal.lastName} ---`)
-        this._step = 1
+        this._steps.push(WizardStep.BASIC_INFO)
     }
 
      /**
      * getters
      */
-    get step() { return this._step}
+    get step() { return this._steps.length > 0 ? this._steps[this._steps.length - 1] : 0}
 
-    nextStep() { this._step += 1}
+    nextStep() { 
+        let currentStep = this.step
+        switch (currentStep) {
+            case 0:
+                this._steps.push(WizardStep.BASIC_INFO)
+                break
+            case WizardStep.BASIC_INFO: 
+                this._steps.push(WizardStep.MARRIAGE_INFO)
+                break
+            case WizardStep.MARRIAGE_INFO:
+                this._steps.push(WizardStep.ADD_CHILDREN)
+                break
+            case WizardStep.ADD_CHILDREN:
+                if (this,this.minors.length > 0) {
+                    this._steps.push(WizardStep.CHILDREN_GUARDIAN)
+                } else {
+                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS)
+                }
+                break
+            case WizardStep.CHILDREN_GUARDIAN:
+                this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS)
+                break
+            case WizardStep.ASSET_DISTRIBUTION_QUESTIONS:
+                    this._steps.push(WizardStep.MARRIED_PACKAGE)
+                    break
+            case WizardStep.MARRIED_PACKAGE:
+                this._steps.push(WizardStep.COMPLETE_AND_PAYMENT)
+                break
+            case WizardStep.COMPLETE_AND_PAYMENT:
+                break
+        }
+        return this.step
+    }
 
-    prevStep() { this._step -= 1}
+    prevStep() { 
+        if (this._steps.length <= 1) {
+            throw Error('No more steps to go back')
+        } 
+        this._steps.pop()
+        return this.step
+    }
 
     get lang() { return this._helpText.language} 
 
