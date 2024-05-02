@@ -12,6 +12,7 @@ import { createTheme, ThemeProvider }
                 from '@mui/material/styles';
 import { useElos } 
                 from '@/lib/providers/EleosAppProvider';
+import { HelpTextObject } from '@/lib/client/model/EleosMisc';
 
 interface EleoHelpTipsProps {
     helpTextEnId: number;
@@ -35,10 +36,10 @@ export const EleosHelpTips: React.FC<EleoHelpTipsProps> = ({helpTextEnId}) => {
     if (!ref || !ref.current) {
       throw Error('Eleos is not initialized');
     }
-    const [helpText, setHelpText] = useState(ref.current.getHelpText(helpTextEnId))
+    const [helpText, setHelpText] = useState<HelpTextObject[]>(ref.current.getHelpText([helpTextEnId]))
 
     useEffect(() => {
-        setHelpText(ref.current ? ref.current.getHelpText(helpTextEnId) : '')
+        setHelpText(ref.current ? ref.current.getHelpText([helpTextEnId]) : [])
     }, [language])
 
     console.log('helpText', helpText)
@@ -47,7 +48,7 @@ export const EleosHelpTips: React.FC<EleoHelpTipsProps> = ({helpTextEnId}) => {
         <ThemeProvider theme={theme}>
         <Tooltip 
             key={helpTextEnId + `` }
-            title={helpText} 
+            title={helpText.length > 0 ? helpText[0].helpTextBody : ''} 
             placement="top" 
             enterDelay={300} 
             leaveDelay={200}

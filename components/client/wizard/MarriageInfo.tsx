@@ -14,6 +14,7 @@ import Checkbox from
                 '@mui/material/Checkbox';
 import FormControlLabel 
                 from '@mui/material/FormControlLabel';
+import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
 
 const NAME_NAME = 'name';
 
@@ -45,6 +46,9 @@ const MarriageInfo: React.FC = () => {
             setSposeMiddleName('')
             setSpouseLastName('')
             setSpouseSuffix('')
+            setValid(true)
+        } else {
+            setValid(testValidness(spouseFirstName, sposeLastName, event.target.checked))
         }
     };
 
@@ -113,6 +117,7 @@ const MarriageInfo: React.FC = () => {
                             text-yellow-500
                             ${isMarried ? 'bg-gray-200 rounded-md' : ''}
                             hover:bg-gray-300
+                            ml-2
                         `}
                     />
                 }
@@ -133,15 +138,15 @@ const MarriageInfo: React.FC = () => {
             </div>
             }
 
-            <div style={{ marginTop: 'auto' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <EleosButton
-                        className="mt-2"
-                        disabled={false}
-                        text=" < Back" 
-                        onClick={onPrev}
-                        tipDisable="Enter all the required info and then submit" 
-                        tipEnabled="Click to save and continue" />
+            <EleosWizardButtonLayout leftChild={
+                <EleosButton
+                    className="mt-2"
+                    disabled={false}
+                    text=" < Back" 
+                    onClick={onPrev}
+                    tipDisable="Enter all the required info and then submit" 
+                    tipEnabled="Click to save and continue" />
+            } rightChild={
                     <EleosButton
                         className="mt-2"
                         disabled={!valid}
@@ -149,10 +154,9 @@ const MarriageInfo: React.FC = () => {
                         onClick={onNext}
                         tipDisable="Enter all the required info and then submit" 
                         tipEnabled="Click to save and continue" />
-                </div>
-            </div>
+            } />
         </div>
-    );
-};
+    )
+}
 
 export default MarriageInfo;

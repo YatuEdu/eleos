@@ -11,13 +11,14 @@ interface EleosInputBaseProps {
 }
 
 const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
-    const [value, setValue] = useState<string>(props.value);
+    //const [value, setValue] = useState<string>(props.value);
+    const { value } = props;
     const [isValid, setIsValid] = useState<number>(validate(props.value)); // 0 = empty, -1 = in valid, 1 = valid
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const validCode = validate(event.target.value);
-        setValue(event.target.value);
+        //setValue(event.target.value);
         setIsValid(validCode);
         props.onTextEntered(event.target.value, validCode);
     };

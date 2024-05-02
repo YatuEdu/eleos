@@ -72,7 +72,32 @@ const BasicInfo: React.FC = () => {
     }
 
     const onEmailChange = (value: string, validCode: number) => {
-        setEmail(value)
+        let newEmail = value;
+
+        // Check if the user has entered '@' and provide a suggestion if not already present
+        if (value.includes('@')) {
+            validCode = 1
+            if (value.endsWith('@g')) {
+                newEmail = value + 'mail.com';
+            } else if (value.endsWith('@ho')) {
+                newEmail = value + 'tmail.com';
+            } else if (value.endsWith('@ya')) {
+                newEmail = value + 'hoo.com';
+            } else if (value.endsWith('@a')) {
+                newEmail = value + 'ol.com';
+            } else if (value.endsWith('@q')) {
+                newEmail = value + 'q.com';
+            } else if (value.endsWith('@ic')) {
+                newEmail = value + 'loud.com';
+            } else if (value.endsWith('@ou')) {
+                newEmail = value + 'tlook.com';
+            }   else {
+                validCode = -1
+            }
+        }
+
+        console.log({ value, validCode, newEmail })
+        setEmail(newEmail);
         setValid(validCode === 1 && validName)
         if (validCode === 0) {
             setInvalidEmail(WARNING_REQUIRED)
@@ -114,10 +139,9 @@ const BasicInfo: React.FC = () => {
         <>
         <div className="mb-8 flex items-center">
             <h1 style={{ fontSize: '2rem', color: 'inherit', marginRight: '1rem', display: 'inline-block' }}>Enter your basic information</h1>
-            <EleosHelpTips helpTextEnId={HelpTextId.EmailUsage} />
         </div>
         <main style={{ position: 'relative' }}>
-            <div className="grid grid-cols-2 gap-1">
+            <div className="grid grid-cols-2 gap-1 ml-2">
                 <div>
                     <EleosLabel text="Select the state you live in" invalidMessage={invalidState} />
                     <EleosAutoComplete
@@ -143,7 +167,7 @@ const BasicInfo: React.FC = () => {
                 suffixInput={suffix2}
                 onNameChange={onNameChange}
             />
-            <div className="mt-1" >
+            <div className="mt-2 ml-2" >
                 <EleosButton
                     ref={submitRef}
                     disabled={!valid}

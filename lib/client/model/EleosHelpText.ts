@@ -1,6 +1,5 @@
-import { Language, HelpTextId, HelpText } 
+import { Language, HelpTextId, HelpText, HelpTextObject } 
                 from "@/lib/client/model/EleosMisc";
-
 
 class EleosHelpText {
     private lang: Language = Language.En
@@ -8,14 +7,35 @@ class EleosHelpText {
     private static helpTextMap: Map<HelpTextId, HelpText> = new Map<HelpTextId, HelpText>([
         [HelpTextId.EmailUsage, 
             {
+                subject: 'Privacy Policy',
                 en: `We will collect some information in order to assit you to create the last will.
                      We use email to uniquely identify a user. However, we will not use your information, inclusing your email,
                     for any other purpose.`,
                 cn: `我们将收集一些信息，以帮助您创建遗嘱。我们使用电子邮件来唯一标识用户。但是，我们不会将您的信息，包括您的电子邮件，用于任何其他目的。`
              } 
         ],
+        [HelpTextId.Marriage, 
+            {
+                subject: 'Importance of Marital Status in a Will',
+                en: `Discussing marital status in a will is crucial as it can significantly influence how assets are distributed and how various provisions within the will are executed. 
+                    Here’s a detailed look at how marital status can impact the creation and execution of a will.`,
+                cn: `在遗嘱中讨论婚姻状况至关重要，因为它可以显著影响资产的分配方式以及遗嘱中的各种规定的执行方式`
+             } 
+        ],
+        [HelpTextId.Marriage2, 
+            {
+                subject: 'Concluding Thoughts on Marital Status in Estate Planning',
+                en: `Marital status significantly impacts estate planning. It’s crucial to consider how this status influences the distribution of assets, tax implications, 
+                and legal rights of surviving family members. Regular updates to your will can ensure that it accurately reflects your current situation and wishes,
+                 particularly after any changes in marital status. Therefore, we recommend that you join us as a yearly member to keep your will up to date.`,
+                cn: `婚姻状况对财产规划产生了重大影响。重要的是要考虑这种状况如何影响资产的分配、税收影响以及幸存家庭成员的法律权利。定期更新您的遗嘱可以确保它准确反映您当前的情况和愿望，
+                特别是在婚姻状况发生任何变化之后。因此，我们建议您加入我们作为年度会员，以保持您的遗嘱保持最新。`
+             } 
+        ],
+
         [HelpTextId.Guardians, 
             {
+                subject: 'Significance of Guardians in a Will',
                 en: `The guardians of your minor children are the most important aspect of a will. 
              Most commonly, a single guardian is appointed to ensure clarity and consistency in the upbringing and care of the children. 
              This is often straightforward and avoids potential conflicts that might arise between multiple guardians.`,
@@ -26,31 +46,37 @@ class EleosHelpText {
         ],
         [HelpTextId.Childrens, 
             {
+                subject: 'Importance of Adding Children as Heirs',
                 en: `This is where you can add your children as heirs. 
-                It is import to add all your children so that they can be included in your estate plan.
+                It is important to add all your children so that they can be included in your estate plan.
                 If you do not have children, you can skip this step.`,
-                cn: `这是您可以将您的孩子添加为继承人的地方。
-                重要的是要添加所有的孩子，以便他们可以包括在您的财产计划中。
+                cn: `这是您可以将您的孩子添加为继承人的地方。请添加所有的孩子，以便他们可以包括在您的财产计划中。
+                即使您不计划某个或多个孩子继承您的财产，也请添加他们。 <br />
                 如果您没有孩子，您可以跳过此步骤。`
             }
         ],
         [HelpTextId.Id3, 
             {
-                en: "Help text for ID 3",
-                cn: "ID 3的帮助文本"
+                subject: 'Help text for ID 3',
+                en: 'Help text for ID 3',
+                cn: 'ID 3的帮助文本'
             }
         ],
         // Add more entries as needed
     ]);
 
-    public getHelpText(id: number): string | undefined {
+    public getHelpText(id: number): HelpTextObject | undefined {
         const textEntry: HelpText | undefined = EleosHelpText.helpTextMap.get(id);
         //console.log(`textEntry: ${textEntry}`, textEntry)
 
         if (!textEntry) {
             return undefined;
         }
-        return textEntry[this.getLangTag()] || '';
+        const helpBody: HelpTextObject = {
+                helpTextBody: textEntry[this.getLangTag()],
+                h2Subject: textEntry.subject
+        }
+        return helpBody
     }
 
     private getLangTag(): keyof HelpText {

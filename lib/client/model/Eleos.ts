@@ -1,10 +1,12 @@
-import { WizardStep } from "@/lib/providers/WizardProvider"
+import { WizardStep } 
+                from "@/lib/providers/WizardProvider"
 import EleosChild 
                 from "./EleosChild"
 import EleosGuardian 
                 from "./EleosGuardian"
-import EleosHelpText from "./EleosHelpText"
-import { EleosIApiResult, Language } 
+import EleosHelpText 
+                from "./EleosHelpText"
+import { EleosIApiResult, HelpTextObject, Language } 
                 from "./EleosMisc"
 import EleosPerson 
                 from "./EleosPerson"
@@ -115,8 +117,16 @@ class Eleos {
      * @param id 
      * @returns 
      */
-    public getHelpText(id: number): string | undefined {
-        return this._helpText.getHelpText(id)
+    public getHelpText(ids: number[]): HelpTextObject[] {
+        let results: HelpTextObject[] = []
+        for (let id of ids) {
+            const textEntry: HelpTextObject | undefined = this._helpText.getHelpText(id);
+            if (!textEntry) {
+                throw Error(`Help text for ID ${id} not found`)
+            }
+            results.push(textEntry)
+        }
+        return results
     }
 
     setSpouse(spouse: EleosPerson | null): EleosIApiResult { 

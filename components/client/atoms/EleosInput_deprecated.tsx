@@ -47,5 +47,3 @@ const EleosInput: React.FC<EleosInputProps> = ({ onTextEntered, name, mustHave})
         />
     );
 };
-
-export default EleosInput;
