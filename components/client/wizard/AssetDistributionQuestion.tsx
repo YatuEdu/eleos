@@ -7,6 +7,7 @@ import { useWizard } from '@/lib/providers/WizardProvider';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from 'styled-components';
 import RadioButtonGroup from '../atoms/EleosRadioGroup';
+import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
 
 const theme = createTheme({
     components: {
@@ -120,9 +121,7 @@ const AssetDistributionQuestion: React.FC = () => {
                 </div>
           
             )}
-
-            <div className="grid grid-cols-12 gap-1">
-                <div className="col-span-7 flex justify-between">
+            <EleosWizardButtonLayout leftChild={
                     <EleosButton
                         className="mr-1 mt-2"
                         disabled={false}
@@ -130,6 +129,7 @@ const AssetDistributionQuestion: React.FC = () => {
                         onClick={onPrev}
                         tipDisable="Enter all the required info and then submit" 
                         tipEnabled="Click to save and continue" />
+            } rightChild={
                     <EleosButton
                         disabled={distMethod === ''}
                         className="mt-2"
@@ -137,8 +137,7 @@ const AssetDistributionQuestion: React.FC = () => {
                         onClick={onNext}
                         tipDisable="Enter all the required info and then submit" 
                         tipEnabled="Click to save and continue" />
-                </div>
-        </div>
+            } />
         </div>
     );
 };

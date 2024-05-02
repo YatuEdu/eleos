@@ -10,7 +10,8 @@ import EleosLanguageButton
         from './EleosLanguageButton';
 import { useElos } 
         from '@/lib/providers/EleosAppProvider';
-import { Language } from '@/lib/client/model/EleosMisc';
+import { Language } 
+        from '@/lib/client/model/EleosMisc';
 
 // Styled components
 const StyledTitleBar = styled.div`
@@ -18,16 +19,16 @@ const StyledTitleBar = styled.div`
   justify-content: space-between;
   align-items: center;
   background-color: #36454F; /* Ocean blue background */
-  padding: 4px 8px;
+  padding: 4px 4px;
 `;
 
 const Logo = styled.img`
-  height: 148px;
+  height: 156px;
   width: auto;
 `;
 
 const LoginButton2 = styled.button`
-  padding: 4px 4px;
+  padding: 1px 1px;
   background-color: white;
   border: none;
   cursor: pointer;

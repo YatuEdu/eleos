@@ -1,5 +1,7 @@
 'use client'
 
+import EleosWizardParent from '@/components/client/atoms/EleosWizardParent';
+import EleosHelpPane from '@/components/client/functional/EleosHelpPane';
 import AddChildren 
                 from '@/components/client/wizard/AddChildren';
 import AssetDistributionQuestion 
@@ -14,6 +16,8 @@ import MarriageInfo
                 from '@/components/client/wizard/MarriageInfo';
 import MarriedPackage 
                 from '@/components/client/wizard/MarriedPackage';
+import { HelpTextId } 
+                from '@/lib/client/model/EleosMisc';
 import { EleosAppProvider, useElos } 
                 from '@/lib/providers/EleosAppProvider'
 import { useWizard, WizardStep } 
@@ -32,13 +36,27 @@ export default function Page() {
         <>
             <Card className="p-4 mt-4" style={{ backgroundColor: '#36454F', color: '#FFD700', width: '80%', height: 'auto', overflow: 'auto'}}>
                 <div>
-                    { (currentStep === WizardStep.BASIC_INFO) && (<BasicInfo />) }
-                    { (currentStep === WizardStep.MARRIAGE_INFO) && (<MarriageInfo />) }
-                    { (currentStep === WizardStep.ADD_CHILDREN) && (<AddChildren />) }
-                    { (currentStep === WizardStep.CHILDREN_GUARDIAN) && (<ChildrenGuardian />) }
-                    { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS) && (<AssetDistributionQuestion />)}
-                    { (currentStep === WizardStep.MARRIED_PACKAGE) && (<MarriedPackage />) }
-                    { (currentStep === WizardStep.COMPLETE_AND_PAYMENT) && (<CompleteAndPayment />) }
+                    { (currentStep === WizardStep.BASIC_INFO) && (
+                        <EleosWizardParent leftChild={<BasicInfo />} rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.EmailUsage]}/>} />
+                    ) }
+                    { (currentStep === WizardStep.MARRIAGE_INFO) && (
+                        <EleosWizardParent leftChild={<MarriageInfo />}  rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.Marriage, HelpTextId.Marriage2]}/>} />
+                    ) }
+                    { (currentStep === WizardStep.ADD_CHILDREN) && (
+                        <EleosWizardParent leftChild={<AddChildren />} rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.Childrens]}/>} />
+                    ) }
+                    { (currentStep === WizardStep.CHILDREN_GUARDIAN) && (
+                        <EleosWizardParent leftChild={<ChildrenGuardian />}  rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.Guardians]}/>} />
+                    ) }
+                    { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS) && (
+                        <EleosWizardParent leftChild={<AssetDistributionQuestion />} rightChild={<div><p>will add help text here</p></div>} />
+                    ) }
+                    { (currentStep === WizardStep.MARRIED_PACKAGE) && (
+                        <EleosWizardParent leftChild={<MarriedPackage />} rightChild={<div><p>will add help text here</p></div>} />
+                    )}
+                    { (currentStep === WizardStep.COMPLETE_AND_PAYMENT) && (
+                        <EleosWizardParent leftChild={<CompleteAndPayment />} rightChild={<div><p>will add help text here</p></div>} />
+                    )}
                 </div>
             </Card>
           

@@ -21,8 +21,10 @@ export enum Language {
 
 export enum HelpTextId {
     EmailUsage = 1,
-    Childrens = 2,
-    Guardians  = 3,
+    Marriage = 2,
+    Marriage2 = 3,
+    Childrens = 4,
+    Guardians  = 5,
     
     Id3 = 4,
     // Add more symbolic names as needed
@@ -31,5 +33,11 @@ export enum HelpTextId {
 export type HelpText = {
     en: string;
     cn: string;
+    subject: string;
+}
+
+export interface HelpTextObject {
+    h2Subject: string;
+    helpTextBody: string
 }
 

@@ -30,20 +30,21 @@ const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Them
     '& .MuiInputBase-root': {
         padding: '0px', 
         marginTop: '2px',
-        marginBottom: '-2px',
+        marginBottom: '2px',
         '& input': {
-          padding: '2px 0px', 
-         
+          padding: '2px 2px',   
           marginTop: '-2px',
-          marginBottom: '-3px',
+          marginBottom: '-8px',
         }
     },
-    '& .MuiInputBase-input': {
+    '& .MuiAutocomplete-input': {
         fontSize: '1rem',
+        padding: '2px 4px 2px 5px', // Custom padding: top right bottom left
     
     },
     '& .MuiOutlinedInput-root': {
         borderRadius: '4px',
+        padding: '0px 0px 0px 0px', // Custom padding: top right bottom left
         '& fieldset': {
             borderColor: {borderColor},
             borderWidth: '1px',
