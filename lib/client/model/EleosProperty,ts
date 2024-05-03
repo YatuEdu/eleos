@@ -1,6 +1,6 @@
 import EleosPerson 
                 from "./EleosPerson"
-                
+               
 class EleosProperty {
     private _name: string;
     private _type: string;

@@ -46,16 +46,15 @@ const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Them
         borderRadius: '4px',
         padding: '0px 0px 0px 0px', // Custom padding: top right bottom left
         '& fieldset': {
-            borderColor: {borderColor},
+            bordercolor: {borderColor},
             borderWidth: '1px',
         },
         '&:hover fieldset': {
-            borderColor:  {borderColor} 
+            bordercolor:  {borderColor} 
         },
         '&.Mui-focused fieldset': {
-            borderColor: {borderColor},
-            borderWidth: '1px',
-            border: '1px solid red', // Add border styling
+            bordercolor: {borderColor},
+        
         },
     },
     '& .MuiOutlinedInput-notchedOutline': {
@@ -101,7 +100,10 @@ const EleosAutoComplete: React.FC<AutoCompleteDropdownProps> = ({selectedOption,
                     id="combo-box-demo"
                     options={optionObjects}
                     sx={{ width: '100%' }}
-                    renderInput={(params) => <StyledTextField {...params} variant="outlined" placeholder='enter the state name ...' borderColor={borderColor} theme={theme}/>}
+                    renderInput={(params) => <StyledTextField {...params} 
+                                                variant="outlined" 
+                                                placeholder='enter the state name ...' 
+                                                borderColor={borderColor} theme={theme}/>}
                     onChange={handleChange}
                 />
             </div>

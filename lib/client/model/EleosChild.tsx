@@ -24,7 +24,7 @@ class EleosChild extends EleosPerson {
         return new Date().getFullYear() - this.birthYear < 18
     }
 
-    display(): string {
+    get display(): string {
         return `${this.firstName} ${this.middleName} ${this.lastName} ${this.suffix} (age: ${new Date().getFullYear() - this.birthYear})`
     }
 }

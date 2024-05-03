@@ -2,6 +2,7 @@
 
 import EleosWizardParent from '@/components/client/atoms/EleosWizardParent';
 import EleosHelpPane from '@/components/client/functional/EleosHelpPane';
+import AddAsset from '@/components/client/wizard/AddAsset';
 import AddChildren 
                 from '@/components/client/wizard/AddChildren';
 import AssetDistributionQuestion 
@@ -47,6 +48,9 @@ export default function Page() {
                     ) }
                     { (currentStep === WizardStep.CHILDREN_GUARDIAN) && (
                         <EleosWizardParent leftChild={<ChildrenGuardian />}  rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.Guardians]}/>} />
+                    ) }
+                     { (currentStep === WizardStep.ADD_ASSET) && (
+                        <EleosWizardParent leftChild={<AddAsset />} rightChild={<div><p>will add asset help text here</p></div>} />
                     ) }
                     { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS) && (
                         <EleosWizardParent leftChild={<AssetDistributionQuestion />} rightChild={<div><p>will add help text here</p></div>} />

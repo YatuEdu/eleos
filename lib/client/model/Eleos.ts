@@ -6,7 +6,7 @@ import EleosGuardian
                 from "./EleosGuardian"
 import EleosHelpText 
                 from "./EleosHelpText"
-import { EleosIApiResult, HelpTextObject, Language } 
+import { EleosApiResult, HelpTextObject, Language } 
                 from "./EleosMisc"
 import EleosPerson 
                 from "./EleosPerson"
@@ -16,6 +16,10 @@ import { EleosState }
                 from "./EleosState"
 import ElesoPersonWithRoles 
                 from "./ElesoPersonWithRoles"
+import { EleosAsset } 
+                from "./EleosAsset"
+import { EleosAssetOwnerShipTypeId } 
+                from "./EleosDataTypes"
 
 /**
  * Eleos encapsulate all the data regarding a will processing wizard, including principals, children, and
@@ -27,6 +31,7 @@ class Eleos {
     private _spouse: EleosPerson | null = null
     private _children: EleosChild[] = []
     private _guardians: EleosGuardian[] = []
+    private _assets: EleosAsset[] = []
     private _people: ElesoPersonWithRoles[] = []
     private _steps: number[] = []
 
@@ -57,15 +62,18 @@ class Eleos {
                 if (this,this.minors.length > 0) {
                     this._steps.push(WizardStep.CHILDREN_GUARDIAN)
                 } else {
-                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS)
+                    this._steps.push(WizardStep.ADD_ASSET)
                 }
                 break
             case WizardStep.CHILDREN_GUARDIAN:
+                this._steps.push(WizardStep.ADD_ASSET)
+                break
+            case WizardStep.ADD_ASSET:
                 this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS)
                 break
             case WizardStep.ASSET_DISTRIBUTION_QUESTIONS:
-                    this._steps.push(WizardStep.MARRIED_PACKAGE)
-                    break
+                this._steps.push(WizardStep.MARRIED_PACKAGE)
+                break
             case WizardStep.MARRIED_PACKAGE:
                 this._steps.push(WizardStep.COMPLETE_AND_PAYMENT)
                 break
@@ -101,6 +109,17 @@ class Eleos {
 
     get guardians() { return this._guardians}
 
+    get assets() { return this._assets}
+
+    getPrincipalOrSpouseByName(name: string): EleosPerson | undefined {
+        if (this._principal && this._principal.display === name) {
+            return this._principal
+        }
+        if (this._spouse && this._spouse.display === name) {
+            return this._spouse
+        }
+        return undefined
+    }
 
     /**
      * setters
@@ -129,7 +148,7 @@ class Eleos {
         return results
     }
 
-    setSpouse(spouse: EleosPerson | null): EleosIApiResult { 
+    setSpouse(spouse: EleosPerson | null): EleosApiResult { 
         if (!spouse) {
             this._spouse = null
             return {succeeded: true}
@@ -161,7 +180,7 @@ class Eleos {
         return false
     }
 
-    addChildren(children: EleosChild[]): EleosIApiResult  {
+    addChildren(children: EleosChild[]): EleosApiResult  {
         // make sure that none of the child is princal himself
         if (this._principal && children.find(c => this._principal && EleosPerson.equealTo(this._principal, c))) {
             return {succeeded: false, error: 'Child cannot be the same as the principal'}
@@ -174,7 +193,7 @@ class Eleos {
         return {succeeded: true};
     }
 
-    addGuardians(guardians: EleosGuardian[]): EleosIApiResult {
+    addGuardians(guardians: EleosGuardian[]): EleosApiResult {
         // need to have minors
         if (this._children.length === 0 || this.minors.length === 0) {
             return {succeeded: false, error: 'Need to have at least a minor child to have guardians'}
@@ -198,6 +217,57 @@ class Eleos {
         this._guardians = guardians
         return {succeeded: true};
     }
+
+    /**
+     * Add a new asset to include in the will
+     * 
+     * @param asset 
+     * @returns 
+     */
+    addEleosAsset(asset: EleosAsset): EleosApiResult {
+        if (!this._principal) {
+            throw Error('Principal is not set')
+        }
+
+        // must have a uqniue name
+        if (this._assets.find(a => a.name === asset.name)) {
+            return {succeeded: false, error: 'The asset with the name already added! Make sure to use a different name if the assets are different.'}
+        }
+
+        // cannot add the same asset twice
+        if ( this._assets.find(a => a.isEquals(asset))) {
+            return {succeeded: false, error: 'The asset with the same attributes is already added! Make sure to write a different note to distingush two assets.'}
+        }
+
+        // must have owner if ownership is individual
+        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separately && !asset.owner) {
+            return { succeeded: false, error: 'Individual ownership must specify the owner' }
+        }
+
+        // must not have owner if ownership is not individual
+        if (asset.ownership.id !== EleosAssetOwnerShipTypeId.separately && asset.owner) {
+            return { succeeded: false, error: 'Thid ownership type must not have owner' }
+        }
+
+        // owner must be either be principal or spouse
+        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separately) {
+            if (!this._spouse) {
+                return { succeeded: false, error: 'The ownership must have spouse as owner'}
+            }
+            if (!asset.owner) {
+                return { succeeded: false, error: 'The ownership must have owner'}
+            }
+        
+            if (!EleosPerson.equealTo(this._principal, asset.owner) && 
+                !EleosPerson.equealTo(this._spouse, asset.owner)) {
+                return { succeeded: false, error: 'The ownership must have principal or spouse as owner'} 
+            }
+        }
+
+        this._assets.push(asset)
+        return {succeeded: true}
+    }
+        
 
     addPersonWithRoles(person: ElesoPersonWithRoles) {
         // cannot add the same person twice

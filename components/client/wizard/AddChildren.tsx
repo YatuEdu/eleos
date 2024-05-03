@@ -170,7 +170,7 @@ const AddChildren: React.FC = () => {
                 {hasChildren && (
                 <div className='ml-2 mr-2'>
                     {childrenList.length > 0 && <EleosLabel text="List of children" />}
-                    <EleosNamesList people={childrenList} onDelete={onDeleteName} />
+                    <EleosNamesList entities={childrenList} onDelete={onDeleteName} />
                     <ConfirmationDialog
                         open={openConfirmationDialog}
                         title="Are you sure you want remove this child?"
