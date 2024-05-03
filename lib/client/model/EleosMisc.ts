@@ -1,6 +1,6 @@
 import { EleosState } from "./EleosState"
 
-export interface EleosIApiResult {
+export interface EleosApiResult {
     succeeded: boolean
     error?: string
 }

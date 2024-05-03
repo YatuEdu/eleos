@@ -89,7 +89,7 @@ const ChildrenGuardian: React.FC = () => {
                     <div>
                         <EleosLabel text="List of gaurdians" />
                         <EleosNamesList 
-                            people={guardians} 
+                            entities={guardians} 
                             onDelete={onDeleteGuardian} />
                     </div>
                 )}
@@ -109,7 +109,7 @@ const ChildrenGuardian: React.FC = () => {
             </div>
             <div className='col-span-5'>
                 <EleosLabel text="List of minor children" />
-                <EleosNamesList people={minors} />
+                <EleosNamesList entities={minors} />
             </div>
         </div>
         <div className="flex justify-between mt-4">

@@ -32,7 +32,7 @@ class EleosGuardian extends EleosPerson {
      * public methods
      */
 
-    display(): string {
+    get display(): string {
         return `${this.firstName} ${this.middleName} ${this.lastName} ${this.suffix} ${this.isPrimary ? '(primary guardian)' : this.isSecondary ? '(alternative guardian1)' : '(alternative guardian2)'}`
     }
 }
