@@ -7,7 +7,7 @@ import { useWizard }
 import AddPersonModal 
                 from '../functional/dialog/AddPersonModal';
 import EleosPerson from '@/lib/client/model/EleosPerson';
-import EleosNamesList 
+import EleosItemsList 
                 from '../functional/EleosNameList'; 
 import { useElos } 
                 from '@/lib/providers/EleosAppProvider';
@@ -88,7 +88,7 @@ const ChildrenGuardian: React.FC = () => {
                 {guardians.length > 0 && (
                     <div>
                         <EleosLabel text="List of gaurdians" />
-                        <EleosNamesList 
+                        <EleosItemsList 
                             entities={guardians} 
                             onDelete={onDeleteGuardian} />
                     </div>
@@ -109,11 +109,12 @@ const ChildrenGuardian: React.FC = () => {
             </div>
             <div className='col-span-5'>
                 <EleosLabel text="List of minor children" />
-                <EleosNamesList entities={minors} />
+                <EleosItemsList entities={minors} />
             </div>
         </div>
         <div className="flex justify-between mt-4">
              <EleosButton
+                    type='wizard'
                     disabled={false}
                     text=" < Back"
                     onClick={onPrev}
@@ -121,6 +122,7 @@ const ChildrenGuardian: React.FC = () => {
                     tipEnabled="Click to save and continue"
                 />
                 <EleosButton
+                    type='wizard'
                     disabled={!valid}
                     text="Save and Continue >"
                     onClick={onNext}

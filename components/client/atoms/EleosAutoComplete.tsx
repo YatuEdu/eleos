@@ -27,6 +27,16 @@ interface AutoCompleteDropdownProps {
  */
 const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Theme; borderColor: string }) => ({
     // Add border styling
+    '& ,MuiAutocomplete-inputRoot': {
+        padding: '0px', 
+        marginTop: '2px',
+        marginBottom: '2px',
+        '& .MuiAutocomplete-input': {
+            fontSize: '1rem',
+            padding: '0px', // Custom padding: top right bottom left
+        
+        },
+    },
     '& .MuiInputBase-root': {
         padding: '0px', 
         marginTop: '2px',
@@ -37,11 +47,6 @@ const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Them
           marginBottom: '-8px',
         }
     },
-    '& .MuiAutocomplete-input': {
-        fontSize: '1rem',
-        padding: '2px 4px 2px 5px', // Custom padding: top right bottom left
-    
-    },
     '& .MuiOutlinedInput-root': {
         borderRadius: '4px',
         padding: '0px 0px 0px 0px', // Custom padding: top right bottom left
@@ -50,10 +55,10 @@ const StyledTextField = styled(TextField)(({ theme, borderColor }: { theme: Them
             borderWidth: '1px',
         },
         '&:hover fieldset': {
-            bordercolor:  {borderColor} 
+            bordercolor:  'red' 
         },
         '&.Mui-focused fieldset': {
-            bordercolor: {borderColor},
+            bordercolor: 'red',
         
         },
     },
@@ -100,10 +105,13 @@ const EleosAutoComplete: React.FC<AutoCompleteDropdownProps> = ({selectedOption,
                     id="combo-box-demo"
                     options={optionObjects}
                     sx={{ width: '100%' }}
-                    renderInput={(params) => <StyledTextField {...params} 
+                    renderInput={(params) => {
+                        console.log('&&&&&&', params)
+                        return  <StyledTextField {...params} 
                                                 variant="outlined" 
                                                 placeholder='enter the state name ...' 
-                                                borderColor={borderColor} theme={theme}/>}
+                                                borderColor={borderColor} theme={theme}/>
+                    }}
                     onChange={handleChange}
                 />
             </div>

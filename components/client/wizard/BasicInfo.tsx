@@ -79,18 +79,18 @@ const BasicInfo: React.FC = () => {
             validCode = 1
             if (value.endsWith('@g')) {
                 newEmail = value + 'mail.com';
-            } else if (value.endsWith('@ho')) {
-                newEmail = value + 'tmail.com';
-            } else if (value.endsWith('@ya')) {
-                newEmail = value + 'hoo.com';
+            } else if (value.endsWith('@h')) {
+                newEmail = value + 'otmail.com';
+            } else if (value.endsWith('@y')) {
+                newEmail = value + 'ahoo.com';
             } else if (value.endsWith('@a')) {
                 newEmail = value + 'ol.com';
             } else if (value.endsWith('@q')) {
                 newEmail = value + 'q.com';
-            } else if (value.endsWith('@ic')) {
-                newEmail = value + 'loud.com';
-            } else if (value.endsWith('@ou')) {
-                newEmail = value + 'tlook.com';
+            } else if (value.endsWith('@i')) {
+                newEmail = value + 'cloud.com';
+            } else if (value.endsWith('@o')) {
+                newEmail = value + 'utlook.com';
             }   else {
                 validCode = -1
             }
@@ -169,6 +169,7 @@ const BasicInfo: React.FC = () => {
             />
             <div className="mt-2 ml-2" >
                 <EleosButton
+                    type='wizard'
                     ref={submitRef}
                     disabled={!valid}
                     text="Save and Continue" 

@@ -123,6 +123,7 @@ const AssetDistributionQuestion: React.FC = () => {
             )}
             <EleosWizardButtonLayout leftChild={
                     <EleosButton
+                        type='wizard'
                         className="mr-1 mt-2"
                         disabled={false}
                         text=" < Back" 
@@ -131,6 +132,7 @@ const AssetDistributionQuestion: React.FC = () => {
                         tipEnabled="Click to save and continue" />
             } rightChild={
                     <EleosButton
+                        type='wizard'
                         disabled={distMethod === ''}
                         className="mt-2"
                         text="Save and Continue >" 

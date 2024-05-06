@@ -27,11 +27,29 @@ export enum EleosRole {
         prenuptial = 5,
         other = 100,
     }
-    export const OWNER_SHIP_SEPARATE = 'Separately owned by you or your spouse'
-    export const OWNER_SHIP_JOINT = 'Jointly owned by you and your spouse'
+
+    export enum EleosMaritalStatus {
+        married = 'Married',
+        single = 'Single',
+        divorced = 'Divorced',
+        widowed = 'Widowed',
+    }
+
+    export const OWNER_SHIP_SEPARATE = 'Separate Property' // Separately owned by you or your spouse'
+    export const OWNER_SHIP_JOINT = 'Marital Property' // Jointly owned by you and your spouse'
+    export const OWNER_SHIP_JOINT_CM = 'Community Property' // Jointly owned by you and your spouse'
     export const OWNER_SHIP_TRUST = 'Owned by a trust'
     export const OWNER_SHIP_PRENUP = 'Prenuptial agreement'
     export const OWNER_SHIP_OTHER = 'Other'
+
+    export const TYPE_REAL_ESTATE = 'Real Estate'
+    export const TYPE_BANK_ACCOUNT = 'Bank Account'
+    export const TYPE_INVESTMENT = 'Investment account'
+    export const TYPE_RETIREMENT = 'Retirement account'
+    export const TYPE_LIFE_INSURANCE = 'Life insurance'
+    export const TYPE_BUSINESS = 'Business ownership or shares'
+    export const TYPE_CASH = 'Cash'
+    export const TYPE_OTHER = 'Other asset types'
 
     export type EleosPropertyType = {
         id: EleosPropertyTypeId,
@@ -44,14 +62,14 @@ export enum EleosRole {
     }
 
     export const ELEOS_PROPERTY_TYPE_LIST: EleosPropertyType[] = [
-        { id: EleosPropertyTypeId.realEstate, name: 'Real Estate' },
-        { id: EleosPropertyTypeId.bankAccount, name: 'Bank Account' },
-        { id: EleosPropertyTypeId.investment, name: 'Investment' },
-        { id: EleosPropertyTypeId.retirement, name: 'Retirement account' },
-        { id: EleosPropertyTypeId.lifeInsurance, name: 'Life insurance' },
-        { id: EleosPropertyTypeId.business, name: 'Business' },     
-        { id: EleosPropertyTypeId.cash, name: 'Cash' },
-        { id: EleosPropertyTypeId.other, name: 'Other' },
+        { id: EleosPropertyTypeId.realEstate, name: TYPE_REAL_ESTATE},
+        { id: EleosPropertyTypeId.bankAccount, name: TYPE_BANK_ACCOUNT },
+        { id: EleosPropertyTypeId.investment, name: TYPE_INVESTMENT },
+        { id: EleosPropertyTypeId.retirement, name: TYPE_RETIREMENT },
+        { id: EleosPropertyTypeId.lifeInsurance, name: TYPE_LIFE_INSURANCE },
+        { id: EleosPropertyTypeId.business, name: TYPE_BUSINESS },     
+        { id: EleosPropertyTypeId.cash, name: TYPE_CASH },
+        { id: EleosPropertyTypeId.other, name: TYPE_OTHER},
     ]
 
     export const ELEOS_OWNERSHIP_TYPE_LIST_MARRIED: EleosOwnershipType[] = [

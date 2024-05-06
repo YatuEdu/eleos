@@ -12,15 +12,26 @@ import EleosButton
                 from '../atoms/EleosButton';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-import EleosNamesList 
+import EleosItemsList 
                 from '../functional/EleosNameList';
-import { EleosOwnershipType, EleosPropertyType } from '@/lib/client/model/EleosDataTypes';
+import { EleosOwnershipType, EleosPropertyType, EleosPropertyTypeId, TYPE_BANK_ACCOUNT, TYPE_BUSINESS, TYPE_CASH, TYPE_INVESTMENT, TYPE_LIFE_INSURANCE, TYPE_OTHER, TYPE_REAL_ESTATE, TYPE_RETIREMENT } from '@/lib/client/model/EleosDataTypes';
 import EleosPerson 
                 from '@/lib/client/model/EleosPerson';
 import { EleosAsset } 
                 from '@/lib/client/model/EleosAsset';
 import EleosEntity 
                 from "@/lib/client/model/EleosEntity"
+import { Label, Note } from '@mui/icons-material';
+import EleosItemTable from '../functional/EleosItemTable';
+import HouseIcon from '@mui/icons-material/House';
+import AccountBalanceIcon 
+                from '@mui/icons-material/AccountBalance'
+import AttachMoney from '@mui/icons-material/AttachMoney';
+import HealthAndSafety from '@mui/icons-material/HealthAndSafety';
+import BeachAccess from '@mui/icons-material/BeachAccess';
+import TrendingUp  from '@mui/icons-material/TrendingUp';
+import BusinessCenter  from '@mui/icons-material/BusinessCenter';
+import PlaylistAddCheck from '@mui/icons-material/PlaylistAddCheck';
 
 const AddAsset: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -54,13 +65,7 @@ const AddAsset: React.FC = () => {
         const asset = new EleosAsset(name, location, note, type, ownership, ownerFound)
         const result = ref.current.addEleosAsset(asset)
         if (result.succeeded) {
-            setAssetList(prevAssetList => {
-                // for some reason it is called twice, so do not add if repetative item found
-                if (prevAssetList.find(a => a.id === asset.id)) {
-                    return prevAssetList
-                }
-                return [...prevAssetList, asset]
-            })
+            setAssetList([...ref.current.assets])
         } else {
             alert(result.error)
             return
@@ -93,36 +98,79 @@ const AddAsset: React.FC = () => {
     const onDeleteAsset = (index: number) => {
     }
 
-    return (<>
-        <div className="flex items-center space-x-2">
-           <EleosLabel text='Add asset' />
-           <AddAssetDialog  principal={ref.current.principal.display} 
-                            spouse={ref.current.spouse?.display} 
-                            buttonText="Add a new asset" 
-                            onSave={handleAddAsset} />
-        </div>
-        <div className="mt-4">
-            <EleosNamesList entities={assetList} onDelete={onDeleteAsset} />
-        </div>
-         <EleosWizardButtonLayout leftChild={
-            <EleosButton
-                 className="mr-1 mt-2"
-                 disabled={false}
-                 text=" < Back" 
-                 onClick={onPrev}
-                 tipDisable="Enter all the required info and then submit" 
-                 tipEnabled="Click to save and continue" />
-        } rightChild={
-            <EleosButton
-                className="mt-2"
-                disabled={false}
-                text="Save and Continue >" 
-                onClick={onNext}
-                tipDisable="Enter all the required info and then submit" 
-                tipEnabled="Click to save and continue" />
-        } />
-    </>
-    )
+    const getIconByAssetId = (id: EleosPropertyTypeId): {icon: React.JSX.Element, toolTip: string} => {
+        return  id === EleosPropertyTypeId.realEstate ? {icon: <HouseIcon />, toolTip: TYPE_REAL_ESTATE} : 
+                id === EleosPropertyTypeId.cash ? {icon: <AttachMoney />, toolTip: TYPE_CASH} :
+                id === EleosPropertyTypeId.lifeInsurance ? {icon:<HealthAndSafety />, toolTip: TYPE_LIFE_INSURANCE} :
+                id === EleosPropertyTypeId.bankAccount ? {icon: <AccountBalanceIcon />, toolTip: TYPE_BANK_ACCOUNT} :
+                id === EleosPropertyTypeId.retirement ? {icon: <BeachAccess />, toolTip: TYPE_RETIREMENT} :
+                id === EleosPropertyTypeId.business ? {icon: <BusinessCenter />, toolTip: TYPE_BUSINESS} :
+                id === EleosPropertyTypeId.investment ? {icon: <TrendingUp  />, toolTip: TYPE_INVESTMENT} : 
+                {icon: <PlaylistAddCheck />, toolTip: TYPE_OTHER};
+    }
+
+    return (
+        <>
+            <div className="flex items-center space-x-2 ml-3">
+                <AddAssetDialog
+                    principal={ref.current.principal.display}
+                    spouse={ref.current.spouse?.display}
+                    buttonText="Add a new asset"
+                    onSave={handleAddAsset}
+                />
+            </div>
+            <div className="mt-4 mr-3 ml-3">
+                <EleosItemTable
+                    rows={ref.current.assets.map((a) => {
+                        const icon = getIconByAssetId(a.type.id)
+                        return { 
+                            Name: a.name, 
+                            Type: icon.icon,
+                            ToolTip: icon.toolTip, // Fix: Corrected the property name to 'ToolTip'
+                            OwnershipType: a.ownership.name, 
+                            Location: a.location || '', 
+                            Note: a.note || '',
+                            Action: <div className='mt-0'><EleosButton type='delete'
+                                                            className=' mt-1' 
+                                                            text="Delete" onClick={() => onDeleteAsset(0)} /></div>
+                        }
+                    })}
+                    columns={[
+                        { label: 'Name', type: 'text' },
+                        { label: 'Type', type: 'icon',},
+                        { label: 'OwnershipType', type: 'text' },
+                        { label: 'Location', type: 'text' },
+                        { label: 'Note', type: 'editable' },
+                        { label: 'Action', type: 'button' },
+                    ]}
+                />
+            </div>
+            <EleosWizardButtonLayout
+                leftChild={
+                    <EleosButton
+                        type='wizard'
+                        className="mr-1 mt-2 ml-2"
+                        disabled={false}
+                        text=" < Back"
+                        onClick={onPrev}
+                        tipDisable="Enter all the required info and then submit"
+                        tipEnabled="Click to save and continue"
+                    />
+                }
+                rightChild={
+                    <EleosButton
+                        type='wizard'
+                        className="mt-2 mr-2"
+                        disabled={false}
+                        text="Save and Continue >"
+                        onClick={onNext}
+                        tipDisable="Enter all the required info and then submit"
+                        tipEnabled="Click to save and continue"
+                    />
+                }
+            />
+        </>
+    );
 };
 
 export default AddAsset;

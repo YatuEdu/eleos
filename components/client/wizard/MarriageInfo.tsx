@@ -15,19 +15,31 @@ import Checkbox from
 import FormControlLabel 
                 from '@mui/material/FormControlLabel';
 import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
+import RadioButtonGroup from '../atoms/EleosRadioGroup';
+import { EleosMaritalStatus } from '@/lib/client/model/EleosDataTypes';
 
-const NAME_NAME = 'name';
+const RADIO_GROUP_TITLE = '';
+const maritalOptions = [
+    { value: EleosMaritalStatus.married, label: EleosMaritalStatus.married },
+    { value: EleosMaritalStatus.divorced, label: EleosMaritalStatus.divorced },
+    { value: EleosMaritalStatus.single, label: EleosMaritalStatus.single },
+    { value: EleosMaritalStatus.widowed, label: EleosMaritalStatus.widowed },
+];
 
 const MarriageInfo: React.FC = () => {
     const {ref} = useElos() ?? {};
-    const {spouse} = ref && ref.current ? ref.current : {spouse: null};
-    const [isMarried, setIsMarried] = useState(!!spouse);
+
+    if (!ref || !ref.current)  {
+        throw Error('Eleos is not initialized')  
+    }
+    const {spouse} = ref.current
+    const [maritalSatus, setMaritalSatus] = useState(ref.current.marritalStatus);
 
     const [spouseFirstName, setSpouseFirstName] = useState(spouse ? spouse.firstName : '')
     const [sposeMiddleName, setSposeMiddleName] = useState(spouse ? spouse.middleName : '')
     const [sposeLastName, setSpouseLastName] = useState(spouse ? spouse.lastName : '')
     const [spouseSuffix, setSpouseSuffix] = useState(spouse ? spouse.suffix : '')
-    const [valid, setValid] = useState(testValidness(spouseFirstName, sposeLastName, isMarried))
+    const [valid, setValid] = useState(testValidness(spouseFirstName, sposeLastName, maritalSatus))
   
     if (ref && ref.current && ref.current.principal) {
         console.log('principal', ref.current.principal)
@@ -37,23 +49,24 @@ const MarriageInfo: React.FC = () => {
     
     const {setStep} = useWizard()
 
-    const handleMarriageStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setIsMarried(event.target.checked);
+    const handleMarriageStatusChange = (status: string) => {
+        const isMarried = status === EleosMaritalStatus.married
+        setMaritalSatus(status as EleosMaritalStatus)
 
         // clear the spouse info if uncheck
-        if (!event.target.checked) {
+        if (status && !isMarried) {
             setSpouseFirstName('')
             setSposeMiddleName('')
             setSpouseLastName('')
             setSpouseSuffix('')
             setValid(true)
         } else {
-            setValid(testValidness(spouseFirstName, sposeLastName, event.target.checked))
+            setValid(testValidness(spouseFirstName, sposeLastName, status as EleosMaritalStatus))
         }
     };
 
-    function testValidness(firstName: string, lastName: string, isMarried: boolean) {
-        return isMarried ? firstName && lastName : true
+    function testValidness(firstName: string, lastName: string, maritalSatus: EleosMaritalStatus | undefined) {
+        return maritalSatus ? firstName && lastName : true
     }
 
     const onSpouseNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
@@ -62,7 +75,7 @@ const MarriageInfo: React.FC = () => {
         setSposeMiddleName(middleName)
         setSpouseLastName(lastName)
         setSpouseSuffix(suffix)
-        setValid(testValidness(firstName, lastName, isMarried))
+        setValid(testValidness(firstName, lastName, maritalSatus))
      }
 
     /**
@@ -82,15 +95,19 @@ const MarriageInfo: React.FC = () => {
             throw Error('Eleos is not initialized')  
         }
 
+        if (!maritalSatus) {
+            throw Error('Invalid form: IMPOSSIBLE')  
+        }
+
         if (!valid) {
             throw Error('Invalid form: IMPOSSIBLE')  
         }
 
         // go to the next step
-        if (!isMarried) {
-            ref.current.setSpouse(null)
+        if (maritalSatus !== EleosMaritalStatus.married) {
+            ref.current.setSpouse(null, maritalSatus)
         } else {
-            const result = ref.current.setSpouse(new EleosPerson(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix))
+            const result = ref.current.setSpouse(new EleosPerson(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix), maritalSatus)
             if (!result.succeeded) {
                 alert(result.error)
                 return;
@@ -107,24 +124,16 @@ const MarriageInfo: React.FC = () => {
              <div className="mb-8">
                 <h1 style={{ fontSize: '2rem', color: 'inherit' }}>Enter your marriage status</h1>
             </div>
-            <FormControlLabel
-                control={
-                    <Checkbox
-                        checked={isMarried}
-                        onChange={handleMarriageStatusChange}
-                        name="checkedB"
-                        className={`
-                            text-yellow-500
-                            ${isMarried ? 'bg-gray-200 rounded-md' : ''}
-                            hover:bg-gray-300
-                            ml-2
-                        `}
-                    />
-                }
-                label="Are you currently married?"
-            />
-
-            {isMarried && <div>
+            <div style={{ margin: 20 }}>
+                <RadioButtonGroup
+                    title={RADIO_GROUP_TITLE}
+                    options={maritalOptions}
+                    value={maritalSatus ? maritalSatus : ''}
+                    onChange={handleMarriageStatusChange}
+                    direction='row'
+                />
+            </div>
+            {maritalSatus === EleosMaritalStatus.married && <div>
                 <div className="mb-4">
                     <h1 style={{ fontSize: '1.5rem', color: 'inherit' }}>Enter the name of your spouse</h1>
                 </div>
@@ -140,6 +149,7 @@ const MarriageInfo: React.FC = () => {
 
             <EleosWizardButtonLayout leftChild={
                 <EleosButton
+                    type='wizard'
                     className="mt-2"
                     disabled={false}
                     text=" < Back" 
@@ -147,13 +157,14 @@ const MarriageInfo: React.FC = () => {
                     tipDisable="Enter all the required info and then submit" 
                     tipEnabled="Click to save and continue" />
             } rightChild={
-                    <EleosButton
-                        className="mt-2"
-                        disabled={!valid}
-                        text="Save and Continue >" 
-                        onClick={onNext}
-                        tipDisable="Enter all the required info and then submit" 
-                        tipEnabled="Click to save and continue" />
+                <EleosButton
+                    type='wizard'
+                    className="mt-2"
+                    disabled={!valid}
+                    text="Save and Continue >" 
+                    onClick={onNext}
+                    tipDisable="Enter all the required info and then submit" 
+                    tipEnabled="Click to save and continue" />
             } />
         </div>
     )

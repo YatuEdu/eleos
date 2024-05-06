@@ -18,7 +18,8 @@ import EleosInputBase
                 from '../../atoms/EleosInputBase';
 import EleosLabel 
                 from '../../atoms/EleosLabel';
-import { REGEX_BIRTH_YEAR, REGEX_EMAIL, WARNING_REQUIRED } from '@/lib/common/constant/StringConst';
+import { REGEX_BIRTH_YEAR, REGEX_EMAIL, WARNING_INVALID, WARNING_REQUIRED } from '@/lib/common/constant/StringConst';
+import { checkBirthYear } from '@/lib/common/constant/IntegerConst';
 
 type AddPersonModalProps = {
     buttonText: string,
@@ -48,6 +49,11 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, needDob, ne
     useEffect(() => {   
         setBirthYear('')
         setEmail('')
+        setFirstName('')
+        setLastName('')
+        setMidName('')
+        setSuffix('')
+        setValid(false)
     }, [open])
 
     function setValidBasedOnState() {
@@ -78,10 +84,20 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, needDob, ne
     const onOptionalFieldChange = (name: string, value: string, isValid: boolean) => {
         if (name === NAME_DOB) {
             setBirthYear(value)
-            setInvalidDob(value ? '' : WARNING_REQUIRED)
+            if (value) {
+               isValid = checkBirthYear(value)
+               setInvalidDob(isValid ? '' : WARNING_INVALID)
+            } else {
+                setInvalidDob(WARNING_REQUIRED)
+            }
         } else if (name === NAME_EMAIL) {
             setEmail(value)
-            setInvalidEmail(value ? '' : WARNING_REQUIRED)
+            if (value) {
+                isValid = new RegExp(REGEX_EMAIL).test(value)
+                setInvalidEmail(isValid ? '' : WARNING_INVALID)
+            } else {
+                setInvalidEmail(   WARNING_REQUIRED)
+            }
         }
         setValid(isValid && setValidBasedOnMustHaveState())
     }
@@ -97,6 +113,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, needDob, ne
     return (
         <div>
              <EleosButton
+                type='add'
                 className="mb-2 float-right"
                 disabled={false}
                 text={buttonText} 
@@ -114,15 +131,14 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, needDob, ne
                     suffixInput={''}
                     onNameChange={onChildNameChange}
                 /> 
-                {needDob && <>
+                {needDob && <div className="ml-2 mr-2">
                 <EleosLabel text="Birth Year" invalidMessage={invalidDob} />
                 <EleosInputBase
                     value={birthYear} 
                     mustHave={true} 
-                    regEx={REGEX_BIRTH_YEAR} 
                     name={NAME_DOB} 
                     onTextEntered={(value, vliadCode) => onOptionalFieldChange(NAME_DOB, value, vliadCode === 1)} />
-                </>
+                </div>
                 }
                  {needEmail && <>
                 <EleosLabel text="Email" invalidMessage={invalidEmail} />
@@ -137,15 +153,22 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, needDob, ne
                              
                 </DialogContent>
                 <DialogActions>
-                    <Button style={{ backgroundColor: '#F44336', color: 'white' }} onClick={handleClose}>Cancel</Button>
-                    <Button 
+                    <EleosButton
+                        type='wizard'
+                        className="mr-1"
+                        disabled={false}
+                        text="Cancel"
+                        onClick={handleClose}
+                        tipDisable="Enter all the required info and then submit"
+                        tipEnabled="Click to save and continue" />
+                  <EleosButton
+                        type='wizard'
+                        className="mr-6"
                         disabled={!valid}
-                        style={{
-                            backgroundColor: valid ? '#4CAF50' : '#AAA',
-                            color: 'white'
-                        }}
-                        onClick={handleSave}>Save
-                    </Button>
+                        text="Save"
+                        onClick={handleSave}
+                        tipDisable="Enter all the required info and then submit"
+                        tipEnabled="Click to save and continue" />
                 </DialogActions>
             </Dialog>
         </div>
