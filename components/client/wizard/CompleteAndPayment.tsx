@@ -47,13 +47,15 @@ const CompleteAndPayment: React.FC = () => {
             </div>
             <div className="flex justify-between mt-4">
                 <EleosButton
-                        disabled={false}
-                        text=" < Back"
-                        onClick={onPrev}
-                        tipDisable="Enter all the required info and then submit"
-                        tipEnabled="Click to save and continue"
+                    type='wizard'
+                    disabled={false}
+                    text=" < Back"
+                    onClick={onPrev}
+                    tipDisable="Enter all the required info and then submit"
+                    tipEnabled="Click to save and continue"
                     />
                     <EleosButton
+                        type='wizard'
                         disabled={true}
                         text="Save and Continue >"
                         onClick={onNext}

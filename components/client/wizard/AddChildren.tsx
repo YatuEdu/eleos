@@ -12,7 +12,7 @@ import FormControlLabel
                 from '@mui/material/FormControlLabel';
 import EleosLabel 
                 from '../atoms/EleosLabel';
-import EleosNamesList 
+import EleosItemsList 
                 from '../functional/EleosNameList';
 import EleosPerson 
                 from '@/lib/client/model/EleosPerson';
@@ -30,10 +30,15 @@ import ConfirmationDialog
                 from '../functional/dialog/ConfirmationDialog';
 import EleosWizardButtonLayout 
                 from '../atoms/EleosWizardButtonLayout';
-
+import { green } from '@mui/material/colors';
+import { EleosMaritalStatus } from '@/lib/client/model/EleosDataTypes';
 
 const AddChildren: React.FC = () => {
     const {ref} = useElos() ?? {};
+    if (!ref || !ref.current || !ref.current.principal || !ref.current.marritalStatus)  {
+        throw Error('Eleos is not initialized')  
+    }
+
     const {children} = ref && ref.current ? ref.current : {children: null};
     const hasChildrenInit = !!children && children.length > 0
     const [hasChildren, setHasChildren] = useState(hasChildrenInit);
@@ -41,6 +46,7 @@ const AddChildren: React.FC = () => {
     const [valid, setValid] = useState(true)
     const {setStep} = useWizard()
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
+    const title = ref.current.marritalStatus === EleosMaritalStatus.single ? 'I' : 'We'
 
     const handleHasChildren = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHasChildren(event.target.checked);
@@ -147,14 +153,32 @@ const AddChildren: React.FC = () => {
                                 checked={hasChildren}
                                 onChange={handleHasChildren}
                                 name="checkedB"
-                                className={`
-                                    text-yellow-500
-                                    ${hasChildren ? 'bg-gray-200 rounded-md' : ''}
-                                    hover:bg-gray-300
-                                `}
+                                sx={{
+                                    marginRight: '0.5rem',
+                                    '&.Mui-checked': {
+                                      color: green[600], // Color of the checkmark when checked
+                                      backgroundColor: 'white', // White background when checked
+                                      
+                                      '&:hover': {
+                                        backgroundColor: 'rgba(0, 0, 0, 0.04)', // Slightly darker on hover when checked
+                                      }
+                                    },
+                                    '&:hover': {
+                                      backgroundColor: 'rgba(0, 0, 0, 0.04)' // Slightly darker on hover when unchecked
+                                    },
+                                    '&&:not(.Mui-checked)': {
+                                      backgroundColor: 'white', // Always white background when not checked
+                                      borderColor: 'rgba(0, 0, 0, 0.23)' // Border color when not checked
+                                    }
+                                  }}
+                                  onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                      setHasChildren(!hasChildren);
+                                    }
+                                  }}
                             />
                         }
-                        label="Do you have children?" 
+                        label={` ${title} have children`} 
                     />
                     {hasChildren && (
                         <>
@@ -170,7 +194,7 @@ const AddChildren: React.FC = () => {
                 {hasChildren && (
                 <div className='ml-2 mr-2'>
                     {childrenList.length > 0 && <EleosLabel text="List of children" />}
-                    <EleosNamesList entities={childrenList} onDelete={onDeleteName} />
+                    <EleosItemsList entities={childrenList} onDelete={onDeleteName} />
                     <ConfirmationDialog
                         open={openConfirmationDialog}
                         title="Are you sure you want remove this child?"
@@ -183,6 +207,7 @@ const AddChildren: React.FC = () => {
             </div>
             <EleosWizardButtonLayout leftChild={
                 <EleosButton
+                     type='wizard'
                      className="mr-1 mt-2"
                      disabled={false}
                      text=" < Back" 
@@ -191,6 +216,7 @@ const AddChildren: React.FC = () => {
                      tipEnabled="Click to save and continue" />
             } rightChild={
                 <EleosButton
+                    type='wizard'
                     className="mt-2"
                     disabled={!valid}
                     text="Save and Continue >" 

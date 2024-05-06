@@ -18,7 +18,7 @@ import ElesoPersonWithRoles
                 from "./ElesoPersonWithRoles"
 import { EleosAsset } 
                 from "./EleosAsset"
-import { EleosAssetOwnerShipTypeId } 
+import { EleosAssetOwnerShipTypeId, EleosMaritalStatus } 
                 from "./EleosDataTypes"
 
 /**
@@ -28,6 +28,7 @@ import { EleosAssetOwnerShipTypeId }
 class Eleos {
     private _helpText: EleosHelpText = new EleosHelpText()
     private _principal: EleosPrincipal | null = null
+    private _marritalStatus: EleosMaritalStatus | undefined = undefined
     private _spouse: EleosPerson | null = null
     private _children: EleosChild[] = []
     private _guardians: EleosGuardian[] = []
@@ -97,6 +98,8 @@ class Eleos {
 
     get principal() { return this._principal}
 
+    get marritalStatus() { return this._marritalStatus}
+
     get spouse(): EleosPerson | null { return this._spouse}
 
     get people() { return this._people}
@@ -148,16 +151,32 @@ class Eleos {
         return results
     }
 
-    setSpouse(spouse: EleosPerson | null): EleosApiResult { 
+    setSpouse(spouse: EleosPerson | null, marritalStatus: EleosMaritalStatus): EleosApiResult { 
+        if (!this._principal) {
+            throw Error('Principal is not set')
+        }
+
+        if (this._children.length > 0) {
+            throw Error('Cannot change the spouse after adding children')
+        }
+
+        if (marritalStatus === EleosMaritalStatus.married && !spouse) {
+            return {succeeded: false, error: 'Married status must have a spouse'}
+        }
+
+        // not married
         if (!spouse) {
             this._spouse = null
+            this._marritalStatus = marritalStatus
             return {succeeded: true}
         }
 
-        // make sure spouse and principal are not the same
+        // married and make sure spouse and principal are not the same
         if (this._principal && EleosPerson.equealTo(this._principal, spouse)) {
             return {succeeded: false, error: 'Spouse cannot be the same as the principal'}
         }
+
+        this._marritalStatus = marritalStatus
         this._spouse = spouse
         return {succeeded: true}
     }

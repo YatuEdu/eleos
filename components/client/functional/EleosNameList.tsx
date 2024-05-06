@@ -9,7 +9,7 @@ interface EleosNamesProps {
     onDelete?: (index: number) => void;
 }
 
-const EleosNamesList: React.FC<EleosNamesProps> = ({entities, onDelete}) => {
+const EleosItemsList: React.FC<EleosNamesProps> = ({entities, onDelete}) => {
     useEffect(() => {
         if (entities.length > 0 ) {
             entities.forEach((p, index) => {
@@ -43,4 +43,4 @@ const EleosNamesList: React.FC<EleosNamesProps> = ({entities, onDelete}) => {
     );
 }
 
-export default EleosNamesList;
+export default EleosItemsList;

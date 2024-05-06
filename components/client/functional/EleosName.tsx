@@ -83,6 +83,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
                 <EleosInputBase 
                     value={middleName} 
                     mustHave={false}  
+                    regEx={REGEX_NAME} 
                     name={NAME_MIDDLENAME} 
                     onTextEntered={(value, validCode) => onchange(NAME_MIDDLENAME, value, validCode === 1)} />
             </div>
@@ -101,6 +102,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
                     value={suffix} 
                     mustHave={false} 
                     name={NAME_SUFFIX} 
+                    regEx={REGEX_NAME}
                     onTextEntered={(value, validCode) => onchange(NAME_SUFFIX, value, validCode === 1)} />
             </div>
         </div>

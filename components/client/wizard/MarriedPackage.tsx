@@ -83,12 +83,14 @@ const MarriedPackage: React.FC = () => {
 
             <div className="mt-1">
                     <EleosButton
+                        type='wizard'
                         disabled={false}
                         text=" < Back" 
                         onClick={onPrev}
                         tipDisable="Enter all the required info and then submit" 
                         tipEnabled="Click to save and continue" />
                     <EleosButton
+                    type='wizard'
                         disabled={!valid}
                         text="Save and Continue >" 
                         onClick={onNext}
