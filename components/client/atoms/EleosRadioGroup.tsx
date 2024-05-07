@@ -27,18 +27,28 @@ interface RadioButtonGroupProps {
 function RadioButtonGroup({ title, options, value, onChange, direction }: RadioButtonGroupProps) {
     const [selectedOption, setSelectedOption] = useState(value);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedOption(event.target.value);
-        onChange(event.target.value)
+    const setControlState = (value: string) => {
+        setSelectedOption(value);
+        onChange(value)
     }
 
-    // Handler for key down events
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setControlState(event.target.value);
+    }
+
+    /**
+     * Handler for key down events, which supports Enter key to move to the next option and made the radio buttons accessible
+     * 
+     * @param event     
+     * @param newSelected 
+     */
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, newSelected: string) => {
         if (event.key === 'Enter') {
             event.preventDefault();  // Stop default Enter behavior
             const currentIndex = options.findIndex(option => option.value === newSelected);
             const nextIndex = (currentIndex + 1) % options.length;  // Move to next option or loop around
-            setSelectedOption(options[nextIndex].value);
+            const nextValue = options[nextIndex].value;
+            setControlState(nextValue);
         }
       }
 

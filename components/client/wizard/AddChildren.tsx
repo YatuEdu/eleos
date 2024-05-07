@@ -83,7 +83,6 @@ const AddChildren: React.FC = () => {
             alert('The child share the same name with someone else. You can append sr or jr to the name is the first name and last name are the same')
             return;
         }
-
         
         if (childrenList.find(child => EleosPerson.equealTo(child, newChild)) !== undefined) {
             console.log(childrenList)

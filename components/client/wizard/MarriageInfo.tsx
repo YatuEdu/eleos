@@ -16,7 +16,7 @@ import FormControlLabel
                 from '@mui/material/FormControlLabel';
 import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
 import RadioButtonGroup from '../atoms/EleosRadioGroup';
-import { EleosMaritalStatus } from '@/lib/client/model/EleosDataTypes';
+import { EleosMaritalStatus, EleosRole } from '@/lib/client/model/EleosDataTypes';
 
 const RADIO_GROUP_TITLE = '';
 const maritalOptions = [
@@ -107,7 +107,7 @@ const MarriageInfo: React.FC = () => {
         if (maritalSatus !== EleosMaritalStatus.married) {
             ref.current.setSpouse(null, maritalSatus)
         } else {
-            const result = ref.current.setSpouse(new EleosPerson(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix), maritalSatus)
+            const result = ref.current.setSpouse(new EleosPerson(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix, EleosRole.spouse), maritalSatus)
             if (!result.succeeded) {
                 alert(result.error)
                 return;

@@ -29,7 +29,7 @@ const EleosItemsList: React.FC<EleosNamesProps> = ({entities, onDelete}) => {
                 <ul className="w-full list-none p-0">
                     {entities.map((p, index) => (
                         <li key={"ELEOS_ass_" + p.id} className="flex w-full justify-between items-left bg-white px-4 py-1 shadow rounded my-2">
-                            <span className="text-black text-sm">{p.display}</span>
+                            <span className="text-black text-sm">{p.signature}</span>
                             {onDelete !== undefined && <button
                                 onClick={() => handleDelete(index)}
                                 className="py-1 px-3 bg-red-500 text-white rounded hover:bg-red-700 transition-colors text-xs"
