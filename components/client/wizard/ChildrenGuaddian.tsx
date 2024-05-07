@@ -64,13 +64,23 @@ const ChildrenGuardian: React.FC = () => {
     };
 
     const onAddGaudian = (firstName: string, middleName: string, lastName: string, suffix: string, birthYear?: string, email?: string) => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+
         if (!email) {   
             throw Error('Email is required')
         }
 
         const newGuardian = new EleosGuardian(firstName, middleName, lastName, suffix, email, guardians.length + 1);
+        if (ref.current.checkPersonExists(newGuardian)) {
+            alert('The added guardian shares the same name with someone else. You can append sr or jr to the name is the first name and last name are the same')
+            return;
+        }
+
         const newGuardians = [...guardians, newGuardian];
-        setGuardians(newGuardians);
+        const result = setGuardians(newGuardians)
+
         setButtonText(newGuardians.length === 1 ? 'Add an Alternative Guardian 1' : 'Add an Alternative Guardian 2');
         setValid(newGuardians.length > 0);
     }

@@ -1,3 +1,4 @@
+import { EleosRole } from "./EleosDataTypes"
 import EleosPerson 
                 from "./EleosPerson"
 import { EleosState } 
@@ -13,7 +14,7 @@ class EleosPrincipal extends EleosPerson {
                 suffix: string,
                 email: string, 
                 state: EleosState) {
-        super(firstName, middleName, lastName, suffix)
+        super(firstName, middleName, lastName, suffix, EleosRole.principal)
         this._email = email
         this._residenceState = state
     }

@@ -1,3 +1,4 @@
+import { EleosRole } from './EleosDataTypes';
 import EleosPerson 
                 from './EleosPerson';
 
@@ -10,7 +11,7 @@ class EleosGuardian extends EleosPerson {
         lastName: string,
         suffix: string,
         email: string, order: number) {
-        super(firstName, middleName, lastName, suffix);
+        super(firstName, middleName, lastName, suffix, EleosRole.child_guardian);
         this._email = email;
         this._order = order;
     }
@@ -32,8 +33,8 @@ class EleosGuardian extends EleosPerson {
      * public methods
      */
 
-    get display(): string {
-        return `${this.firstName} ${this.middleName} ${this.lastName} ${this.suffix} ${this.isPrimary ? '(primary guardian)' : this.isSecondary ? '(alternative guardian1)' : '(alternative guardian2)'}`
+    get signature(): string {
+        return `${this.display} ${this.isPrimary ? '(primary guardian)' : this.isSecondary ? '(alternative guardian1)' : '(alternative guardian2)'}`
     }
 }
 

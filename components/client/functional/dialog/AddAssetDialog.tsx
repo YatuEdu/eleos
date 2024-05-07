@@ -19,7 +19,7 @@ import EleosLabel
                 from '../../atoms/EleosLabel';
 import { WARNING_REQUIRED } 
                 from '@/lib/common/constant/StringConst';
-import { EleosOwnershipType, EleosPropertyType, ELEOS_PROPERTY_TYPE_LIST, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, OWNER_SHIP_SEPARATE, TYPE_BANK_ACCOUNT, TYPE_INVESTMENT, TYPE_LIFE_INSURANCE, TYPE_REAL_ESTATE, TYPE_RETIREMENT, } 
+import { ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipTypeId, EleosPropertyTypeId, } 
                 from '@/lib/client/model/EleosDataTypes';
 import EleosSelect from '../../atoms/EleosSelect';
 import EleosHelpPane from '../EleosHelpPane';
@@ -33,8 +33,8 @@ type AddAssetProps = {
     onSave: (name: string, 
              location: string, 
              note: string, 
-             type: EleosPropertyType, 
-             ownerShip: EleosOwnershipType, 
+             type: EleosPropertyTypeId, 
+             ownerShip: EleosAssetOwnerShipTypeId, 
              owner?: string) => void
 };
 
@@ -101,8 +101,8 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
 
     const handleSave = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
-        const typeObj = ELEOS_PROPERTY_TYPE_LIST.find((entry) => entry.name === state.type)
-        const ownerShipObj = ownerShipTypes.find((entry) => entry.name === state.ownerShip)
+        const typeObj = Object.entries(EleosPropertyTypeId).find((entry) => entry[1] === state.type)
+        const ownerShipObj = ownerShipTypes.find((entry) => entry === state.ownerShip)
     
         if (!typeObj || !ownerShipObj) {        
             //throw Error('Invalid type or ownership')
@@ -110,7 +110,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
             return
         }
 
-        onSave(state.name, state.location, state.note, typeObj, ownerShipObj, state.owner)
+        onSave(state.name, state.location, state.note, typeObj[1], ownerShipObj, state.owner)
         setOpen(false);
     }
 
@@ -146,13 +146,13 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
     }
 
     function setLocationLabel(name: string): string {
-        if (name === TYPE_BANK_ACCOUNT) {
+        if (name === EleosPropertyTypeId.bankAccount) {
             return LOCATION_LABEL_BANK_BRANCH
-        } else if (name === TYPE_LIFE_INSURANCE) {
+        } else if (name === EleosPropertyTypeId.lifeInsurance) {
             return LOCATION_LABEL_INS
-        } else if (name === TYPE_INVESTMENT || name === TYPE_RETIREMENT) {
+        } else if (name === EleosPropertyTypeId.investment  || name === EleosPropertyTypeId.retirement) {
             return LOCATION_LABEL_BROKAGE
-        } else if (name === TYPE_REAL_ESTATE) {
+        } else if (name === EleosPropertyTypeId.realEstate) {
             return LOCATION_LABEL_LOC
         } else {
             return ''
@@ -183,7 +183,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
             result = {...result, invalidOwnership: ''}
         }
 
-        if (state.ownerShip === OWNER_SHIP_SEPARATE && !state.owner) {
+        if (state.ownerShip === EleosAssetOwnerShipTypeId.separate && !state.owner) {
             result = {...result, invalidOwner: WARNING_REQUIRED}
             hasInvalid = true
         } else {    
@@ -220,14 +220,14 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                 <DialogContent className='grid grid-cols-12 gap-2 pr-3'>
                     <div className='col-span-7'>
                         <EleosLabel text="Type" invalidMessage={state.invalidType} />
-                        <EleosSelect name={NAME_TYPE} options={ELEOS_PROPERTY_TYPE_LIST.map((entry) => { return { value: entry.name, label: entry.name } })}
+                        <EleosSelect name={NAME_TYPE} options={ Object.entries(EleosPropertyTypeId).map((entry) => { return { value: entry[1], label: entry[1] } })}
                                     onChange={(selectedOption) => dispatch({type: NAME_TYPE, value: selectedOption ? selectedOption.value: ''})} 
                                     value={{label: state.type, value: state.type}} />
                         <EleosLabel text="Ownership" invalidMessage={state.invalidOwnership}/>
-                        <EleosSelect name={NAME_OWNERSHIP} options={ownerShipTypes.map((entry) => { return { value: entry.name, label: entry.name } })}
+                        <EleosSelect name={NAME_OWNERSHIP} options={ownerShipTypes.map((entry) => { return { value: entry, label: entry } })}
                                     onChange={(selectedOption) => dispatch({type: NAME_OWNERSHIP, value: selectedOption ? selectedOption.value: ''})} 
                                     value={{label: state.ownerShip, value: state.ownerShip}} />
-                        {state.ownerShip === OWNER_SHIP_SEPARATE && <>
+                        {state.ownerShip === EleosAssetOwnerShipTypeId.separate && <>
                             <EleosLabel text="Owner" invalidMessage={state.invalidOwner}/>
                             <EleosSelect name={NAME_OWNER} options={[principal, spouse].map((name) => { return { value: name ? name :  'NA', label: name ? name :  'NA' } })}
                                     onChange={(selectedOption) => dispatch({type: NAME_OWNER, value: selectedOption ? selectedOption.value: ''})} 

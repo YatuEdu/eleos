@@ -55,14 +55,6 @@ const AssetDistributionQuestion: React.FC = () => {
         { value: 'OTHER_UNEVEN', label: 'Distribute your assets unevenly among friends or relatives' }
     ];
 
-    const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedOption(event.target.value);
-    };
-
-    const handleSubmit = () => {
-        // Handle form submission here
-    };
-
     if (!ref || !ref.current || !ref.current.principal)  {
         throw Error('Eleos is not initialized')  
     }

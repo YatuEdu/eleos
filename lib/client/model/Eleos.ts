@@ -14,12 +14,11 @@ import EleosPrincipal
                 from "./EleosPrincipal"
 import { EleosState } 
                 from "./EleosState"
-import ElesoPersonWithRoles 
-                from "./ElesoPersonWithRoles"
 import { EleosAsset } 
                 from "./EleosAsset"
-import { EleosAssetOwnerShipTypeId, EleosMaritalStatus } 
+import { EleosAssetOwnerShipTypeId, EleosMaritalStatus, EleosRole } 
                 from "./EleosDataTypes"
+import { error } from "console"
 
 /**
  * Eleos encapsulate all the data regarding a will processing wizard, including principals, children, and
@@ -27,18 +26,15 @@ import { EleosAssetOwnerShipTypeId, EleosMaritalStatus }
  */
 class Eleos {
     private _helpText: EleosHelpText = new EleosHelpText()
-    private _principal: EleosPrincipal | null = null
-    private _marritalStatus: EleosMaritalStatus | undefined = undefined
-    private _spouse: EleosPerson | null = null
-    private _children: EleosChild[] = []
-    private _guardians: EleosGuardian[] = []
     private _assets: EleosAsset[] = []
-    private _people: ElesoPersonWithRoles[] = []
+    private _people: Map<string, EleosPerson> = new Map()
+    private _marritalStatus: EleosMaritalStatus | undefined = undefined
+
     private _steps: number[] = []
 
     init(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState) {
-        this._principal = new EleosPrincipal(firstName, middleName, lastName, suffix, email, state)
-        console.log(`principal added ${email}, ${this._principal.lastName} ---`)
+        const principal = new EleosPrincipal(firstName, middleName, lastName, suffix, email, state)
+        this._people.set(principal.display, principal) 
         this._steps.push(WizardStep.BASIC_INFO)
     }
 
@@ -60,7 +56,7 @@ class Eleos {
                 this._steps.push(WizardStep.ADD_CHILDREN)
                 break
             case WizardStep.ADD_CHILDREN:
-                if (this,this.minors.length > 0) {
+                if (this.minors.length > 0) {
                     this._steps.push(WizardStep.CHILDREN_GUARDIAN)
                 } else {
                     this._steps.push(WizardStep.ADD_ASSET)
@@ -96,30 +92,47 @@ class Eleos {
 
     set lang(lang: Language) { this._helpText.setLanguage(lang)}
 
-    get principal() { return this._principal}
+    get principal() { return this.findOnePersonByRole(EleosRole.principal) as EleosPrincipal}
 
     get marritalStatus() { return this._marritalStatus}
 
-    get spouse(): EleosPerson | null { return this._spouse}
+    get spouse(): EleosPerson | undefined { return this.findOnePersonByRole(EleosRole.spouse)}
 
     get people() { return this._people}
     
-    get children() {return  this._children  }
+    get children() {return  this.findPeopleByRole(EleosRole.child) as EleosChild[]  }
 
     get minors(): EleosChild[] {
-        return this._children.filter(c => c.isMinor)
+        return this.children.filter(c => c.isMinor) as EleosChild[]
     }
-
-    get guardians() { return this._guardians}
+    
+    get guardians() { return this.findPeopleByRole(EleosRole.child_guardian) as EleosGuardian[]}
 
     get assets() { return this._assets}
 
+    deleteOnePersonByRole(role: EleosRole): EleosPerson | undefined {
+        const foundPerson = Array.from(this._people.values()).find(p => p.roles.includes(role))
+        if (foundPerson) {
+            this._people.delete(foundPerson.display)
+        }   
+        return foundPerson
+    }
+
+    findOnePersonByRole(role: EleosRole): EleosPerson | undefined {
+        return Array.from(this._people.values()).find(p => p.roles.includes(role))
+    }
+
+    
+    findPeopleByRole(role: EleosRole): EleosPerson[] {
+        return Array.from(this._people.values()).filter(p => p.roles.includes(role))
+    }
+
     getPrincipalOrSpouseByName(name: string): EleosPerson | undefined {
-        if (this._principal && this._principal.display === name) {
-            return this._principal
+        if (this.principal && this.principal.display === name) {
+            return this.principal
         }
-        if (this._spouse && this._spouse.display === name) {
-            return this._spouse
+        if (this.spouse && this.spouse.display === name) {
+            return this.spouse
         }
         return undefined
     }
@@ -152,12 +165,8 @@ class Eleos {
     }
 
     setSpouse(spouse: EleosPerson | null, marritalStatus: EleosMaritalStatus): EleosApiResult { 
-        if (!this._principal) {
+        if (!this.principal) {
             throw Error('Principal is not set')
-        }
-
-        if (this._children.length > 0) {
-            throw Error('Cannot change the spouse after adding children')
         }
 
         if (marritalStatus === EleosMaritalStatus.married && !spouse) {
@@ -166,74 +175,75 @@ class Eleos {
 
         // not married
         if (!spouse) {
-            this._spouse = null
+            this.deleteOnePersonByRole(EleosRole.spouse)
             this._marritalStatus = marritalStatus
             return {succeeded: true}
         }
 
+        // not the right role
+        if (!spouse.isSpouse) {
+            return {succeeded: false, error: 'The person is not a spouse'}
+        }
+
         // married and make sure spouse and principal are not the same
-        if (this._principal && EleosPerson.equealTo(this._principal, spouse)) {
-            return {succeeded: false, error: 'Spouse cannot be the same as the principal'}
+        if (this.people.get(spouse.display)) {
+            return {succeeded: false, error: 'Spouse cannot have the same name as other people. Please double check your spelling or add a suffix like sr or jr'}
         }
 
         this._marritalStatus = marritalStatus
-        this._spouse = spouse
+        this.people.set(spouse.display, spouse)
         return {succeeded: true}
     }
 
+    /**
+     * Remove all children from the list if the user reset the "have children" checkbox
+     */
     resetChildren() {
-        this._children = []
+        this.removePeople(EleosRole.child)
+        this.removePeople(EleosRole.child_guardian)
     }
 
-    checkPersonExists(person: EleosPerson): boolean  {
-        // check if the person is the proincipal
-        if (this._principal && EleosPerson.equealTo(this._principal, person)) {
-            return true
+    removePeople(role: EleosRole) {
+        for (let [key, value] of this.people) {
+            if (value.roles.includes(role)) {
+                this.people.delete(key);
+            }
         }
-          
-        // check if the person is the spouse
-        if (this._spouse && EleosPerson.equealTo(this._spouse, person)) {
-            return true
-        }
-       
-        return false
+    }
+
+    checkPersonExists(person: EleosPerson): EleosPerson | undefined{
+        return this.people.get(person.display)
     }
 
     addChildren(children: EleosChild[]): EleosApiResult  {
-        // make sure that none of the child is princal himself
-        if (this._principal && children.find(c => this._principal && EleosPerson.equealTo(this._principal, c))) {
-            return {succeeded: false, error: 'Child cannot be the same as the principal'}
-        }
-         // make sure that none of the child is spouse himself
-        if (this._spouse && children.find(c => this._spouse && EleosPerson.equealTo(this._spouse, c))) {
-            return {succeeded: false, error: 'Child cannot be the same as the spouse'}
-        }
-        this._children = children
+        children.forEach(c => {
+            const existing = this.checkPersonExists(c)
+            if (!existing) {
+                this.people.set(c.display, c)
+            } else if (existing && !existing.isChild){
+                return {succeeded: false, error: `The person "${c.display}" already exists`}
+            }
+        })
         return {succeeded: true};
     }
 
     addGuardians(guardians: EleosGuardian[]): EleosApiResult {
         // need to have minors
-        if (this._children.length === 0 || this.minors.length === 0) {
+        if (this.children.length === 0 || this.minors.length === 0) {
             return {succeeded: false, error: 'Need to have at least a minor child to have guardians'}
         }  
         
         // make sure that none of the guardian is princal himself
-        if (this._principal && guardians.find(c => this._principal && EleosPerson.equealTo(this._principal, c))) {
-            return {succeeded: false, error: 'Guardian must be an adult other than the parents'}
-        }
-         // make sure that none of the guardian is spouse himself
-        if (this._spouse && guardians.find(c => this._spouse && EleosPerson.equealTo(this._spouse, c))) {
-            return {succeeded: false, error: 'Guardian must be an adult other than the parents'}
-        }
-          
-        // make sure that none of the guardian is a child himself
-        const filteredArray = guardians.filter( g => !this._children.find(c => EleosPerson.equealTo(c, g)))
-        if (filteredArray.length !== guardians.length) {
-            return {succeeded: false, error: 'Guardian cannot be a one of the child'}
-        }
+        guardians.forEach(g => {
+            const existingPerson = this.people.get(g.display)
+            if (existingPerson && (existingPerson.isPrincipal || 
+                existingPerson.isSpouse || existingPerson.isChild)) {                     
+                return {succeeded: false, error: 'Guardian cannot be the principal or the spouse'}
+            } else {
+                this.people.set(g.display, g)
+            }
+        })
       
-        this._guardians = guardians
         return {succeeded: true};
     }
 
@@ -244,7 +254,7 @@ class Eleos {
      * @returns 
      */
     addEleosAsset(asset: EleosAsset): EleosApiResult {
-        if (!this._principal) {
+        if (!this.principal) {
             throw Error('Principal is not set')
         }
 
@@ -258,43 +268,32 @@ class Eleos {
             return {succeeded: false, error: 'The asset with the same attributes is already added! Make sure to write a different note to distingush two assets.'}
         }
 
-        // must have owner if ownership is individual
-        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separately && !asset.owner) {
+        // must have owner if ownership is SEPERATE Property
+        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separate && !asset.owner) {
             return { succeeded: false, error: 'Individual ownership must specify the owner' }
         }
 
         // must not have owner if ownership is not individual
-        if (asset.ownership.id !== EleosAssetOwnerShipTypeId.separately && asset.owner) {
+        if (asset.ownership.id !== EleosAssetOwnerShipTypeId.separate && asset.owner) {
             return { succeeded: false, error: 'Thid ownership type must not have owner' }
         }
 
         // owner must be either be principal or spouse
-        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separately) {
-            if (!this._spouse) {
+        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separate) {
+            if (!this.spouse) {
                 return { succeeded: false, error: 'The ownership must have spouse as owner'}
             }
             if (!asset.owner) {
                 return { succeeded: false, error: 'The ownership must have owner'}
             }
         
-            if (!EleosPerson.equealTo(this._principal, asset.owner) && 
-                !EleosPerson.equealTo(this._spouse, asset.owner)) {
-                return { succeeded: false, error: 'The ownership must have principal or spouse as owner'} 
+            if (this.principal !== asset.owner && this.spouse !== asset.owner) {
+                return { succeeded: false, error: 'The owner must be either the principal or the spouse'} 
             }
         }
 
         this._assets.push(asset)
         return {succeeded: true}
-    }
-        
-
-    addPersonWithRoles(person: ElesoPersonWithRoles) {
-        // cannot add the same person twice
-        if ( this._people.find(p => p.isEqual(person))) {
-            throw Error('The user is already added!')
-        }
-        // ok to add
-        this._people.push(person)
     }
 }
 

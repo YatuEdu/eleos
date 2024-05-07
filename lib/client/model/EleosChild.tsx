@@ -1,5 +1,7 @@
 import EleosPerson 
                 from '@/lib/client/model/EleosPerson';
+import { EleosRole } 
+                from './EleosDataTypes';
 
 class EleosChild extends EleosPerson {
     private birthYear: number;
@@ -9,7 +11,7 @@ class EleosChild extends EleosPerson {
                 lastName: string,
                 suffix: string, 
                 birthYear: number) {
-        super(firstName, middleName, lastName, suffix);
+        super(firstName, middleName, lastName, suffix, EleosRole.child);
         this.birthYear = birthYear;
     }
 
@@ -24,8 +26,8 @@ class EleosChild extends EleosPerson {
         return new Date().getFullYear() - this.birthYear < 18
     }
 
-    get display(): string {
-        return `${this.firstName} ${this.middleName} ${this.lastName} ${this.suffix} (age: ${new Date().getFullYear() - this.birthYear})`
+    get signature(): string {
+        return `${this.display} (age: ${new Date().getFullYear() - this.birthYear})`
     }
 }
 

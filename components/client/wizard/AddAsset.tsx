@@ -2,8 +2,6 @@ import React, { useState }
                 from 'react';
 import AddAssetDialog 
                 from '@/components/client/functional/dialog/AddAssetDialog';
-import EleosLabel 
-                from '../atoms/EleosLabel';
 import { useElos } 
                 from '@/lib/providers/EleosAppProvider';
 import EleosWizardButtonLayout 
@@ -12,9 +10,8 @@ import EleosButton
                 from '../atoms/EleosButton';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-import EleosItemsList 
-                from '../functional/EleosNameList';
-import { EleosOwnershipType, EleosPropertyType, EleosPropertyTypeId, TYPE_BANK_ACCOUNT, TYPE_BUSINESS, TYPE_CASH, TYPE_INVESTMENT, TYPE_LIFE_INSURANCE, TYPE_OTHER, TYPE_REAL_ESTATE, TYPE_RETIREMENT } from '@/lib/client/model/EleosDataTypes';
+import { EleosAssetOwnerShipTypeId, EleosPropertyTypeId, } 
+                from '@/lib/client/model/EleosDataTypes';
 import EleosPerson 
                 from '@/lib/client/model/EleosPerson';
 import { EleosAsset } 
@@ -52,12 +49,11 @@ const AddAsset: React.FC = () => {
      * @param owner 
      */
     const handleAddAsset = (name: string, location: string, 
-                            note: string, type: EleosPropertyType, 
-                            ownership: EleosOwnershipType, owner: string | undefined) => {
+                            note: string, type: EleosPropertyTypeId, 
+                            ownership: EleosAssetOwnerShipTypeId, owner: string | undefined) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
         }
-     
         console.log('AddAsset:', name, 'location=', location, 'note=', note, 'type=', type, 'ownership=', ownership, 'owner=', owner)
 
         // Attempt to find the owner and add the asset to Eleos
@@ -99,14 +95,14 @@ const AddAsset: React.FC = () => {
     }
 
     const getIconByAssetId = (id: EleosPropertyTypeId): {icon: React.JSX.Element, toolTip: string} => {
-        return  id === EleosPropertyTypeId.realEstate ? {icon: <HouseIcon />, toolTip: TYPE_REAL_ESTATE} : 
-                id === EleosPropertyTypeId.cash ? {icon: <AttachMoney />, toolTip: TYPE_CASH} :
-                id === EleosPropertyTypeId.lifeInsurance ? {icon:<HealthAndSafety />, toolTip: TYPE_LIFE_INSURANCE} :
-                id === EleosPropertyTypeId.bankAccount ? {icon: <AccountBalanceIcon />, toolTip: TYPE_BANK_ACCOUNT} :
-                id === EleosPropertyTypeId.retirement ? {icon: <BeachAccess />, toolTip: TYPE_RETIREMENT} :
-                id === EleosPropertyTypeId.business ? {icon: <BusinessCenter />, toolTip: TYPE_BUSINESS} :
-                id === EleosPropertyTypeId.investment ? {icon: <TrendingUp  />, toolTip: TYPE_INVESTMENT} : 
-                {icon: <PlaylistAddCheck />, toolTip: TYPE_OTHER};
+        return  id === EleosPropertyTypeId.realEstate ? {icon: <HouseIcon />, toolTip: EleosPropertyTypeId.realEstate} : 
+                id === EleosPropertyTypeId.cash ? {icon: <AttachMoney />, toolTip: EleosPropertyTypeId.cash} :
+                id === EleosPropertyTypeId.lifeInsurance ? {icon:<HealthAndSafety />, toolTip: EleosPropertyTypeId.lifeInsurance } :
+                id === EleosPropertyTypeId.bankAccount ? {icon: <AccountBalanceIcon />, toolTip: EleosPropertyTypeId.bankAccount} :
+                id === EleosPropertyTypeId.retirement ? {icon: <BeachAccess />, toolTip: EleosPropertyTypeId.retirement} :
+                id === EleosPropertyTypeId.business ? {icon: <BusinessCenter />, toolTip: EleosPropertyTypeId.business} :
+                id === EleosPropertyTypeId.investment ? {icon: <TrendingUp  />, toolTip: EleosPropertyTypeId.investment} : 
+                {icon: <PlaylistAddCheck />, toolTip: EleosPropertyTypeId.other};
     }
 
     return (
