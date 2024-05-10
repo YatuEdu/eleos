@@ -34,7 +34,6 @@ const MarriageInfo: React.FC = () => {
     }
     const {spouse} = ref.current
     const [maritalSatus, setMaritalSatus] = useState(ref.current.marritalStatus);
-
     const [spouseFirstName, setSpouseFirstName] = useState(spouse ? spouse.firstName : '')
     const [sposeMiddleName, setSposeMiddleName] = useState(spouse ? spouse.middleName : '')
     const [sposeLastName, setSpouseLastName] = useState(spouse ? spouse.lastName : '')
@@ -54,7 +53,7 @@ const MarriageInfo: React.FC = () => {
         setMaritalSatus(status as EleosMaritalStatus)
 
         // clear the spouse info if uncheck
-        if (status && !isMarried) {
+        if (!isMarried) {
             setSpouseFirstName('')
             setSposeMiddleName('')
             setSpouseLastName('')
@@ -63,10 +62,13 @@ const MarriageInfo: React.FC = () => {
         } else {
             setValid(testValidness(spouseFirstName, sposeLastName, status as EleosMaritalStatus))
         }
-    };
+    }
 
     function testValidness(firstName: string, lastName: string, maritalSatus: EleosMaritalStatus | undefined) {
-        return maritalSatus ? firstName && lastName : true
+        const isValid = maritalSatus === undefined ? false :
+                        maritalSatus === EleosMaritalStatus.married ? firstName && lastName : !firstName && !lastName
+        console.log(`testValidness: ${isValid}, ${maritalSatus}, ${firstName}, ${lastName}`)
+        return isValid
     }
 
     const onSpouseNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
@@ -104,13 +106,27 @@ const MarriageInfo: React.FC = () => {
         }
 
         // go to the next step
+       
         if (maritalSatus !== EleosMaritalStatus.married) {
             ref.current.setSpouse(null, maritalSatus)
         } else {
-            const result = ref.current.setSpouse(new EleosPerson(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix, EleosRole.spouse), maritalSatus)
-            if (!result.succeeded) {
-                alert(result.error)
-                return;
+            const newSpouse = new EleosPerson(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix, EleosRole.spouse)
+            if (spouse) {
+                if (spouse.display !== newSpouse.display) {
+                    // spouse name changed (usually the case when the user changes the name of the spouse)
+                    const result = ref.current.setSpouse(newSpouse, maritalSatus)
+                    if (!result.succeeded) {
+                        alert(result.error)
+                        return;
+                    }
+                }
+            } else {
+                // add a new spouse
+                const result = ref.current.setSpouse(newSpouse, maritalSatus)
+                if (!result.succeeded) {
+                    alert(result.error)
+                    return;
+                }
             }
         }    
          

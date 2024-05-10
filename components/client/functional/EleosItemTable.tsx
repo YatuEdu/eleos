@@ -56,7 +56,7 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
-                            <TableCell key={column.label} sx={{ fontWeight: 'bold', fontSize: '1rem' }}>{column.label}</TableCell>
+                            <TableCell key={column.label} sx={{ backgroundColor: '#74848e', color: '#FFD700', fontWeight: 'bold', fontSize: '1rem' }}>{column.label}</TableCell>
                         ))}
                     </TableRow>
                 </TableHead>
@@ -64,9 +64,10 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                     {rows.map((row, idx) => (
                         <TableRow key={idx} sx={tableRowStyles}>
                             {columns.map((column) => {
-                                const cellKey = `${idx}-${column.label}`;
+                                const cellKey   = `${idx}-${column.label}`;
                                 const cellValue = row[column.label];
-                                const toolTips = row['TooolTip'];
+                                const toolTip  = row['ToolTip'];
+                                console.log('toolTip', toolTip )
                                 let content: string | JSX.Element = '';
 
                                 switch (column.type) {
@@ -80,9 +81,9 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                                         );
                                         break;
                                     case 'icon':
-                                        content = toolTips ? (
+                                        content = toolTip ? (
                                             <Tooltip 
-                                                title={toolTips}
+                                                title={toolTip}
                                                 componentsProps={{
                                                     tooltip: {
                                                       sx:{
@@ -105,7 +106,7 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                                         break;
                                 }
 
-                                return <TableCell key={column.label} sx={{ color: 'grey', fontSize: '1rem' }}>{content}</TableCell>;
+                                return <TableCell key={column.label} sx={{ backgroundColor: '#8999a3', color: 'white', fontSize: '1rem' }}>{content}</TableCell>;
                             })}
                         </TableRow>
                     ))}

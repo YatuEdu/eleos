@@ -81,7 +81,7 @@ const ChildrenGuardian: React.FC = () => {
         const newGuardians = [...guardians, newGuardian];
         const result = setGuardians(newGuardians)
 
-        setButtonText(newGuardians.length === 1 ? 'Add an Alternative Guardian 1' : 'Add an Alternative Guardian 2');
+        setButtonText(newGuardians.length === 1 ? 'Add Alternate Guardian 1' : 'Add Alternate Guardian 2');
         setValid(newGuardians.length > 0);
     }
 

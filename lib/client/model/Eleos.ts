@@ -19,6 +19,8 @@ import { EleosAsset }
 import { EleosAssetOwnerShipTypeId, EleosMaritalStatus, EleosRole } 
                 from "./EleosDataTypes"
 import { error } from "console"
+import { EleosChildrenStatusValue } 
+                from "./EleosChildrenStatus"
 
 /**
  * Eleos encapsulate all the data regarding a will processing wizard, including principals, children, and
@@ -29,6 +31,7 @@ class Eleos {
     private _assets: EleosAsset[] = []
     private _people: Map<string, EleosPerson> = new Map()
     private _marritalStatus: EleosMaritalStatus | undefined = undefined
+    private _childrenStatus: EleosChildrenStatusValue | undefined = undefined
 
     private _steps: number[] = []
 
@@ -96,10 +99,18 @@ class Eleos {
 
     get marritalStatus() { return this._marritalStatus}
 
+    get title() { return this._marritalStatus === EleosMaritalStatus.single ? 'I' : 'We'}
+
+    get possessivePronouns() { return this._marritalStatus === EleosMaritalStatus.single ? 'My' : 'Our'}
+    
     get spouse(): EleosPerson | undefined { return this.findOnePersonByRole(EleosRole.spouse)}
 
     get people() { return this._people}
     
+    get childrenStatus(): EleosChildrenStatusValue | undefined { return this._childrenStatus}
+
+    set childrenStatus(status: EleosChildrenStatusValue) { this._childrenStatus = status}
+
     get children() {return  this.findPeopleByRole(EleosRole.child) as EleosChild[]  }
 
     get minors(): EleosChild[] {
@@ -169,28 +180,36 @@ class Eleos {
             throw Error('Principal is not set')
         }
 
+        this._marritalStatus = marritalStatus
         if (marritalStatus === EleosMaritalStatus.married && !spouse) {
+            this._marritalStatus = undefined
             return {succeeded: false, error: 'Married status must have a spouse'}
         }
 
         // not married
         if (!spouse) {
             this.deleteOnePersonByRole(EleosRole.spouse)
-            this._marritalStatus = marritalStatus
             return {succeeded: true}
         }
 
         // not the right role
         if (!spouse.isSpouse) {
+            this._marritalStatus = undefined
             return {succeeded: false, error: 'The person is not a spouse'}
         }
 
         // married and make sure spouse and principal are not the same
-        if (this.people.get(spouse.display)) {
-            return {succeeded: false, error: 'Spouse cannot have the same name as other people. Please double check your spelling or add a suffix like sr or jr'}
+        const existingPerson = this.people.get(spouse.display)
+        if (existingPerson) {
+            if (existingPerson.roles.includes(EleosRole.spouse)) {
+                // idemptotency
+                return {succeeded: true}
+            
+            } else {
+                return {succeeded: false, error: 'Spouse cannot have the same name as other people. Please double check your spelling or add a suffix like sr or jr'}
+            }
         }
 
-        this._marritalStatus = marritalStatus
         this.people.set(spouse.display, spouse)
         return {succeeded: true}
     }
@@ -269,17 +288,17 @@ class Eleos {
         }
 
         // must have owner if ownership is SEPERATE Property
-        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separate && !asset.owner) {
-            return { succeeded: false, error: 'Individual ownership must specify the owner' }
+        if (asset.ownership === EleosAssetOwnerShipTypeId.separate && !asset.owner) {
+            return { succeeded: false, error: 'Separate ownership must specify the owner' }
         }
 
         // must not have owner if ownership is not individual
-        if (asset.ownership.id !== EleosAssetOwnerShipTypeId.separate && asset.owner) {
+        if (asset.ownership !== EleosAssetOwnerShipTypeId.separate && asset.owner) {
             return { succeeded: false, error: 'Thid ownership type must not have owner' }
         }
 
         // owner must be either be principal or spouse
-        if (asset.ownership.id === EleosAssetOwnerShipTypeId.separate) {
+        if (asset.ownership === EleosAssetOwnerShipTypeId.separate) {
             if (!this.spouse) {
                 return { succeeded: false, error: 'The ownership must have spouse as owner'}
             }
