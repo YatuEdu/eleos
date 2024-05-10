@@ -10,8 +10,6 @@ import EleosButton
                 from '../atoms/EleosButton';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-import { EleosAssetOwnerShipTypeId, EleosPropertyTypeId, } 
-                from '@/lib/client/model/EleosDataTypes';
 import EleosPerson 
                 from '@/lib/client/model/EleosPerson';
 import { EleosAsset } 
@@ -19,16 +17,34 @@ import { EleosAsset }
 import EleosEntity 
                 from "@/lib/client/model/EleosEntity"
 import { Label, Note } from '@mui/icons-material';
-import EleosItemTable from '../functional/EleosItemTable';
-import HouseIcon from '@mui/icons-material/House';
+import EleosItemTable 
+                from '../functional/EleosItemTable';
+import { EleosPropertyTypIconAndToolTip, EleosPropertyType } 
+                from '@/lib/client/model/EleosPropertyType';
+import HouseIcon 
+                from '@mui/icons-material/House';
 import AccountBalanceIcon 
                 from '@mui/icons-material/AccountBalance'
-import AttachMoney from '@mui/icons-material/AttachMoney';
-import HealthAndSafety from '@mui/icons-material/HealthAndSafety';
-import BeachAccess from '@mui/icons-material/BeachAccess';
-import TrendingUp  from '@mui/icons-material/TrendingUp';
-import BusinessCenter  from '@mui/icons-material/BusinessCenter';
-import PlaylistAddCheck from '@mui/icons-material/PlaylistAddCheck';
+import AttachMoney 
+                from '@mui/icons-material/AttachMoney';
+import HealthAndSafety 
+                from '@mui/icons-material/HealthAndSafety';
+import BeachAccess 
+                from '@mui/icons-material/BeachAccess';
+import TrendingUp  
+                from '@mui/icons-material/TrendingUp';
+import BusinessCenter  
+                from '@mui/icons-material/BusinessCenter';
+import PlaylistAddCheck 
+                from '@mui/icons-material/PlaylistAddCheck';
+import DirectionsCar 
+                from '@mui/icons-material/DirectionsCar';
+import EleosLabel 
+                from '../atoms/EleosLabel';
+import { StaticStypes } 
+                from '@/lib/client/styles/globalStyles';
+import { EleosAssetOwnerShipType } 
+                from '@/lib/client/model/EleosAssetOwnerShipType';
 
 const AddAsset: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -49,13 +65,12 @@ const AddAsset: React.FC = () => {
      * @param owner 
      */
     const handleAddAsset = (name: string, location: string, 
-                            note: string, type: EleosPropertyTypeId, 
-                            ownership: EleosAssetOwnerShipTypeId, owner: string | undefined) => {
+                            note: string, type: EleosPropertyType, 
+                            ownership: EleosAssetOwnerShipType, owner: string | undefined) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
         }
-        console.log('AddAsset:', name, 'location=', location, 'note=', note, 'type=', type, 'ownership=', ownership, 'owner=', owner)
-
+    
         // Attempt to find the owner and add the asset to Eleos
         let ownerFound: EleosPerson|undefined = owner ? ref.current.getPrincipalOrSpouseByName(owner) : undefined
         const asset = new EleosAsset(name, location, note, type, ownership, ownerFound)
@@ -91,18 +106,40 @@ const AddAsset: React.FC = () => {
         setStep(step)
     } 
 
-    const onDeleteAsset = (index: number) => {
+    const onUpdateAsset = (name: string) => {
+        console.log('onDeleteAsset:', name)
     }
 
-    const getIconByAssetId = (id: EleosPropertyTypeId): {icon: React.JSX.Element, toolTip: string} => {
-        return  id === EleosPropertyTypeId.realEstate ? {icon: <HouseIcon />, toolTip: EleosPropertyTypeId.realEstate} : 
-                id === EleosPropertyTypeId.cash ? {icon: <AttachMoney />, toolTip: EleosPropertyTypeId.cash} :
-                id === EleosPropertyTypeId.lifeInsurance ? {icon:<HealthAndSafety />, toolTip: EleosPropertyTypeId.lifeInsurance } :
-                id === EleosPropertyTypeId.bankAccount ? {icon: <AccountBalanceIcon />, toolTip: EleosPropertyTypeId.bankAccount} :
-                id === EleosPropertyTypeId.retirement ? {icon: <BeachAccess />, toolTip: EleosPropertyTypeId.retirement} :
-                id === EleosPropertyTypeId.business ? {icon: <BusinessCenter />, toolTip: EleosPropertyTypeId.business} :
-                id === EleosPropertyTypeId.investment ? {icon: <TrendingUp  />, toolTip: EleosPropertyTypeId.investment} : 
-                {icon: <PlaylistAddCheck />, toolTip: EleosPropertyTypeId.other};
+    const getIconByAssetType = (type: EleosPropertyType): EleosPropertyTypIconAndToolTip => {
+        // Add a return statement at the end of the function
+        switch (type) {
+            case EleosPropertyType.realEstate:
+                return {icon: <HouseIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.realEstate}
+
+            case EleosPropertyType.bankAccount:
+                return {icon: <AccountBalanceIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.bankAccount}
+
+            case EleosPropertyType.investment:
+                return {icon: <TrendingUp style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.investment}
+
+            case EleosPropertyType.retirement:
+                return {icon: <BeachAccess style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.retirement}
+
+            case EleosPropertyType.lifeInsurance:
+                return {icon:<HealthAndSafety style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.lifeInsurance}
+
+            case EleosPropertyType.business:
+                return {icon: <BusinessCenter style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.business}
+
+            case EleosPropertyType.cash:
+                return {icon: <AttachMoney style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.cash}
+
+            case EleosPropertyType.vehicles:
+                return {icon: <DirectionsCar style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.vehicles}
+
+            default:
+                return {icon: <PlaylistAddCheck style={{ color: '#FFD700' }}/>, toolTip: EleosPropertyType.other}
+        }
     }
 
     return (
@@ -115,20 +152,23 @@ const AddAsset: React.FC = () => {
                     onSave={handleAddAsset}
                 />
             </div>
-            <div className="mt-4 mr-3 ml-3">
+            {assetList.length > 0 && 
+             <div className="mt-4 mr-3 ml-3 mb-2">
+                <EleosLabel classNames='mb-2 mt-0'  text={`${ref.current.possessivePronouns} Assets`} />
                 <EleosItemTable
                     rows={ref.current.assets.map((a) => {
-                        const icon = getIconByAssetId(a.type.id)
+                        const icon = getIconByAssetType(a.type)
                         return { 
                             Name: a.name, 
                             Type: icon.icon,
-                            ToolTip: icon.toolTip, // Fix: Corrected the property name to 'ToolTip'
-                            OwnershipType: a.ownership.name, 
+                            ToolTip: icon.toolTip,
+                            OwnershipType: a.ownership, 
                             Location: a.location || '', 
                             Note: a.note || '',
-                            Action: <div className='mt-0'><EleosButton type='delete'
-                                                            className=' mt-1' 
-                                                            text="Delete" onClick={() => onDeleteAsset(0)} /></div>
+                            Action: <div className='mt-0'>
+                                        <EleosButton type='delete'
+                                                    className=' mt-1' 
+                                                    text="update" onClick={() => onUpdateAsset(a.name)} /></div>
                         }
                     })}
                     columns={[
@@ -140,7 +180,7 @@ const AddAsset: React.FC = () => {
                         { label: 'Action', type: 'button' },
                     ]}
                 />
-            </div>
+            </div> }
             <EleosWizardButtonLayout
                 leftChild={
                     <EleosButton

@@ -61,7 +61,7 @@ function RadioButtonGroup({ title, options, value, onChange, direction }: RadioB
                 name={title.toLowerCase()}
                 value={selectedOption}
                 onChange={handleChange}
-                onKeyDown={(event) => handleKeyDown(event, selectedOption)} // Handle key down events
+                onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => handleKeyDown(event, selectedOption)} // Handle key down events
                 sx={{ flexDirection: direction ? direction : 'column'}} // Add this line to make radio buttons appear on the same line
                 >
                 {options.map((option) => (

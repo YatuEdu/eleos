@@ -6,10 +6,7 @@ import { useElos }
                 from '@/lib/providers/EleosAppProvider';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-import Checkbox 
-                from '@mui/material/Checkbox';
-import FormControlLabel 
-                from '@mui/material/FormControlLabel';
+
 import EleosLabel 
                 from '../atoms/EleosLabel';
 import EleosItemsList 
@@ -30,8 +27,10 @@ import ConfirmationDialog
                 from '../functional/dialog/ConfirmationDialog';
 import EleosWizardButtonLayout 
                 from '../atoms/EleosWizardButtonLayout';
-import { green } from '@mui/material/colors';
-import { EleosMaritalStatus } from '@/lib/client/model/EleosDataTypes';
+import RadioButtonGroup from 
+                '../atoms/EleosRadioGroup';
+import EleosChildrenStatus, { EleosChildrenStatusValue } 
+                from '@/lib/client/model/EleosChildrenStatus';
 
 const AddChildren: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -39,24 +38,15 @@ const AddChildren: React.FC = () => {
         throw Error('Eleos is not initialized')  
     }
 
-    const {children} = ref && ref.current ? ref.current : {children: null};
+    const {children} = ref.current
     const hasChildrenInit = !!children && children.length > 0
-    const [hasChildren, setHasChildren] = useState(hasChildrenInit);
-    const [childrenList, setChildrenList] = useState(children ? children : []); 
-    const [valid, setValid] = useState(true)
+    const [childrenStatus, setChildrenStatus] = useState(ref.current.childrenStatus);
+    const [childrenList, setChildrenList] = useState(children ? [...children] : []); 
+    const [valid, setValid] = useState(ref.current.childrenStatus === EleosChildrenStatusValue.hasNoChildren || hasChildrenInit)
     const {setStep} = useWizard()
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
-    const title = ref.current.marritalStatus === EleosMaritalStatus.single ? 'I' : 'We'
-
-    const handleHasChildren = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setHasChildren(event.target.checked);
-        if (!event.target.checked) {
-            setChildrenList([])
-            setValid(true)
-        } else {
-            setValid(childrenList.length > 0)
-        }
-    }
+    const title = ref.current.title
+    const childrenOptions = EleosChildrenStatus.childrenStatusLabeledValues(title)
 
     const onAddChild = (firstName: string, midName: string, lastName: string, suffix: string, birthYear?: string) => {
         if (!ref || !ref.current || !ref.current.principal)  {
@@ -124,73 +114,63 @@ const AddChildren: React.FC = () => {
             throw Error('Eleos is not initialized')  
         }
 
-        if (!valid) {
+        if (!valid || !childrenStatus) {
             throw Error('Invalid form: IMPOSSIBLE')  
         }
 
         // go to the next step
-        if (!hasChildren) {
+        if (childrenStatus === EleosChildrenStatusValue.hasNoChildren) {
             ref.current.resetChildren()
         } else {
             ref.current.addChildren(childrenList)
-        }    
+        }  
+        ref.current.childrenStatus = childrenStatus
          
         // move to the next step
         const step = ref.current.nextStep()
         setStep(step)
     } 
 
+    const handleHasChildren = (status: string) => {
+        console.log('handleHasChildren:', status)
+
+        const hasChildren = status === EleosChildrenStatusValue.hasChildren
+        setChildrenStatus(status as EleosChildrenStatusValue)
+        if (!hasChildren) {
+            setChildrenList([])
+            setValid(true)
+        } else {
+            setValid(childrenList.length > 0)
+        }
+    }
+
     return (
         <div>
             <div className="mb-8">
                 <h1 className="text-2xl">Add your children as heirs</h1>
             </div>
-                <div className="flex items-left ml-4">
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={hasChildren}
-                                onChange={handleHasChildren}
-                                name="checkedB"
-                                sx={{
-                                    marginRight: '0.5rem',
-                                    '&.Mui-checked': {
-                                      color: green[600], // Color of the checkmark when checked
-                                      backgroundColor: 'white', // White background when checked
-                                      
-                                      '&:hover': {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.04)', // Slightly darker on hover when checked
-                                      }
-                                    },
-                                    '&:hover': {
-                                      backgroundColor: 'rgba(0, 0, 0, 0.04)' // Slightly darker on hover when unchecked
-                                    },
-                                    '&&:not(.Mui-checked)': {
-                                      backgroundColor: 'white', // Always white background when not checked
-                                      borderColor: 'rgba(0, 0, 0, 0.23)' // Border color when not checked
-                                    }
-                                  }}
-                                  onKeyDown={(event) => {
-                                    if (event.key === 'Enter') {
-                                      setHasChildren(!hasChildren);
-                                    }
-                                  }}
-                            />
-                        }
-                        label={` ${title} have children`} 
-                    />
-                    {hasChildren && (
-                        <>
-                        <AddPersonModal 
-                            buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
-                            needDob={true} 
-                            onSave={onAddChild} />
-                    
-                        </>
-                    )}
-                </div>
+            <div style={{ margin: 20 }}>
+                <RadioButtonGroup
+                    title=''
+                    options={childrenOptions}
+                    value={childrenStatus ? childrenStatus : ''}
+                    onChange={handleHasChildren}
+                    direction='row'
+                />
+            </div>
+            <div className="flex items-left ml-4">
+                {childrenStatus === EleosChildrenStatusValue.hasChildren && (
+                    <>
+                    <AddPersonModal 
+                        buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
+                        needDob={true} 
+                        onSave={onAddChild} />
+                
+                    </>
+                )}
+            </div>
             <div className="mt-4">
-                {hasChildren && (
+                {childrenStatus === EleosChildrenStatusValue.hasChildren && (
                 <div className='ml-2 mr-2'>
                     {childrenList.length > 0 && <EleosLabel text="List of children" />}
                     <EleosItemsList entities={childrenList} onDelete={onDeleteName} />
