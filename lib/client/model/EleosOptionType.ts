@@ -22,11 +22,15 @@ class EleosOptionType<T extends Record<string, string>> {
         return Object.entries(this.enumObject)
     }
 
-    getlabelValuePairs() : {label: string, value: string} [] {
-        return Object.entries(this.enumObject).map((entry) => ({label: entry[1], value: entry[0]}))
+    getLabelValuePairs() : {label: string, value: string} [] {
+        return Object.entries(this.enumObject).map((entry) => ({label: entry[1], value: entry[1]}))
     }
 
     keyToValue(key: string): string {
+        if (!key) {
+            return ''
+        }
+
         const entry =  this.entries.find((entry) => entry[0] === key)
         if (!entry) {
             throw new Error(`Invalid key: ${key}`)

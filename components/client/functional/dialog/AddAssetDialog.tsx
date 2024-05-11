@@ -23,9 +23,9 @@ import EleosSelect from '../../atoms/EleosSelect';
 import EleosHelpPane from '../EleosHelpPane';
 import { HelpTextId } from '@/lib/client/model/EleosMisc';
 import { set } from 'zod';
-import { ELEOS_PROPERTY_TYPE_HELPER_OBJ, EleosPropertyType } 
+import { EPT_HELPER, EleosPropertyType } 
                 from '@/lib/client/model/EleosPropertyType';
-import { ELEOS_ASSET_OWNERSHIP_TYPE_HELPER_OBJ, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipType } 
+import { EAOT_HELPER, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipType } 
                 from '@/lib/client/model/EleosAssetOwnerShipType';
 
 type AddAssetProps = {
@@ -91,8 +91,8 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
     const [state, dispatch] = useReducer(stateReducer, initialState)
     const [open, setOpen] = useState(false)
     const ownerShipTypeLabelValuePairs = spouse ? 
-                        ELEOS_ASSET_OWNERSHIP_TYPE_HELPER_OBJ.getlabelValuePairsForCouples() :
-                        ELEOS_ASSET_OWNERSHIP_TYPE_HELPER_OBJ.getlabelValuePairsForSingle()
+                        EAOT_HELPER.getlabelValuePairsForCouples() :
+                        EAOT_HELPER.getlabelValuePairsForSingle()
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -105,8 +105,8 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
 
     const handleSave = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
-        const typeValue = ELEOS_PROPERTY_TYPE_HELPER_OBJ.keyToValue(state.type) as EleosPropertyType
-        const ownerShipValue = ELEOS_ASSET_OWNERSHIP_TYPE_HELPER_OBJ.keyToValue(state.ownerShip) as EleosAssetOwnerShipType
+        const typeValue = state.type as EleosPropertyType
+        const ownerShipValue = state.ownerShip as EleosAssetOwnerShipType
     
         if (!typeValue || !ownerShipValue) {        
             //throw Error('Invalid type or ownership')
@@ -225,7 +225,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                 <DialogContent className='grid grid-cols-12 gap-2 pr-3'>
                     <div className='col-span-7'>
                         <EleosLabel text="Type" invalidMessage={state.invalidType} />
-                        <EleosSelect name={NAME_TYPE} options={ELEOS_PROPERTY_TYPE_HELPER_OBJ.getlabelValuePairs()}
+                        <EleosSelect name={NAME_TYPE} options={EPT_HELPER.getlabelValuePairs()}
                                     onChange={(selectedOption) => dispatch({type: NAME_TYPE, value: selectedOption ? selectedOption.value: ''})} 
                                     value={{label: state.type, value: state.type}} />
                         <EleosLabel text="Ownership" invalidMessage={state.invalidOwnership}/>

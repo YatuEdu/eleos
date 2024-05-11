@@ -45,9 +45,9 @@ class EleosPropertyTypeHelper {
     }
 
     getlabelValuePairs() : {label: string, value: string} [] {
-        return this.propertyType.getlabelValuePairs()
+        return this.propertyType.getLabelValuePairs()
     }
 }
 
-export const ELEOS_PROPERTY_TYPE_HELPER_OBJ = new EleosPropertyTypeHelper()
+export const EPT_HELPER = new EleosPropertyTypeHelper()
 

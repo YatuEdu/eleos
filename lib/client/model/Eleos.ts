@@ -16,11 +16,12 @@ import { EleosState }
                 from "./EleosState"
 import { EleosAsset } 
                 from "./EleosAsset"
-import { EleosAssetOwnerShipTypeId, EleosMaritalStatus, EleosRole } 
+import { EleosMaritalStatus, EleosRole } 
                 from "./EleosDataTypes"
 import { error } from "console"
 import { EleosChildrenStatusValue } 
                 from "./EleosChildrenStatus"
+import { EleosAssetOwnerShipType } from "./EleosAssetOwnerShipType"
 
 /**
  * Eleos encapsulate all the data regarding a will processing wizard, including principals, children, and
@@ -288,17 +289,17 @@ class Eleos {
         }
 
         // must have owner if ownership is SEPERATE Property
-        if (asset.ownership === EleosAssetOwnerShipTypeId.separate && !asset.owner) {
+        if (asset.ownership === EleosAssetOwnerShipType.separate && !asset.owner) {
             return { succeeded: false, error: 'Separate ownership must specify the owner' }
         }
 
         // must not have owner if ownership is not individual
-        if (asset.ownership !== EleosAssetOwnerShipTypeId.separate && asset.owner) {
+        if (asset.ownership !== EleosAssetOwnerShipType.separate && asset.owner) {
             return { succeeded: false, error: 'Thid ownership type must not have owner' }
         }
 
         // owner must be either be principal or spouse
-        if (asset.ownership === EleosAssetOwnerShipTypeId.separate) {
+        if (asset.ownership === EleosAssetOwnerShipType.separate) {
             if (!this.spouse) {
                 return { succeeded: false, error: 'The ownership must have spouse as owner'}
             }

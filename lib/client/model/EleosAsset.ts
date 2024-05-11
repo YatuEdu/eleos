@@ -1,5 +1,3 @@
-import { EleosAssetOwnerShipTypeId,  } 
-                from "./EleosDataTypes";
 import { EleosApiResult } 
                 from "./EleosMisc";
 import EleosPerson 
@@ -8,11 +6,13 @@ import EleosEntity
                 from "./EleosEntity";
 import { EleosPropertyType } 
                 from "./EleosPropertyType";
+import { EleosAssetOwnerShipType } 
+                from "./EleosAssetOwnerShipType";
 
 export class EleosAsset extends EleosEntity {
     private _name: string;
     private _type: EleosPropertyType;
-    private _ownership: EleosAssetOwnerShipTypeId;
+    private _ownership: EleosAssetOwnerShipType;
     private _owner?: EleosPerson;
     private _location?: string;
     private _note?: string;
@@ -21,7 +21,7 @@ export class EleosAsset extends EleosEntity {
                 location: string, 
                 note: string, 
                 type: EleosPropertyType, 
-                ownership: EleosAssetOwnerShipTypeId, 
+                ownership: EleosAssetOwnerShipType, 
                 owner?: EleosPerson) {
         super()
         this._name = name
@@ -66,7 +66,7 @@ export class EleosAsset extends EleosEntity {
         return this._type;
     }
 
-    get ownership(): EleosAssetOwnerShipTypeId {
+    get ownership(): EleosAssetOwnerShipType {
         return this._ownership;
     }
 

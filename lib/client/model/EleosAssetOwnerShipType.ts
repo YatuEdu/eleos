@@ -47,23 +47,23 @@ class EleosAssetOwnerShipTypeHelper {
     }
 
     getlabelValuePairs() : {label: string, value: string} [] {
-        return this.pownershipType.getlabelValuePairs()
+        return this.pownershipType.getLabelValuePairs()
     }
 
     getlabelValuePairsForSingle() : {label: string, value: string} [] {
         return this.pownershipType
-                    .getlabelValuePairs()
+                    .getLabelValuePairs()
                     .filter((pair) => ELEOS_OWNERSHIP_TYPE_LIST_SINGLE.includes(pair.value as EleosAssetOwnerShipType))
     }
 
     getlabelValuePairsForCouples() : {label: string, value: string} [] {
         return this.pownershipType
-                    .getlabelValuePairs()
+                    .getLabelValuePairs()
                     .filter((pair) => ELEOS_OWNERSHIP_TYPE_LIST_MARRIED.includes(pair.value as EleosAssetOwnerShipType))
     }
 
  }
  
- export const ELEOS_ASSET_OWNERSHIP_TYPE_HELPER_OBJ = new EleosAssetOwnerShipTypeHelper()
+ export const EAOT_HELPER = new EleosAssetOwnerShipTypeHelper()
  
  
