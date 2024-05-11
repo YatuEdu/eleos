@@ -3,9 +3,8 @@ import { Label } from "@mui/icons-material";
 type FormatLabel = (value: string, parameter: string) => string
 
 /**
- * This class is used to enhanse the functionality of an Eleos Enum type, when the
- * type is used in a form, such that the values are displayed as a dropdown list or
- * radio buttons.
+ * This class is used to enhanse the functionality of an Eleos Enum type, such as EleosAssetOwnerShipType.
+ * It is useful for converting between the key and value of an enum type.
  */
 class EleosOptionType<T extends Record<string, string>> {
     private enumObject: T;
