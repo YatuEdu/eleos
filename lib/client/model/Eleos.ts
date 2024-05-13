@@ -21,7 +21,8 @@ import { EleosMaritalStatus, EleosRole }
 import { error } from "console"
 import { EleosChildrenStatusValue } 
                 from "./EleosChildrenStatus"
-import { EleosAssetOwnerShipType } from "./EleosAssetOwnerShipType"
+import { EleosAssetOwnerShipType } 
+                from "./EleosAssetOwnerShipType"
 
 /**
  * Eleos encapsulate all the data regarding a will processing wizard, including principals, children, and

@@ -19,8 +19,8 @@ import EleosEntity
 import { Label, Note } from '@mui/icons-material';
 import EleosItemTable 
                 from '../functional/EleosItemTable';
-import { EleosPropertyTypIconAndToolTip, EleosPropertyType } 
-                from '@/lib/client/model/EleosPropertyType';
+import { EleosPropertyTypIconAndToolTip, EleosAssetType} 
+                from '@/lib/client/model/EleosAssetType';
 import HouseIcon 
                 from '@mui/icons-material/House';
 import AccountBalanceIcon 
@@ -65,7 +65,7 @@ const AddAsset: React.FC = () => {
      * @param owner 
      */
     const handleAddAsset = (name: string, location: string, 
-                            note: string, type: EleosPropertyType, 
+                            note: string, type: EleosAssetType, 
                             ownership: EleosAssetOwnerShipType, owner: string | undefined) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
@@ -110,35 +110,35 @@ const AddAsset: React.FC = () => {
         console.log('onDeleteAsset:', name)
     }
 
-    const getIconByAssetType = (type: EleosPropertyType): EleosPropertyTypIconAndToolTip => {
+    const getIconByAssetType = (type: EleosAssetType): EleosPropertyTypIconAndToolTip => {
         // Add a return statement at the end of the function
         switch (type) {
-            case EleosPropertyType.realEstate:
-                return {icon: <HouseIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.realEstate}
+            case EleosAssetType.realEstate:
+                return {icon: <HouseIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosAssetType.realEstate}
 
-            case EleosPropertyType.bankAccount:
-                return {icon: <AccountBalanceIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.bankAccount}
+            case EleosAssetType.bankAccount:
+                return {icon: <AccountBalanceIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosAssetType.bankAccount}
 
-            case EleosPropertyType.investment:
-                return {icon: <TrendingUp style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.investment}
+            case EleosAssetType.investment:
+                return {icon: <TrendingUp style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosAssetType.investment}
 
-            case EleosPropertyType.retirement:
-                return {icon: <BeachAccess style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.retirement}
+            case EleosAssetType.retirement:
+                return {icon: <BeachAccess style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosAssetType.retirement}
 
-            case EleosPropertyType.lifeInsurance:
-                return {icon:<HealthAndSafety style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.lifeInsurance}
+            case EleosAssetType.lifeInsurance:
+                return {icon:<HealthAndSafety style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosAssetType.lifeInsurance}
 
-            case EleosPropertyType.business:
-                return {icon: <BusinessCenter style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosPropertyType.business}
+            case EleosAssetType.business:
+                return {icon: <BusinessCenter style={StaticStypes.TABLE_BK_COLOR}/>, toolTip: EleosAssetType.business}
 
-            case EleosPropertyType.cash:
-                return {icon: <AttachMoney style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.cash}
+            case EleosAssetType.cash:
+                return {icon: <AttachMoney style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosAssetType.cash}
 
-            case EleosPropertyType.vehicles:
-                return {icon: <DirectionsCar style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosPropertyType.vehicles}
+            case EleosAssetType.vehicles:
+                return {icon: <DirectionsCar style={StaticStypes.TABLE_BK_COLOR} />, toolTip: EleosAssetType.vehicles}
 
             default:
-                return {icon: <PlaylistAddCheck style={{ color: '#FFD700' }}/>, toolTip: EleosPropertyType.other}
+                return {icon: <PlaylistAddCheck style={{ color: '#FFD700' }}/>, toolTip: EleosAssetType.other}
         }
     }
 
