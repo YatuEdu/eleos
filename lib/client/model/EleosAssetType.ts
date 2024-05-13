@@ -3,7 +3,7 @@ import EleosOptionType
 
 import React from "react";
 
-export enum EleosPropertyType {
+export enum EleosAssetType {
     realEstate = 'Real Estate',
     bankAccount = 'Bank Account',
     investment = 'Investment account',
@@ -16,7 +16,7 @@ export enum EleosPropertyType {
 }
 
 export interface EleosPropertyTypeWithLabel {
-    value: EleosPropertyType;
+    value: EleosAssetType;
     label: string;
 }
 
@@ -26,10 +26,10 @@ export interface EleosPropertyTypIconAndToolTip {
 }
 
 class EleosPropertyTypeHelper {
-   private propertyType = new EleosOptionType(EleosPropertyType)
+   private propertyType = new EleosOptionType(EleosAssetType)
 
-    get values() : EleosPropertyType[] {
-        return this.propertyType.values as EleosPropertyType[]
+    get values() : EleosAssetType[] {
+        return this.propertyType.values as EleosAssetType[]
     }
 
     get entries() : [string, string][] {

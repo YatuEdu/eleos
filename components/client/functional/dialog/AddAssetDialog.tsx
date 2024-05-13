@@ -23,8 +23,8 @@ import EleosSelect from '../../atoms/EleosSelect';
 import EleosHelpPane from '../EleosHelpPane';
 import { HelpTextId } from '@/lib/client/model/EleosMisc';
 import { set } from 'zod';
-import { EPT_HELPER, EleosPropertyType } 
-                from '@/lib/client/model/EleosPropertyType';
+import { EPT_HELPER, EleosAssetType} 
+                from '@/lib/client/model/EleosAssetType';
 import { EAOT_HELPER, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipType } 
                 from '@/lib/client/model/EleosAssetOwnerShipType';
 
@@ -35,7 +35,7 @@ type AddAssetProps = {
     onSave: (name: string, 
              location: string, 
              note: string, 
-             type: EleosPropertyType, 
+             type: EleosAssetType, 
              ownerShip: EleosAssetOwnerShipType, 
              owner?: string) => void
 };
@@ -105,7 +105,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
 
     const handleSave = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
-        const typeValue = state.type as EleosPropertyType
+        const typeValue = state.type as EleosAssetType
         const ownerShipValue = state.ownerShip as EleosAssetOwnerShipType
     
         if (!typeValue || !ownerShipValue) {        
@@ -150,13 +150,13 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
     }
 
     function setLocationLabel(name: string): string {
-        if (name === EleosPropertyType.bankAccount) {
+        if (name === EleosAssetType.bankAccount) {
             return LOCATION_LABEL_BANK_BRANCH
-        } else if (name === EleosPropertyType.lifeInsurance) {
+        } else if (name === EleosAssetType.lifeInsurance) {
             return LOCATION_LABEL_INS
-        } else if (name === EleosPropertyType.investment  || name === EleosPropertyType.retirement) {
+        } else if (name === EleosAssetType.investment  || name === EleosAssetType.retirement) {
             return LOCATION_LABEL_BROKAGE
-        } else if (name === EleosPropertyType.realEstate) {
+        } else if (name === EleosAssetType.realEstate) {
             return LOCATION_LABEL_LOC
         } else {
             return ''

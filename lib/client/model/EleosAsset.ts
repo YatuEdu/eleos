@@ -1,26 +1,24 @@
-import { EleosApiResult } 
-                from "./EleosMisc";
 import EleosPerson 
                 from "./EleosPerson";
 import EleosEntity 
                 from "./EleosEntity";
-import { EleosPropertyType } 
-                from "./EleosPropertyType";
+import { EleosAssetType} 
+                from "./EleosAssetType";
 import { EleosAssetOwnerShipType } 
                 from "./EleosAssetOwnerShipType";
 
 export class EleosAsset extends EleosEntity {
-    private _name: string;
-    private _type: EleosPropertyType;
-    private _ownership: EleosAssetOwnerShipType;
-    private _owner?: EleosPerson;
-    private _location?: string;
-    private _note?: string;
+    protected _name: string;
+    protected _type: EleosAssetType;
+    protected _ownership: EleosAssetOwnerShipType;
+    protected _owner?: EleosPerson;
+    protected _location?: string;
+    protected _note?: string;
 
     constructor(name: string, 
                 location: string, 
                 note: string, 
-                type: EleosPropertyType, 
+                type: EleosAssetType, 
                 ownership: EleosAssetOwnerShipType, 
                 owner?: EleosPerson) {
         super()
@@ -62,7 +60,7 @@ export class EleosAsset extends EleosEntity {
         return this._name;
     }
 
-    get type(): EleosPropertyType {
+    get type(): EleosAssetType{
         return this._type;
     }
 
