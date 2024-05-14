@@ -24,6 +24,7 @@ import { EleosChildrenStatusValue }
 import { EleosAssetOwnerShipType } 
                 from "./EleosAssetOwnerShipType"
 
+
 /**
  * Eleos encapsulate all the data regarding a will processing wizard, including principals, children, and
  * other people related to this will
@@ -71,9 +72,25 @@ class Eleos {
                 this._steps.push(WizardStep.ADD_ASSET)
                 break
             case WizardStep.ADD_ASSET:
-                this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS)
+                if (this.assetsSurvidedByPrincipal.length > 0) {
+                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES)
+                } else if (this.assetsSurvidedBySpouse.length > 0) {
+                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES)
+                } else {
+                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
+                }
                 break
-            case WizardStep.ASSET_DISTRIBUTION_QUESTIONS:
+            case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES:
+                if (this.assetsSurvidedBySpouse.length > 0) {
+                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES)
+                } else {
+                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
+                }
+                break
+            case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES:
+                this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
+                break
+            case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO:
                 this._steps.push(WizardStep.MARRIED_PACKAGE)
                 break
             case WizardStep.MARRIED_PACKAGE:
@@ -123,6 +140,17 @@ class Eleos {
 
     get assets() { return this._assets}
 
+    get assetsSurvidedBySpouse() { 
+        return this._assets.filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
+                                  (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.spouse)
+        )
+    }  
+
+    get assetsSurvidedByPrincipal() { 
+        return this._assets.filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
+               (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.principal))
+    }
+    
     deleteOnePersonByRole(role: EleosRole): EleosPerson | undefined {
         const foundPerson = Array.from(this._people.values()).find(p => p.roles.includes(role))
         if (foundPerson) {

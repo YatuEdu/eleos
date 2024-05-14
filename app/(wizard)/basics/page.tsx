@@ -5,7 +5,9 @@ import EleosHelpPane from '@/components/client/functional/EleosHelpPane';
 import AddAsset from '@/components/client/wizard/AddAsset';
 import AddChildren 
                 from '@/components/client/wizard/AddChildren';
+import AssetDistributionIfBothGoes from '@/components/client/wizard/AssetDistributionIfBothGo';
 import AssetDistributionIfPrincipalGoes from '@/components/client/wizard/AssetDistributionIfPrincipalGoes';
+import AssetDistributionIfSpouseGoes from '@/components/client/wizard/AssetDistributionIfSpouseGoes';
 import AssetDistributionQuestion 
                 from '@/components/client/wizard/AssetDistributionQuestion';
 import BasicInfo 
@@ -53,9 +55,15 @@ export default function Page() {
                      { (currentStep === WizardStep.ADD_ASSET) && (
                         <EleosWizardParent leftChild={<AddAsset />} rightChild={<div><p>will add asset help text here</p></div>} />
                     ) }
-                    { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS) && (
+                    { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES) && (
                         <EleosWizardParent leftChild={<AssetDistributionIfPrincipalGoes />} rightChild={<div><p>will add help text here</p></div>} />
                     ) }
+                    { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES) && (
+                        <EleosWizardParent leftChild={<AssetDistributionIfSpouseGoes />} rightChild={<div><p>will add help text here</p></div>} />
+                    )}
+                    { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO) && (
+                        <EleosWizardParent leftChild={<AssetDistributionIfBothGoes />} rightChild={<div><p>will add help text here</p></div>} />
+                    )}
                     { (currentStep === WizardStep.MARRIED_PACKAGE) && (
                         <EleosWizardParent leftChild={<MarriedPackage />} rightChild={<div><p>will add help text here</p></div>} />
                     )}

@@ -29,7 +29,7 @@ class AssetDistribution {
         this.distributions[index].percentage = percentage;
         const total = this.totalPercentage();
         if (total + percentage > 100) {
-            throw new Error('Total percentage exceeds 100%');
+           console.log('Total percentage exceeds 100%');
         }
     }
 

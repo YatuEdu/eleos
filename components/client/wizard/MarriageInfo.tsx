@@ -162,7 +162,6 @@ const MarriageInfo: React.FC = () => {
                 />     
             </div>
             }
-
             <EleosWizardButtonLayout leftChild={
                 <EleosButton
                     type='wizard'

@@ -45,11 +45,15 @@ export class EleosAsset extends EleosEntity {
     }
 
     get display(): string {
-        return `${this._name}: type=${this._type} 
-                ownership=${this._ownership} 
-                owner=${this._owner?.display} 
-                location=${this._location} 
-                note=${this._note}`
+        if (this._type === EleosAssetType.realEstate) {
+            return `The property '${this._name}' ${this._location ? `located at ${this._location}` : ''}`
+        }
+
+        if (this._type === EleosAssetType.bankAccount) {
+            return `The bank account '${this._name}' ${this._location ? `in ${this._location}` : ''}`
+        }
+
+        return `The ${this._type} '${this._name}' ${this._location ? `located at ${this._location}` : ''}`
      }
 
     /**

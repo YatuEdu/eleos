@@ -12,7 +12,7 @@ export const allEleosStates: EleosState[] = [
         code: 'AL',
         country: 'us',
         name: 'Alabama',
-        isCommSate: true
+        isCommSate: false
     },
     {
         id: 3,
@@ -35,7 +35,7 @@ export const allEleosStates: EleosState[] = [
         code: 'GA',
         country: 'us',
         name: 'Georgia',
-        isCommSate: true
+        isCommSate: false
     },
     {
        
@@ -43,7 +43,7 @@ export const allEleosStates: EleosState[] = [
         code: 'NY',
         country: 'us',
         name: 'New York',
-        isCommSate: true
+        isCommSate: false
     },
     {
        
