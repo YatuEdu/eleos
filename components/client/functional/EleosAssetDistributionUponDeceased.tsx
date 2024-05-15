@@ -8,14 +8,19 @@ import { useElos }
                 from '@/lib/providers/EleosAppProvider';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-import Eleos from '@/lib/client/model/Eleos';
-import { EleosAssetType } from '@/lib/client/model/EleosAssetType';
-import EleosPerson from '@/lib/client/model/EleosPerson';
-import RadioButtonGroup from '../atoms/EleosRadioGroup';
-import { AssetDistributionMethods } from '@/lib/client/model/AssetDistribution';
-import AssetDistributionForm from '../functional/AssetDistributionForm';
-import { EleosAsset } from '@/lib/client/model/EleosAsset';
-import EleosLabel from '../atoms/EleosLabel';
+
+import EleosPerson 
+                from '@/lib/client/model/EleosPerson';
+import RadioButtonGroup 
+                from '../atoms/EleosRadioGroup';
+import { AssetDistributionMethods } 
+                from '@/lib/client/model/AssetDistribution';
+import AssetDistributionForm 
+                from '../functional/AssetDistributionForm';
+import { EleosAsset } 
+                from '@/lib/client/model/EleosAsset';
+import EleosLabel 
+                from '../atoms/EleosLabel';
 
 interface AssetDistributionConfig {
     deceased: EleosPerson;
