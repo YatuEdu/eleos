@@ -72,9 +72,6 @@ class Eleos {
                 this._steps.push(WizardStep.ADD_ASSET)
                 break
             case WizardStep.ADD_ASSET:
-                if (this.marritalStatus === EleosMaritalStatus.single) {
-                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES)
-                } else
                 if (this.assetsSurvidedByPrincipal.length > 0) {
                     this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES)
                 } else if (this.assetsSurvidedBySpouse.length > 0) {
