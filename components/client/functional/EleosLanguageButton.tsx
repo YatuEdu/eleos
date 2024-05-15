@@ -24,7 +24,7 @@ const EleosLanguageButton: React.FC<EleosLanguageProps> = ( {language, setLangua
     };
 
     return (
-        <IconButton onClick={toggleLanguage} color="primary" aria-label="switch language" style={{ color: 'white' }}>
+        <IconButton onClick={toggleLanguage} color="primary" aria-label="switch language" style={{ color: 'green' }}>
             <TranslateIcon />
             {currentLang === Language.En ? 'EN' : '中'}
         </IconButton>

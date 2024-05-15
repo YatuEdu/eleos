@@ -9,7 +9,7 @@ function LoginButton() {
     return (
         <Button
             variant="contained"
-            color="primary"
+            className="bg-green-500"
             startIcon={<AccountCircle />}
         >
             Sign In

@@ -38,7 +38,7 @@ export default function Page() {
 
     return (
         <>
-            <Card className="p-4 mt-4" style={{ backgroundColor: '#36454F', color: '#FFD700', width: '80%', height: 'auto', overflow: 'auto'}}>
+            <Card className="p-4 mt-4 bg-white text-black" style={{  width: '80%', height: 'auto', overflow: 'auto'}}>
                 <div>
                     { (currentStep === WizardStep.BASIC_INFO) && (
                         <EleosWizardParent leftChild={<BasicInfo />} rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.EmailUsage]}/>} />

@@ -158,7 +158,7 @@ const AddChildren: React.FC = () => {
                     direction='row'
                 />
             </div>
-            <div className="flex items-left ml-4">
+            <div className="flex items-left ml-2">
                 {childrenStatus === EleosChildrenStatusValue.hasChildren && (
                     <>
                     <AddPersonModal 

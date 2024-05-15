@@ -14,6 +14,11 @@ export enum AssetDistributionTiming {
     uponBothDeath = 'upon both death',
 }
 
+export enum AssetDistributionMethods {
+    allToSpouse = 'allToSpouse',
+    amongOtherHeirs = 'amongOtherHeirs',
+}
+
 class AssetDistribution {
     private distributions: AssetDistributionUnit[] = [];
 

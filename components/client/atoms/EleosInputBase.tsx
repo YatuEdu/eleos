@@ -53,7 +53,7 @@ const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     return (
         <div >
             <input
-                className={`border ${!isValid ? 'border-red-500' : 'border-black'} rounded-md text-black p-1 w-full `  + props.className}
+                className={`bg-light-gray border border-gray-300 p-2 shadow-3d focus:bg-darker-gray focus:shadow-3d-focus focus:outline-none transition-colors duration-300 w-full `  + props.className}
                 type="text"
                 value={value}
                 onChange={handleChange}

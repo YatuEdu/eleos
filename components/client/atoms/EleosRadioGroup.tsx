@@ -69,9 +69,9 @@ function RadioButtonGroup({ title, options, value, onChange, direction }: RadioB
                         key={option.value}
                         value={option.value}
                         control={<Radio   
-                            icon={<RadioButtonUncheckedIcon />} // default icon
+                            icon={<RadioButtonUncheckedIcon sx={{ color: 'black' }} />} // default icon
                             checkedIcon={<CheckIcon />} // icon when checked
-                            sx={{ color: 'white', '&.Mui-checked': { color: 'white' } }}
+                            sx={{ color: 'black', '&.Mui-checked': { color: 'green' } }}
                         />} 
                         label={option.label}
                         sx={{ whiteSpace: 'pre-line' }} // Add this line to allow carriage return

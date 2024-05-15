@@ -18,12 +18,12 @@ const StyledTitleBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #36454F; /* Ocean blue background */
+  background-color: white; /* Ocean blue background */
   padding: 4px 4px;
 `;
 
 const Logo = styled.img`
-  height: 156px;
+  height: 99px;
   width: auto;
 `;
 
@@ -37,7 +37,7 @@ const LoginButton2 = styled.button`
   outline: none;
 
   &:hover {
-    background-color: #e0e0e0; /* Light grey background on hover */
+    background-color: white; /* Light grey background on hover */
   }
 `;
 
