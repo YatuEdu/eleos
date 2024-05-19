@@ -31,6 +31,8 @@ import RadioButtonGroup from
                 '../atoms/EleosRadioGroup';
 import EleosChildrenStatus, { EleosChildrenStatusValue } 
                 from '@/lib/client/model/EleosChildrenStatus';
+import { EleosRelationshipType } from '@/lib/client/model/EleosRelationshipType';
+import { EleosRole } from '@/lib/client/model/EleosDataTypes';
 
 const AddChildren: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -48,27 +50,26 @@ const AddChildren: React.FC = () => {
     const title = ref.current.title
     const childrenOptions = EleosChildrenStatus.childrenStatusLabeledValues(title)
 
-    const onAddChild = (firstName: string, midName: string, lastName: string, suffix: string, birthYear?: string) => {
+    const onAddChild = (person: EleosPerson) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
         }
 
-        if (!birthYear) {
-            alert('Please enter the birth year')
-            return;
+        let newChild = null
+        if (person instanceof EleosChild) {
+            newChild = person as EleosChild
+        } else {
+            throw new Error('Not a child object')
         }
-
-        const birthYearInt = parseInt(birthYear)
 
         // make sure that the birth year is valid
         const currentYear = new Date().getFullYear()
-        if (currentYear - birthYearInt < 0 || currentYear - birthYearInt > IntegerConst.MAX_AGE) {
+        if (currentYear - newChild.getBirthYear() < 0 || currentYear - newChild.getBirthYear() > IntegerConst.MAX_AGE) {
             alert('Invalid birth year')
             return;
         }
 
         // make sure the child has a unique name
-        const newChild = new EleosChild(firstName,  midName, lastName, suffix, birthYearInt);
         if (ref.current.checkPersonExists(newChild)) {
             alert('The child share the same name with someone else. You can append sr or jr to the name is the first name and last name are the same')
             return;
@@ -163,7 +164,9 @@ const AddChildren: React.FC = () => {
                     <>
                     <AddPersonModal 
                         buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
+                        role={EleosRole.child}
                         needDob={true} 
+                        existingPeople={[]}
                         onSave={onAddChild} />
                 
                     </>

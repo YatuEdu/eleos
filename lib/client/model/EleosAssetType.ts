@@ -1,7 +1,7 @@
 import EleosOptionType 
                 from "./EleosOptionType";
-
-import React from "react";
+import React 
+                from "react";
 
 export enum EleosAssetType {
     realEstate = 'Real Estate',

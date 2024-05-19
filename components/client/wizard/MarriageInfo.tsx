@@ -17,6 +17,7 @@ import FormControlLabel
 import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
 import RadioButtonGroup from '../atoms/EleosRadioGroup';
 import { EleosMaritalStatus, EleosRole } from '@/lib/client/model/EleosDataTypes';
+import { EleosRelationshipType } from '@/lib/client/model/EleosRelationshipType';
 
 const RADIO_GROUP_TITLE = '';
 const maritalOptions = [
@@ -110,7 +111,9 @@ const MarriageInfo: React.FC = () => {
         if (maritalSatus !== EleosMaritalStatus.married) {
             ref.current.setSpouse(null, maritalSatus)
         } else {
-            const newSpouse = new EleosPerson(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix, EleosRole.spouse)
+            const newSpouse = new EleosPerson(  spouseFirstName, sposeMiddleName, 
+                                                sposeLastName, spouseSuffix, 
+                                                EleosRelationshipType.spouse, EleosRole.spouse)
             if (spouse) {
                 if (spouse.display !== newSpouse.display) {
                     // spouse name changed (usually the case when the user changes the name of the spouse)

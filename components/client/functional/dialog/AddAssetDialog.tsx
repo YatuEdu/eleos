@@ -37,6 +37,7 @@ type AddAssetProps = {
              note: string, 
              type: EleosAssetType, 
              ownerShip: EleosAssetOwnerShipType, 
+             principalPercentage?: number,
              owner?: string) => void
 };
 
@@ -51,6 +52,7 @@ type AddAssetState = {
     invalidName?: string,
     invalidOwner?: string,
     ownerShip: string,
+    principalPercentage?: number,
     owner?: string,
     valid: boolean
 }
@@ -65,6 +67,7 @@ const NAME_LOCATION = 'location'
 const NAME_NOTE = 'note'
 const NAME_TYPE = 'type'
 const NAME_OWNERSHIP = 'ownership'
+const NAME_PRINCIPAL_PCT = 'principal_pct'
 const NAME_OWNER = 'owner'
 const NAME_RESET = 'reset'
 const LOCATION_LABEL_LOC = 'Location'
@@ -83,6 +86,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         invalidOwner: '',
         location: '',
         locationLabel: '',
+        principalPercentage: 50,
         note: '',
         owner: undefined,
         valid: false
@@ -114,7 +118,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
             return
         }
 
-        onSave(state.name, state.location, state.note, typeValue, ownerShipValue, state.owner)
+        onSave(state.name, state.location, state.note, typeValue, ownerShipValue, state.principalPercentage, state.owner, )
         setOpen(false);
     }
 
@@ -135,6 +139,9 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                 break
             case NAME_OWNERSHIP:
                 newState = { ...state, ownerShip: action.value }
+                break
+            case NAME_PRINCIPAL_PCT:
+                newState = { ...state, principalPercentage: +action.value }
                 break
             case NAME_OWNER:
                 newState = { ...state, owner: action.value }    
@@ -212,26 +219,38 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                     onClose={handleClose} 
                     PaperProps={{
                         style: {
-                            backgroundColor: '#3B6978', 
-                            color: '#FFD700',
-                            width: '600px', // Set the width of the dialog
+                            backgroundColor: 'white', 
+                            color: 'black',
+                            width: '60%', // Set the width of the dialog
                             height: 'auto', // Set the height of the dialog
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between'
                         }
                     }} >
-                <DialogTitle>Add an asset</DialogTitle>
+                <DialogTitle sx={{ backgroundColor: '#d3d3d3', marginBottom: '8px'}}>Add an asset</DialogTitle>
                 <DialogContent className='grid grid-cols-12 gap-2 pr-3'>
                     <div className='col-span-7'>
                         <EleosLabel text="Type" invalidMessage={state.invalidType} />
                         <EleosSelect name={NAME_TYPE} options={EPT_HELPER.getlabelValuePairs()}
-                                    onChange={(selectedOption) => dispatch({type: NAME_TYPE, value: selectedOption ? selectedOption.value: ''})} 
+                                    onChange={(selectedOption) => 
+                                        dispatch({type: NAME_TYPE, value: selectedOption ? selectedOption.value: ''})} 
                                     value={{label: state.type, value: state.type}} />
                         <EleosLabel text="Ownership" invalidMessage={state.invalidOwnership}/>
                         <EleosSelect name={NAME_OWNERSHIP} options={ownerShipTypeLabelValuePairs}
                                     onChange={(selectedOption) => dispatch({type: NAME_OWNERSHIP, value: selectedOption ? selectedOption.value: ''})} 
                                     value={{label: state.ownerShip, value: state.ownerShip}} />
+                         {state.ownerShip === EleosAssetOwnerShipType.joint && 
+                            <div>
+                                <EleosLabel text={`Percentage by ${principal}`} />
+                                <EleosInputBase 
+                                    value={state.principalPercentage ? state.principalPercentage+'' : '50'} 
+                                    mustHave={true} 
+                                    name={NAME_PRINCIPAL_PCT} 
+                                    onTextEntered={(value, vliadCode) => dispatch({type: NAME_PRINCIPAL_PCT, value: value}) } 
+                                />
+                            </div>
+                        }
                         {state.ownerShip === EleosAssetOwnerShipType.separate && <>
                             <EleosLabel text="Owner" invalidMessage={state.invalidOwner}/>
                             <EleosSelect name={NAME_OWNER} options={[principal, spouse].map((name) => { return { value: name ? name :  'NA', label: name ? name :  'NA' } })}

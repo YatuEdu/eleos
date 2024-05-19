@@ -2,7 +2,7 @@ export enum EleosRole {
     principal = 0,
     spouse = 1,
     child = 2, 
-    otherBenificiary = 3,
+    other_benificiary = 3,
     exSpouse = 4,
     executor = 5,
     child_guardian = 6, 
@@ -17,5 +17,11 @@ export enum EleosMaritalStatus {
     single = 'Single',
     divorced = 'Divorced',
     widowed = 'Widowed',
+}
+
+export enum AssetDistributionTiming {
+    principalDiceased,
+    spouseDeceased,
+    bothDecesed
 }
 

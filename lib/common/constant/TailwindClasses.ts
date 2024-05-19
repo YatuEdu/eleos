@@ -11,17 +11,17 @@ function dynamicTemplate<T extends TemplateData>(strings: TemplateStringsArray, 
 }
 
 // Eleos Button Class template
-const btnClassTemplate = dynamicTemplate<{bgColor: string; hoverBgColor:string, txtColor: string, }>
-`py-1 px-3 mt-2 bg-${'bgColor'} text-${'txtColor'} rounded hover:bg-${'hoverBgColor'} transition-colors`;
+const btnClassTemplate = dynamicTemplate<{bgColor: string; hoverBgColor:string, txtColor: string, extra: string }>
+`py-1 px-3 mt-2 bg-${'bgColor'} text-${'txtColor'} rounded hover:bg-${'hoverBgColor'} transition-colors ${'extra'}`;
 
 // Disabled Eleos Button Class template
-const btnClassDiaabledTemplate = dynamicTemplate<{bgColor: string; txtColor: string }>
-`py-1 px-3 mt-2 bg-${'bgColor'} text-${'txtColor'} rounded cursor-not-allowed transition-colors`;
+const btnClassDiaabledTemplate = dynamicTemplate<{bgColor: string; txtColor: string, extra: string}>
+`py-1 px-3 mt-2 bg-${'bgColor'} text-${'txtColor'} rounded cursor-not-allowed transition-colors ${'extra'}`;
 
 // wizard button
-export const BUTTON_CLASS_GREEN = btnClassTemplate({ bgColor: 'green-600', hoverBgColor: 'green-700', txtColor: 'white', });
+export const BUTTON_CLASS_GREEN = btnClassTemplate({ bgColor: 'green-600', hoverBgColor: 'green-700', txtColor: 'white', extra: 'mt-1 mr-2 ml-2 mb-2'});
 // disabled wizard button
-export const BUTTON_CLASS_DISABLED = btnClassDiaabledTemplate({ bgColor: 'pink-200', txtColor: 'white',});
+export const BUTTON_CLASS_DISABLED = btnClassDiaabledTemplate({ bgColor: 'pink-200', txtColor: 'white', extra: 'mt-1 mr-2 ml-2 mb-2'});
 // mixed button
-export const BUTTON_CLASS_BLUE = btnClassTemplate({ bgColor: 'blue-600', hoverBgColor: 'blue-700', txtColor: 'white', });
+export const BUTTON_CLASS_BLUE = btnClassTemplate({ bgColor: 'blue-600', hoverBgColor: 'blue-700', txtColor: 'white', extra: ''});
 

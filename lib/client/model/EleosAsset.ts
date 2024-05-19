@@ -6,26 +6,37 @@ import { EleosAssetType}
                 from "./EleosAssetType";
 import { EleosAssetOwnerShipType } 
                 from "./EleosAssetOwnerShipType";
+import AssetDistribution from "./AssetDistribution";
+import { AssetDistributionTiming } from "./EleosDataTypes";
+
+interface Distribution {
+    [key: number]: AssetDistribution; // Maps heir ID to their percentage
+}
+
 
 export class EleosAsset extends EleosEntity {
     protected _name: string;
     protected _type: EleosAssetType;
     protected _ownership: EleosAssetOwnerShipType;
+    protected _principalPercentage
     protected _owner?: EleosPerson;
     protected _location?: string;
     protected _note?: string;
+    protected _assetDistribution: Distribution = {} 
 
     constructor(name: string, 
                 location: string, 
                 note: string, 
                 type: EleosAssetType, 
-                ownership: EleosAssetOwnerShipType, 
+                ownership: EleosAssetOwnerShipType,
+                principalPercentage?: number,
                 owner?: EleosPerson) {
         super()
         this._name = name
         this._type = type
         this._ownership = ownership
         this._owner = owner
+        this._principalPercentage = principalPercentage
         this._location = location
         this._note = note
     }
@@ -39,6 +50,15 @@ export class EleosAsset extends EleosEntity {
                this._note === asset._note &&
                this._ownership === asset._ownership
     }
+
+    distribut(timing: AssetDistributionTiming, distribute: AssetDistribution) {
+        delete this._assetDistribution[timing]
+        this._assetDistribution[timing] = distribute
+    }
+
+    /**
+     * getters
+     */
 
     get id(): string {
         return this._name
@@ -70,6 +90,14 @@ export class EleosAsset extends EleosEntity {
 
     get ownership(): EleosAssetOwnerShipType {
         return this._ownership;
+    }
+
+    get principalPercentage() : number | undefined {
+        return this._principalPercentage
+    }
+
+    get spousePercentage() : number | undefined {
+        return this._principalPercentage ? 100 - this._principalPercentage : undefined
     }
 
     get owner(): EleosPerson | undefined {

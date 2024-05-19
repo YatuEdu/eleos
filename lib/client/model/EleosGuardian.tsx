@@ -1,25 +1,28 @@
-import { EleosRole } from './EleosDataTypes';
+import { EleosRole } 
+                from './EleosDataTypes';
 import EleosPerson 
                 from './EleosPerson';
+import { EleosRelationshipType } 
+                from './EleosRelationshipType';
 
 class EleosGuardian extends EleosPerson {
-    private _email: string;
+  
     private _order: number;
 
     constructor(firstName: string, 
         middleName: string,
         lastName: string,
         suffix: string,
+        relationship: EleosRelationshipType,
         email: string, order: number) {
-        super(firstName, middleName, lastName, suffix, EleosRole.child_guardian);
-        this._email = email;
+        super(firstName, middleName, lastName, suffix, relationship, EleosRole.child_guardian);
+        super.email = email;
         this._order = order;
     }
 
     /**
      * getters
      */
-    get email() { return this._email; }
 
     get order() { return this._order; } 
 

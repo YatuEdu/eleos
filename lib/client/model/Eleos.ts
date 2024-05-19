@@ -23,6 +23,7 @@ import { EleosChildrenStatusValue }
                 from "./EleosChildrenStatus"
 import { EleosAssetOwnerShipType } 
                 from "./EleosAssetOwnerShipType"
+import { EleosAssetType } from "./EleosAssetType"
 
 
 /**
@@ -83,8 +84,10 @@ class Eleos {
             case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES:
                 if (this.assetsSurvidedBySpouse.length > 0) {
                     this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES)
-                } else {
+                } else if (this._marritalStatus === EleosMaritalStatus.married) {
                     this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
+                } else {
+                    this._steps.push(WizardStep.MARRIED_PACKAGE)
                 }
                 break
             case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES:
@@ -121,7 +124,9 @@ class Eleos {
     get title() { return this._marritalStatus === EleosMaritalStatus.single ? 'I' : 'We'}
 
     get possessivePronouns() { return this._marritalStatus === EleosMaritalStatus.single ? 'My' : 'Our'}
-    
+
+    get they() { return `${this.principal.display}` + (this.spouse ? ` and ${this.spouse.display}`: '')}
+
     get spouse(): EleosPerson | undefined { return this.findOnePersonByRole(EleosRole.spouse)}
 
     get people() { return this._people}
@@ -130,7 +135,21 @@ class Eleos {
 
     set childrenStatus(status: EleosChildrenStatusValue) { this._childrenStatus = status}
 
-    get children() {return  this.findPeopleByRole(EleosRole.child) as EleosChild[]  }
+    get children() {return this.findPeopleByRole(EleosRole.child) as EleosChild[]  }
+
+    get potentialGuardians() {
+        return Array.from(this._people.values()).filter(p => {
+            if (p.isChild) {
+                return (p as EleosChild).isMinor === false && !p.isGuardian
+            } else {
+                return !p.isGuardian && !p.isPrincipal && !p.isSpouse 
+            }
+        })
+    }
+
+    get adultChildren(): EleosChild[] {
+        return this.children.filter(c => !c.isMinor) as EleosChild[]
+    }
 
     get minors(): EleosChild[] {
         return this.children.filter(c => c.isMinor) as EleosChild[]
@@ -140,16 +159,29 @@ class Eleos {
 
     get assets() { return this._assets}
 
+    /**
+     * The following assets that need to be distributed if the principal or spouse id deceased
+     */
+    get assetsNeedDistribution() {
+        return this._assets.filter(asset => 
+            asset.type !== EleosAssetType.lifeInsurance && 
+            asset.type !== EleosAssetType.investment &&
+            asset.ownership !== EleosAssetOwnerShipType.prenuptial &&
+            asset.ownership !== EleosAssetOwnerShipType.trust
+           )
+        }
+
     get assetsSurvidedBySpouse() { 
-        return this._assets.filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
-                                  (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.spouse)
-        )
+        return this.assetsNeedDistribution
+                    .filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
+                                (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.spouse))
     }  
 
     get assetsSurvidedByPrincipal() { 
-        return this._assets.filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
-                                  (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.principal) ||
-                                  (a.ownership === EleosAssetOwnerShipType.individualForSingle))
+        return this.assetsNeedDistribution
+                    .filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
+                                (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.principal) ||
+                                (a.ownership === EleosAssetOwnerShipType.individualForSingle))
     }
     
     deleteOnePersonByRole(role: EleosRole): EleosPerson | undefined {
@@ -283,13 +315,22 @@ class Eleos {
             return {succeeded: false, error: 'Need to have at least a minor child to have guardians'}
         }  
         
-        // make sure that none of the guardian is princal himself
+        // make sure that none of the guardian is princal or spouse himself
         guardians.forEach(g => {
             const existingPerson = this.people.get(g.display)
-            if (existingPerson && (existingPerson.isPrincipal || 
-                existingPerson.isSpouse || existingPerson.isChild)) {                     
-                return {succeeded: false, error: 'Guardian cannot be the principal or the spouse'}
+            if (existingPerson ) {
+                if (existingPerson.isPrincipal || existingPerson.isSpouse) {                     
+                    return {succeeded: false, error: 'Guardian cannot be the principal or the spouse'}
+                } else if (existingPerson.isChild && (existingPerson as EleosChild).isMinor) {
+                    return {succeeded: false, error: 'Guardian cannot be minors'}
+                } else {
+                    existingPerson.email = g.email
+                    existingPerson.addRole(EleosRole.child_guardian)
+                }
             } else {
+                if (!(g instanceof EleosGuardian)) {
+                    return {succeeded: false, error: 'Guardian instance expexcted'}
+                }
                 this.people.set(g.display, g)
             }
         })

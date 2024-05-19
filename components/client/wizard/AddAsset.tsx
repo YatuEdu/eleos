@@ -66,14 +66,16 @@ const AddAsset: React.FC = () => {
      */
     const handleAddAsset = (name: string, location: string, 
                             note: string, type: EleosAssetType, 
-                            ownership: EleosAssetOwnerShipType, owner: string | undefined) => {
+                            ownership: EleosAssetOwnerShipType, 
+                            principalPercentage?: number,
+                            owner?: string | undefined) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
         }
     
         // Attempt to find the owner and add the asset to Eleos
         let ownerFound: EleosPerson|undefined = owner ? ref.current.getPrincipalOrSpouseByName(owner) : undefined
-        const asset = new EleosAsset(name, location, note, type, ownership, ownerFound)
+        const asset = new EleosAsset(name, location, note, type, ownership, principalPercentage, ownerFound)
         const result = ref.current.addEleosAsset(asset)
         if (result.succeeded) {
             setAssetList([...ref.current.assets])
@@ -185,7 +187,6 @@ const AddAsset: React.FC = () => {
                 leftChild={
                     <EleosButton
                         type='wizard'
-                        className="mr-1 mt-2 ml-2"
                         disabled={false}
                         text=" < Back"
                         onClick={onPrev}
@@ -196,7 +197,6 @@ const AddAsset: React.FC = () => {
                 rightChild={
                     <EleosButton
                         type='wizard'
-                        className="mt-2 mr-2"
                         disabled={false}
                         text="Save and Continue >"
                         onClick={onNext}

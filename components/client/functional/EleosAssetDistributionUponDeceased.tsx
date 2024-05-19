@@ -13,7 +13,7 @@ import EleosPerson
                 from '@/lib/client/model/EleosPerson';
 import RadioButtonGroup 
                 from '../atoms/EleosRadioGroup';
-import { AssetDistributionMethods } 
+import AssetDistribution, { AssetDistributionMethods } 
                 from '@/lib/client/model/AssetDistribution';
 import AssetDistributionForm 
                 from '../functional/AssetDistributionForm';
@@ -21,12 +21,18 @@ import { EleosAsset }
                 from '@/lib/client/model/EleosAsset';
 import EleosLabel 
                 from '../atoms/EleosLabel';
+import { AssetDistributionTiming } from '@/lib/client/model/EleosDataTypes';
+import { undefined } from 'zod';
 
 interface AssetDistributionConfig {
-    deceased: EleosPerson;
+    deceased: EleosPerson | null;
     survived: EleosPerson | null;
     assets: EleosAsset[];
     isCommunityState: boolean;
+}
+
+interface Distribution {
+    [key: string]: AssetDistribution; // Maps heir ID to their percentage
 }
 
 const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({deceased, survived, assets,isCommunityState}) => {
@@ -39,15 +45,36 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
     }
     const {setStep} = useWizard()
     const [valid, setValid] = useState(true)
-    const [distribution, setDistribution] = useState<string>('');
-    const [heirs, setHeirs] = useState<EleosPerson[]>(ref.current.children)
-    const [showAddHeirs, setShowAddHeirs] = useState<boolean>(false);
+    //const [distribution, setDistribution] = useState<string>('');
+    const [heirs, setHeirs] = useState<EleosPerson[]>(!survived ? ref.current.children : [...ref.current.children, survived])
+    const [showAddHeirs, setShowAddHeirs] = useState<boolean>(survived === null);
     const [percentage, setPercentage] = useState<number>(100);
     const [assetDistributionMethods, setAssetDistributionMethods] = useState<string>('');
-    const isCommunityProperty = ref.current.principal.residenceState.isCommSate
-    let title = survived ? `If ${deceased.display} is deseased and is survived by ${survived.display}, how is ${deceased.display}'s portion of the family assets distributed?` :
-        `If ${deceased.display} is deseased, how is ${deceased.display}'s portion of the family assets distributed?`
+    const [assetDistributionMap, setAssetDistributionMap] = useState(assets.map((a) => ({ key: a.name, value: undefined })))
+    const [distribution, setDistribution] = useState<Distribution>({})
+    const isCommunityProperty = ref.current.principal.residenceState.isCommSate;
+    const assetFinalDistributions = assets.map((a) => ({ key: a.name, value: undefined }));
 
+    // if deceased is null, it means both are deceased
+    // if survived is null, it means the deceased is unmarried
+    let title = null;
+    let timing: AssetDistributionTiming = AssetDistributionTiming.bothDecesed;
+    if (deceased === null) {
+        title = `Asset Distribution plan if ${ref.current.they} both are deceased`
+    } else if (survived) {
+        if (deceased === ref.current.principal) {
+            timing = AssetDistributionTiming.principalDiceased
+        } else {
+            timing = AssetDistributionTiming.spouseDeceased
+        }
+        title = `If ${deceased.display} is deseased and is survived by ${survived.display}, how is ${deceased.display}'s portion of the family assets distributed?`
+    } else {
+        title = `If ${deceased.display} is deseased, how is ${deceased.display}'s portion of the family assets distributed?`
+    }
+
+    const setAssetDistribution = (asset: EleosAsset, dist: AssetDistribution) => {
+        setDistribution({...distribution, [asset.name]: dist})
+    }
 
     const handleDistributionNethodChange = (value: string) => {
         setAssetDistributionMethods(value)
@@ -59,7 +86,7 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
     }
    
     const distributionOptions = [
-        { label: `All to ${ref.current.principal.display}`, value: AssetDistributionMethods.allToSpouse },
+        { label: `All to ${survived?.display}`, value: AssetDistributionMethods.allToSpouse },
         { label: 'Among other heirs', value: AssetDistributionMethods.amongOtherHeirs }
     ]
 
@@ -70,6 +97,7 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
         if (!ref || !ref.current)  {
             throw Error('Eleos is not initialized')  
         }
+
         // go back to the previous step
         const step = ref.current.prevStep()
         setStep(step)
@@ -80,6 +108,13 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
             throw Error('Eleos is not initialized')  
         }
 
+        // set asset distribution for each asset
+        for (const entry of Object.entries(distribution)) {
+            if (entry[1].totalPercentage() !== 100) {
+                alert('not 100 pct')
+                return
+            }
+        }
          // move to the next step
          const step = ref.current.nextStep()
          setStep(step)
@@ -102,7 +137,6 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
 
             {showAddHeirs && (
                 <div>
-                    <EleosLabel text='Select heirs to add:' />
                     {heirs.length > 0 && assets.length > 0 && (
                         <div>
                             {assets.map((asset, index) => (
@@ -110,7 +144,8 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
                                 key={index}
                                 heirs={heirs}
                                 asset={asset}
-                                onBlur={(distribution) => console.log('distribution:', distribution)}
+                                timing={timing}
+                                onVlidation={(distribution) => setAssetDistribution(asset, distribution)}
                             />
                             ))}
                         </div>
