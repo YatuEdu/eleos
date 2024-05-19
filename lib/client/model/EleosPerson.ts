@@ -2,25 +2,32 @@ import { normalizeName }
                 from '@/lib/common/utilities/StringUtil'
 import EleosEntity  
                 from './EleosEntity'
-import { EleosRole } from './EleosDataTypes'
+import { EleosRole } 
+                from './EleosDataTypes'
+import { EleosRelationshipType } 
+                from './EleosRelationshipType'
                             
 class EleosPerson extends EleosEntity {
     private _firstName: string
     private _middleName: string
     private _lastName: string
     private _suffix: string
+    private _relationship: EleosRelationshipType
     private _roles: EleosRole[] = []
+    private _email: string = ''
 
     constructor(firstName: string, 
                 middleName: string,
                 lastName: string,
                 suffix: string,
+                relationship: EleosRelationshipType,
                 role: EleosRole) {
         super()
         this._firstName = normalizeName(firstName)
         this._middleName = middleName ? normalizeName(middleName) : ''
         this._lastName = normalizeName(lastName)
         this._suffix = suffix ? normalizeName(suffix) : ''
+        this._relationship = relationship
         this._roles.push(role)
     }
 
@@ -36,6 +43,8 @@ class EleosPerson extends EleosEntity {
 
     get suffix() { return this._suffix }
 
+    get relationship() { return this._relationship }
+    
     get roles() { return this._roles }  
 
     get isPrincipal() { 
@@ -82,6 +91,14 @@ class EleosPerson extends EleosEntity {
 
     get id(): string {
         return this.display
+    }
+
+    get email () {
+        return this._email
+    }
+
+    set email (email: string) {
+        this._email = email
     }
 
     /**

@@ -1,11 +1,11 @@
 import { EleosRole } from "./EleosDataTypes"
 import EleosPerson 
                 from "./EleosPerson"
+import { EleosRelationshipType } from "./EleosRelationshipType"
 import { EleosState } 
                 from "./EleosState"
 
 class EleosPrincipal extends EleosPerson {
-    private _email: string
     private _residenceState: EleosState
 
     constructor(firstName: string, 
@@ -14,16 +14,14 @@ class EleosPrincipal extends EleosPerson {
                 suffix: string,
                 email: string, 
                 state: EleosState) {
-        super(firstName, middleName, lastName, suffix, EleosRole.principal)
-        this._email = email
+        super(firstName, middleName, lastName, suffix, EleosRelationshipType.principal, EleosRole.principal)
+        super.email = email
         this._residenceState = state
     }
 
     /**
      * getters
      */
-
-    get email() { return this._email }
 
     get residenceState() { return this._residenceState }
 }

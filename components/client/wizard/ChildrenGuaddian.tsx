@@ -15,6 +15,7 @@ import EleosLabel from '../atoms/EleosLabel';
 import EleosGuardian from '@/lib/client/model/EleosGuardian';
 import { EleosHelpTips } from '../functional/EleosHelpTips';
 import { HelpTextId } from '@/lib/client/model/EleosMisc';
+import { EleosRole } from '@/lib/client/model/EleosDataTypes';
 
 const ChildrenGuardian: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -27,7 +28,8 @@ const ChildrenGuardian: React.FC = () => {
     const [valid, setValid] = useState(ref.current.guardians.length > 0);
     const [guardians, setGuardians] = useState(ref.current.guardians.sort((a, b) => a.order - b.order));
     const [buttonText, setButtonText] = useState(ref.current.guardians.length === 0 ? 
-        'Add Guardian' : ref.current.guardians.length === 1 ? 'Add an Alternative Guardian 1' : 'Add an Alternative Guardian 2');
+        'Add Guardian' : ref.current.guardians.length === 1 ? 'Add an Alternative Guardian 1' : 'Add an Alternative Guardian 2'); 
+    const [existingPeople, setExistingPeople] = useState(ref.current.potentialGuardians)
 
     /**
      * Submit the form and goes to the seconds page
@@ -56,27 +58,34 @@ const ChildrenGuardian: React.FC = () => {
         if (!result.succeeded) {
             alert(result.error);
             return
-        }   
+        }
+        
+        // update existing potential guadians
+        setExistingPeople([...ref.current.potentialGuardians])
 
         // go to the next step
         const step = ref.current.nextStep()
         setStep(step)
     };
 
-    const onAddGaudian = (firstName: string, middleName: string, lastName: string, suffix: string, birthYear?: string, email?: string) => {
+    const onAddGaudian = (person: EleosPerson) => {
         if (!ref || !ref.current)  {
             throw Error('Eleos is not initialized')  
         }
 
-        if (!email) {   
-            throw Error('Email is required')
+        let newGuardian = null
+        if (person instanceof EleosGuardian) {
+            newGuardian = person as EleosGuardian
+        } else {
+            throw new Error('Not a guardian object')
         }
 
-        const newGuardian = new EleosGuardian(firstName, middleName, lastName, suffix, email, guardians.length + 1);
+        /*
         if (ref.current.checkPersonExists(newGuardian)) {
             alert('The added guardian shares the same name with someone else. You can append sr or jr to the name is the first name and last name are the same')
             return;
         }
+        */
 
         const newGuardians = [...guardians, newGuardian];
         const result = setGuardians(newGuardians)
@@ -108,8 +117,11 @@ const ChildrenGuardian: React.FC = () => {
                     <>
                     <AddPersonModal
                         buttonText={buttonText}
+                        role={EleosRole.child_guardian}
                         needEmail={true}
                         needDob={false}
+                        existingPeople={existingPeople}
+                        order={guardians.length + 1}
                         onSave={onAddGaudian}
                     />
                     <EleosHelpTips helpTextEnId={HelpTextId.Guardians} />

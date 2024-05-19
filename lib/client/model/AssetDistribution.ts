@@ -9,10 +9,11 @@ export interface AssetDistributionUnit {
 }
 
 export enum AssetDistributionTiming {
-    uponPrincipalDeath = 'upon principal death',
-    uponSpouseDeath = 'upon spouse death',
-    uponBothDeath = 'upon both death',
+    uponBothDeath = 0,
+    uponPrincipalDeath = 1,
+    uponSpouseDeath = 2,
 }
+    
 
 export enum AssetDistributionMethods {
     allToSpouse = 'allToSpouse',
@@ -45,9 +46,6 @@ class AssetDistribution {
         }
 
         const total = this.totalPercentage();
-        if (total + percentage > 100) {
-            throw new Error('Total percentage exceeds 100%');
-        }
         this.distributions.push({person, percentage});
     }   
 
