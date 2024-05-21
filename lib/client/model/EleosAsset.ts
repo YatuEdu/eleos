@@ -1,28 +1,21 @@
-import EleosPerson 
-                from "./EleosPerson";
 import EleosEntity 
                 from "./EleosEntity";
 import { EleosAssetType} 
                 from "./EleosAssetType";
 import { EleosAssetOwnerShipType } 
                 from "./EleosAssetOwnerShipType";
-import AssetDistribution from "./AssetDistribution";
-import { AssetDistributionTiming } from "./EleosDataTypes";
-
-interface Distribution {
-    [key: number]: AssetDistribution; // Maps heir ID to their percentage
-}
-
+import AssetDistribution, { AssetDistributionTiming } 
+                from "./AssetDistribution";
 
 export class EleosAsset extends EleosEntity {
     protected _name: string;
     protected _type: EleosAssetType;
     protected _ownership: EleosAssetOwnerShipType;
     protected _principalPercentage
-    protected _owner?: EleosPerson;
+    protected _owner?: string;
     protected _location?: string;
     protected _note?: string;
-    protected _assetDistribution: Distribution = {} 
+    protected _assetDistribution: Map<AssetDistributionTiming, AssetDistribution> = new Map() 
 
     constructor(name: string, 
                 location: string, 
@@ -30,7 +23,7 @@ export class EleosAsset extends EleosEntity {
                 type: EleosAssetType, 
                 ownership: EleosAssetOwnerShipType,
                 principalPercentage?: number,
-                owner?: EleosPerson) {
+                owner?: string) {
         super()
         this._name = name
         this._type = type
@@ -52,8 +45,12 @@ export class EleosAsset extends EleosEntity {
     }
 
     distribut(timing: AssetDistributionTiming, distribute: AssetDistribution) {
-        delete this._assetDistribution[timing]
-        this._assetDistribution[timing] = distribute
+        this._assetDistribution.delete(timing)
+        this._assetDistribution.set(timing, distribute)
+    }
+
+    getDistributionForTiming(timing: AssetDistributionTiming): AssetDistribution | undefined {
+        return this._assetDistribution.get(timing)
     }
 
     /**
@@ -92,6 +89,20 @@ export class EleosAsset extends EleosEntity {
         return this._ownership;
     }
 
+    totalShareForTiming(timing: AssetDistributionTiming): number {
+        let totalShare = 100
+        if (this.ownership ===  EleosAssetOwnerShipType.joint) {
+           if (timing === AssetDistributionTiming.principalDiceased) {
+                totalShare = this._principalPercentage ? this._principalPercentage : 50
+           } else if (timing === AssetDistributionTiming.spouseDeceased) {
+                totalShare = this.spousePercentage ? this.spousePercentage : 50
+           } else {
+            totalShare = 100
+           }
+        }
+        return totalShare
+    }
+
     get principalPercentage() : number | undefined {
         return this._principalPercentage
     }
@@ -100,7 +111,7 @@ export class EleosAsset extends EleosEntity {
         return this._principalPercentage ? 100 - this._principalPercentage : undefined
     }
 
-    get owner(): EleosPerson | undefined {
+    get owner(): string | undefined {
         return this._owner;
     }
 

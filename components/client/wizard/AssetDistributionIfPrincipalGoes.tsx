@@ -4,6 +4,7 @@ import { useElos }
                 from '@/lib/providers/EleosAppProvider';
 import EleosAssetDistributionUponDeceased 
                 from '../functional/EleosAssetDistributionUponDeceased';
+import EleosPrincipal from '@/lib/client/model/EleosPrincipal';
 
 
 const AssetDistributionIfPrincipalGoes: React.FC = () => {
@@ -13,7 +14,7 @@ const AssetDistributionIfPrincipalGoes: React.FC = () => {
         throw Error('Eleos is not initialized for this page')  
     }
 
-    const isCommunityProperty = ref.current.principal.residenceState.isCommSate
+    const isCommunityProperty = (ref.current.principal as EleosPrincipal).residenceState.isCommSate
    
     let assets = ref.current.spouse ? ref.current.assetsSurvidedByPrincipal : ref.current.assets
     if (!assets.length) {

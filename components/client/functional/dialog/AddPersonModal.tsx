@@ -26,8 +26,8 @@ import { ELEOS_RELATIONSHIP_TYPE_HELPER, EleosRelationshipType }
                 from '@/lib/client/model/EleosRelationshipType';
 import EleosSelect 
                 from '../../atoms/EleosSelect';
-import { EleosRole } 
-                from '@/lib/client/model/EleosDataTypes';
+import EleosRole 
+                from '@/lib/client/model/EleosRole';
 import EleosPerson 
                 from '@/lib/client/model/EleosPerson';
 import EleosChild 
@@ -37,17 +37,19 @@ import EleosGuardian
 import OtherBenificiary 
                 from '@/lib/client/model/OtherBenificiary';
 import ChildrenGuardian from '../../wizard/ChildrenGuaddian';
+import { EleosRoleId } 
+                from '@/lib/client/model/EleosRole';
 
 
 
 type AddPersonModalProps = {
     buttonText: string,
-    role: EleosRole,
+    role: EleosRoleId,
     existingPeople: EleosPerson[],
     needDob?: boolean,
     needEmail?: boolean,
     order? : number,
-    onSave: (newPerson: EleosPerson) => void
+    onSave: (newRole: EleosRole) => void
 };
 
 const NAME_DOB = 'dob'
@@ -68,14 +70,14 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     const [invalidRelation, setInvalidRelation] = useState(relationShip ? '' : WARNING_REQUIRED)
     const [existingPersonName, setExistingPersonName] = useState('')
     
-    const titleText = role === EleosRole.child ? 'Add a child' :
-    role === EleosRole.child_guardian ? 'Add a guardian' :
-    role === EleosRole.other_benificiary ? 'Add a benificiary' :
-    role === EleosRole.executor ? 'Add an exuctor': ''
+    const titleText = role === EleosRoleId.child ? 'Add a child' :
+    role === EleosRoleId.child_guardian ? 'Add a guardian' :
+    role === EleosRoleId.other_benificiary ? 'Add a benificiary' :
+    role === EleosRoleId.executor ? 'Add an exuctor': ''
 
-    const relationSelection = role === EleosRole.child ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForChildren() : 
-                              role === EleosRole.child_guardian ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForGuardian() :
-                              role === EleosRole.other_benificiary ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForAdditionalHeirs() :
+    const relationSelection = role === EleosRoleId.child ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForChildren() : 
+                              role === EleosRoleId.child_guardian ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForGuardian() :
+                              role === EleosRoleId.other_benificiary ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForAdditionalHeirs() :
                               ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForExecutor()
 
     ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairs()
@@ -126,11 +128,11 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
         setOpen(false);
     }
 
-    const convertToRole = (person: EleosPerson, role: EleosRole) => {
+    const convertToRole = (person: EleosPerson, role: EleosRoleId) => {
         switch(role) {
-            case EleosRole.child:
+            case EleosRoleId.child:
                 throw new Error('cannot convert a person to a child')
-            case EleosRole.child_guardian:
+            case EleosRoleId.child_guardian:
                 if (person instanceof EleosChild) {
                     const child = person as EleosChild
                     if (child.isMinor) {
@@ -140,16 +142,16 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 if (order === undefined) {
                     throw new Error('Order is undefined')
                 }
-                return new EleosGuardian(person.firstName, person.middleName, person.lastName, person.suffix, person.relationship, email, order)
+                return new EleosGuardian(person, email, order)
                 
-            case EleosRole.other_benificiary:
+            case EleosRoleId.other_benificiary:
                 if (person instanceof OtherBenificiary) {
                     return person
                 } else if (person instanceof EleosChild) {
                     throw new Error('A child cannot be another benificiary')
                 }
-                return new OtherBenificiary(person.firstName, person.middleName, person.lastName, person.suffix, person.relationship)
-            case EleosRole.executor:
+                return new OtherBenificiary(person)
+            case EleosRoleId.executor:
             default:
                 throw new Error('Unimplemented')
 
@@ -162,23 +164,24 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
             return convertToRole(person, role)
         }
         const relation = relationShip as EleosRelationshipType
+        let newRole = null
         switch(role) {
-            case EleosRole.child:
-                person = new EleosChild(firstName, midtName, lastName, suffix, relation, + birthYear)
+            case EleosRoleId.child:
+                newRole = EleosChild.createFromUi(firstName, midtName, lastName, suffix,  +birthYear, relation)
                 break
-            case EleosRole.child_guardian:
+            case EleosRoleId.child_guardian:
                 if (!order) {
                     throw new Error("Order is needed for a guardian")
                 }
-                person = new EleosGuardian(firstName, midtName, lastName, suffix, relation, email, order)
+                newRole = EleosGuardian.create(firstName, midtName, lastName, suffix, relation, email, order)
                 break
-            case EleosRole.other_benificiary:
-                person = new OtherBenificiary(firstName, midtName, lastName, suffix, relation)
+            case EleosRoleId.other_benificiary:
+                newRole = OtherBenificiary.create(firstName, midtName, lastName, suffix, relation)
                 break
             default:
                 throw new Error("Unknown role for a person")
         }
-        return person
+        return newRole
     }
      
     const handleSave = () => {
