@@ -45,6 +45,8 @@ import { StaticStypes }
                 from '@/lib/client/styles/globalStyles';
 import { EleosAssetOwnerShipType } 
                 from '@/lib/client/model/EleosAssetOwnerShipType';
+import EleosRole 
+                from '@/lib/client/model/EleosRole';
 
 const AddAsset: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -74,8 +76,8 @@ const AddAsset: React.FC = () => {
         }
     
         // Attempt to find the owner and add the asset to Eleos
-        let ownerFound: EleosPerson|undefined = owner ? ref.current.getPrincipalOrSpouseByName(owner) : undefined
-        const asset = new EleosAsset(name, location, note, type, ownership, principalPercentage, ownerFound)
+        let ownerFound: EleosRole | undefined = owner ? ref.current.getPrincipalOrSpouseByName(owner) : undefined
+        const asset = new EleosAsset(name, location, note, type, ownership, principalPercentage, ownerFound?.display)
         const result = ref.current.addEleosAsset(asset)
         if (result.succeeded) {
             setAssetList([...ref.current.assets])

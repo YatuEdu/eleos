@@ -1,22 +1,33 @@
-import { EleosRole } from "./EleosDataTypes"
 import EleosPerson 
                 from "./EleosPerson"
-import { EleosRelationshipType } from "./EleosRelationshipType"
+import { EleosRelationshipType } 
+                from "./EleosRelationshipType"
+import EleosRole 
+, { EleosRoleId }                from "./EleosRole"
 import { EleosState } 
                 from "./EleosState"
 
-class EleosPrincipal extends EleosPerson {
+class EleosPrincipal extends EleosRole {
     private _residenceState: EleosState
 
-    constructor(firstName: string, 
-                middleName: string,
-                lastName: string,
-                suffix: string,
-                email: string, 
+    constructor(person: EleosPerson, 
                 state: EleosState) {
-        super(firstName, middleName, lastName, suffix, EleosRelationshipType.principal, EleosRole.principal)
-        super.email = email
+        super(person, EleosRoleId.principal)
         this._residenceState = state
+    }
+
+    static create(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState): EleosPrincipal {
+        const person = new EleosPerson(firstName, middleName, lastName, suffix, EleosRelationshipType.principal)
+        person.email = email
+        return new EleosPrincipal(person, state)
+    }
+
+    /**
+     * overrides
+     */
+
+    get signature(): string {
+        return `Principal person: ${this._person.display}, email: ${this._person.email}, state: ${this._residenceState.name}`
     }
 
     /**

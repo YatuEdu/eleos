@@ -32,7 +32,8 @@ import RadioButtonGroup from
 import EleosChildrenStatus, { EleosChildrenStatusValue } 
                 from '@/lib/client/model/EleosChildrenStatus';
 import { EleosRelationshipType } from '@/lib/client/model/EleosRelationshipType';
-import { EleosRole } from '@/lib/client/model/EleosDataTypes';
+import EleosRole, { EleosRoleId } from '@/lib/client/model/EleosRole';
+
 
 const AddChildren: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -40,42 +41,42 @@ const AddChildren: React.FC = () => {
         throw Error('Eleos is not initialized')  
     }
 
-    const {children} = ref.current
-    const hasChildrenInit = !!children && children.length > 0
+    const childrenExisting = ref.current.children as EleosChild[]
+    const hasChildrenInit = !!childrenExisting && childrenExisting.length > 0
     const [childrenStatus, setChildrenStatus] = useState(ref.current.childrenStatus);
-    const [childrenList, setChildrenList] = useState(children ? [...children] : []); 
+    const [childrenList, setChildrenList] = useState(childrenExisting ? [...childrenExisting] : []); 
     const [valid, setValid] = useState(ref.current.childrenStatus === EleosChildrenStatusValue.hasNoChildren || hasChildrenInit)
     const {setStep} = useWizard()
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
     const title = ref.current.title
     const childrenOptions = EleosChildrenStatus.childrenStatusLabeledValues(title)
 
-    const onAddChild = (person: EleosPerson) => {
+    const onAddChild = (child: EleosRole) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
         }
 
         let newChild = null
-        if (person instanceof EleosChild) {
-            newChild = person as EleosChild
+        if (child instanceof EleosChild) {
+            newChild = child as EleosChild
         } else {
             throw new Error('Not a child object')
         }
 
         // make sure that the birth year is valid
         const currentYear = new Date().getFullYear()
-        if (currentYear - newChild.getBirthYear() < 0 || currentYear - newChild.getBirthYear() > IntegerConst.MAX_AGE) {
+        if (currentYear - newChild.birthYear < 0 || currentYear - newChild.birthYear > IntegerConst.MAX_AGE) {
             alert('Invalid birth year')
             return;
         }
 
-        // make sure the child has a unique name
-        if (ref.current.checkPersonExists(newChild)) {
-            alert('The child share the same name with someone else. You can append sr or jr to the name is the first name and last name are the same')
+        // check if the child already exists
+        if (ref.current.checkPersonExists(newChild.display)) {
+            alert(`The person with the same name [${newChild.display}] exists.  Please enter a different name.`)
             return;
         }
-        
-        if (childrenList.find(child => EleosPerson.equealTo(child, newChild)) !== undefined) {
+
+        if (childrenList.find(child => child.display === newChild.display)!== undefined) {
             console.log(childrenList)
             alert('This child already exists')
             return;
@@ -122,10 +123,22 @@ const AddChildren: React.FC = () => {
         // go to the next step
         if (childrenStatus === EleosChildrenStatusValue.hasNoChildren) {
             ref.current.resetChildren()
+        } else if (!hasChildrenInit) {
+            // first time adding children
+            const result = ref.current.addChildren(childrenList)
+            if (!result.succeeded) {
+                alert(result.error)
+                return
+            }
+            ref.current.childrenStatus = childrenStatus
         } else {
-            ref.current.addChildren(childrenList)
+            // update the children list (either add or update children)
+            const result = ref.current.updateChildren(childrenList)
+            if (!result.succeeded) {
+                alert(result.error)
+                return
+            }
         }  
-        ref.current.childrenStatus = childrenStatus
          
         // move to the next step
         const step = ref.current.nextStep()
@@ -133,7 +146,14 @@ const AddChildren: React.FC = () => {
     } 
 
     const handleHasChildren = (status: string) => {
-        console.log('handleHasChildren:', status)
+        // will not allow to change children status if there are children
+        if (hasChildrenInit) {
+            if (status !== EleosChildrenStatusValue.hasChildren) {
+                alert('You cannot change the children status if there are children')
+                setChildrenStatus(EleosChildrenStatusValue.hasChildren)
+                return
+            }
+        }
 
         const hasChildren = status === EleosChildrenStatusValue.hasChildren
         setChildrenStatus(status as EleosChildrenStatusValue)
@@ -154,6 +174,7 @@ const AddChildren: React.FC = () => {
                 <RadioButtonGroup
                     title=''
                     options={childrenOptions}
+                    disabledOptions={hasChildrenInit ? [EleosChildrenStatusValue.hasNoChildren] : []}
                     value={childrenStatus ? childrenStatus : ''}
                     onChange={handleHasChildren}
                     direction='row'
@@ -164,7 +185,7 @@ const AddChildren: React.FC = () => {
                     <>
                     <AddPersonModal 
                         buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
-                        role={EleosRole.child}
+                        role={EleosRoleId.child}
                         needDob={true} 
                         existingPeople={[]}
                         onSave={onAddChild} />

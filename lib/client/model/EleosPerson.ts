@@ -2,33 +2,49 @@ import { normalizeName }
                 from '@/lib/common/utilities/StringUtil'
 import EleosEntity  
                 from './EleosEntity'
-import { EleosRole } 
-                from './EleosDataTypes'
 import { EleosRelationshipType } 
                 from './EleosRelationshipType'
-                            
+import EleosRole, { EleosRoleId } from './EleosRole'
+
+interface IEleosRoleMap {
+    [roleId: string]: EleosRole
+}
+
 class EleosPerson extends EleosEntity {
     private _firstName: string
     private _middleName: string
     private _lastName: string
     private _suffix: string
     private _relationship: EleosRelationshipType
-    private _roles: EleosRole[] = []
     private _email: string = ''
+    private _phone: string = ''
+    private _roles: IEleosRoleMap = {}
 
     constructor(firstName: string, 
                 middleName: string,
                 lastName: string,
                 suffix: string,
-                relationship: EleosRelationshipType,
-                role: EleosRole) {
+                relationship: EleosRelationshipType) {
         super()
         this._firstName = normalizeName(firstName)
         this._middleName = middleName ? normalizeName(middleName) : ''
         this._lastName = normalizeName(lastName)
         this._suffix = suffix ? normalizeName(suffix) : ''
         this._relationship = relationship
-        this._roles.push(role)
+    }
+
+    /**
+     * check if the person has a role
+     */
+    hasRole(roleId: EleosRoleId): boolean {
+        return this._roles[roleId] !== undefined
+    }
+
+     /**
+     * get the role
+     */
+    getRole(roleId: EleosRoleId) {
+        return this._roles[roleId]
     }
 
     /**
@@ -47,9 +63,13 @@ class EleosPerson extends EleosEntity {
     
     get roles() { return this._roles }  
 
+    get email() { return this._email }
+
+    get phone() { return this._phone }
+
     get isPrincipal() { 
-        if (this._roles.includes(EleosRole.principal)) {
-            if (this._roles.length > 1 ) {
+        if (this._roles[EleosRoleId.principal] !== undefined) {
+            if (Object.keys(this._roles).length > 1 ) {
                 throw Error('Principal cannot have other roles')
             }
             return true
@@ -59,8 +79,8 @@ class EleosPerson extends EleosEntity {
     }
 
     get isSpouse() { 
-        if (this._roles.includes(EleosRole.spouse)) {
-            if (this._roles.length > 1 ) {
+        if (this._roles[EleosRoleId.spouse] !== undefined) {
+            if (Object.keys(this._roles).length > 1 ) {
                 throw Error('Spouse cannot have other roles')
             }
             return true
@@ -70,34 +90,34 @@ class EleosPerson extends EleosEntity {
     }
 
     get isChild() {
-        return this._roles.includes(EleosRole.child)
+        return this._roles[EleosRoleId.child] !== undefined
     }
 
     get isExSpouse() {
-        return this._roles.includes(EleosRole.exSpouse)
+        return this._roles[EleosRoleId.exSpouse] !== undefined
     }
 
     get isExecutor() {
-        return this._roles.includes(EleosRole.executor)
+        return this._roles[EleosRoleId.executor] !== undefined
     }
 
     get isGuardian() {
-        return this._roles.includes(EleosRole.child_guardian)
+        return this._roles[EleosRoleId.child_guardian] !== undefined
     }
 
     get display(): string {
         return `${this._firstName} ${this._middleName} ${this._lastName} ${this._suffix}`
+    }
+
+    get signature(): string {
+        return this.display
     } 
 
     get id(): string {
         return this.display
     }
 
-    get email () {
-        return this._email
-    }
-
-    set email (email: string) {
+    set email(email: string) {
         this._email = email
     }
 
@@ -109,11 +129,11 @@ class EleosPerson extends EleosEntity {
     }
 
     addRole(role: EleosRole) {
-        if (this._roles.includes(role)) {
+        if (this._roles[role.roleId] !== undefined) {
             return
         }
 
-        this._roles.push(role)
+        this._roles[role.roleId] = role
     }  
 
 }

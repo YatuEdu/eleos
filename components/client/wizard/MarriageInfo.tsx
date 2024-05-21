@@ -8,16 +8,12 @@ import { useWizard }
                 from '@/lib/providers/WizardProvider';
 import EleosName 
                 from '../functional/EleosName';
-import EleosPerson 
-                from '@/lib/client/model/EleosPerson';
-import Checkbox from 
-                '@mui/material/Checkbox';
-import FormControlLabel 
-                from '@mui/material/FormControlLabel';
-import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
-import RadioButtonGroup from '../atoms/EleosRadioGroup';
-import { EleosMaritalStatus, EleosRole } from '@/lib/client/model/EleosDataTypes';
-import { EleosRelationshipType } from '@/lib/client/model/EleosRelationshipType';
+import EleosWizardButtonLayout 
+                from '../atoms/EleosWizardButtonLayout';
+import RadioButtonGroup 
+                from '../atoms/EleosRadioGroup';
+import { EleosMaritalStatus, } 
+                from '@/lib/client/model/EleosDataTypes';
 
 const RADIO_GROUP_TITLE = '';
 const maritalOptions = [
@@ -34,11 +30,11 @@ const MarriageInfo: React.FC = () => {
         throw Error('Eleos is not initialized')  
     }
     const {spouse} = ref.current
-    const [maritalSatus, setMaritalSatus] = useState(ref.current.marritalStatus);
-    const [spouseFirstName, setSpouseFirstName] = useState(spouse ? spouse.firstName : '')
-    const [sposeMiddleName, setSposeMiddleName] = useState(spouse ? spouse.middleName : '')
-    const [sposeLastName, setSpouseLastName] = useState(spouse ? spouse.lastName : '')
-    const [spouseSuffix, setSpouseSuffix] = useState(spouse ? spouse.suffix : '')
+    const [maritalSatus, setMaritalSatus] = useState(ref.current.marritalStatus)
+    const [spouseFirstName, setSpouseFirstName] = useState(spouse ? spouse.person.firstName : '')
+    const [sposeMiddleName, setSposeMiddleName] = useState(spouse ? spouse.person.middleName : '')
+    const [sposeLastName, setSpouseLastName] = useState(spouse ? spouse.person.lastName : '')
+    const [spouseSuffix, setSpouseSuffix] = useState(spouse ? spouse.person.suffix : '')
     const [valid, setValid] = useState(testValidness(spouseFirstName, sposeLastName, maritalSatus))
   
     if (ref && ref.current && ref.current.principal) {
@@ -51,6 +47,10 @@ const MarriageInfo: React.FC = () => {
 
     const handleMarriageStatusChange = (status: string) => {
         const isMarried = status === EleosMaritalStatus.married
+        if (isMarried && EleosMaritalStatus.married !== status) { 
+            throw Error('Marriage status cannot be changed once selected.')
+        }
+
         setMaritalSatus(status as EleosMaritalStatus)
 
         // clear the spouse info if uncheck
@@ -106,32 +106,25 @@ const MarriageInfo: React.FC = () => {
             throw Error('Invalid form: IMPOSSIBLE')  
         }
 
-        // go to the next step
-       
-        if (maritalSatus !== EleosMaritalStatus.married) {
-            ref.current.setSpouse(null, maritalSatus)
+        // spouse already added, update if needed
+        if (spouse) {
+            const result = ref.current.updateSpouse(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix, maritalSatus)
+            if (!result.succeeded) {
+                alert(result.error)  
+                return
+            }
         } else {
-            const newSpouse = new EleosPerson(  spouseFirstName, sposeMiddleName, 
-                                                sposeLastName, spouseSuffix, 
-                                                EleosRelationshipType.spouse, EleosRole.spouse)
-            if (spouse) {
-                if (spouse.display !== newSpouse.display) {
-                    // spouse name changed (usually the case when the user changes the name of the spouse)
-                    const result = ref.current.setSpouse(newSpouse, maritalSatus)
-                    if (!result.succeeded) {
-                        alert(result.error)
-                        return;
-                    }
-                }
-            } else {
-                // add a new spouse
-                const result = ref.current.setSpouse(newSpouse, maritalSatus)
+            // add the spouse and go to the next step
+            if (maritalSatus === EleosMaritalStatus.married) {
+                const result = ref.current.addSpouse(spouseFirstName, sposeMiddleName, sposeLastName, spouseSuffix, maritalSatus)
                 if (!result.succeeded) {
                     alert(result.error)
                     return;
                 }
-            }
-        }    
+            } else {
+                ref.current.marritalStatus = maritalSatus
+            }   
+        }
          
         // move to the next step
         const step = ref.current.nextStep()
@@ -147,6 +140,7 @@ const MarriageInfo: React.FC = () => {
                 <RadioButtonGroup
                     title={RADIO_GROUP_TITLE}
                     options={maritalOptions}
+                    disabledOptions={maritalSatus === EleosMaritalStatus.married ? [EleosMaritalStatus.single, EleosMaritalStatus.divorced, EleosMaritalStatus.widowed] : []}
                     value={maritalSatus ? maritalSatus : ''}
                     onChange={handleMarriageStatusChange}
                     direction='row'

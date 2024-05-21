@@ -1,73 +1,59 @@
-import Eleos 
-                from "./Eleos";
-import EleosPerson 
-                from "./EleosPerson";
-
-export interface AssetDistributionUnit {
-    person: EleosPerson;
-    percentage: number;
-}
-
 export enum AssetDistributionTiming {
-    uponBothDeath = 0,
-    uponPrincipalDeath = 1,
-    uponSpouseDeath = 2,
+    principalDiceased = 0,
+    spouseDeceased = 1,
+    bothDecesed = 2,
+    singleDeceased = 3,
 }
-    
 
-export enum AssetDistributionMethods {
+export enum AssetDistributionMethod {
     allToSpouse = 'allToSpouse',
     amongOtherHeirs = 'amongOtherHeirs',
-}
+} 
 
 class AssetDistribution {
-    private distributions: AssetDistributionUnit[] = [];
+    private _distributions: Map<string, number> = new Map()
 
-    totalPercentage(): number {
-        return this.distributions.reduce((acc, dist) => acc + dist.percentage, 0);
+    get totalPercentage(): number {
+        return [...this._distributions.values()].reduce((acc, dist) => acc + dist, 0);
     }   
 
-    changeDistribution(person: EleosPerson, percentage: number): void {
-        const index = this.distributions.findIndex(dist => dist.person === person);
-        if (index === -1) {
+    changeDistribution(person: string, percentage: number): void {
+        const distribution = this._distributions.get(person)
+        if (!distribution) {
             throw new Error('Person not found in distribution');
         }
-        this.distributions[index].percentage = percentage;
-        const total = this.totalPercentage();
+        this._distributions.delete(person)
+        this.setDistribution(person, percentage)
+    }
+
+    addDistribution(person: string, percentage: number): void {
+        const distribution = this._distributions.get(person)
+        if (distribution) {
+            throw new Error('Person already in distribution');
+        }
+        this.setDistribution(person, percentage)
+    }   
+
+    setDistribution(person: string, percentage: number): void {
+        this._distributions.set(person, percentage)
+        const total = this.totalPercentage
         if (total + percentage > 100) {
            console.log('Total percentage exceeds 100%');
         }
     }
 
-    addDistribution(person: EleosPerson, percentage: number): void {
-        const index = this.distributions.findIndex(dist => dist.person === person);
-        if (index !== -1) {
-            throw new Error('Person already in distribution');
-        }
-
-        const total = this.totalPercentage();
-        this.distributions.push({person, percentage});
-    }   
-
-    removeDistribution(person: EleosPerson): void {
-        const index = this.distributions.findIndex(dist => dist.person === person);
-        if (index === -1) {
-            throw new Error('Person not found in distribution');
-        }
-        this.distributions.splice(index, 1);
+    removeDistribution(person: string): void {
+        this._distributions.delete(person)
     }
 
-    getDistribution(person: EleosPerson): number {
-        const dist = this.distributions.find(dist => dist.person === person);
-        if (!dist) {
-            throw new Error('Person not found in distribution');
-        }
-        return dist.percentage;
+    getDistribution(person: string): number | undefined {
+        return this._distributions.get(person)
     }
 
-    get distributionsList(): AssetDistributionUnit[] {
-        return this.distributions;
+    get distributionsList() {
+        return this._distributions.entries()
     }
 }
 
 export default AssetDistribution
+

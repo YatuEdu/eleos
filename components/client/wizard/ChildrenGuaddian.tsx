@@ -6,16 +6,22 @@ import { useWizard }
                 from '@/lib/providers/WizardProvider';
 import AddPersonModal 
                 from '../functional/dialog/AddPersonModal';
-import EleosPerson from '@/lib/client/model/EleosPerson';
+import EleosPerson 
+                from '@/lib/client/model/EleosPerson';
 import EleosItemsList 
                 from '../functional/EleosNameList'; 
 import { useElos } 
                 from '@/lib/providers/EleosAppProvider';
-import EleosLabel from '../atoms/EleosLabel';
-import EleosGuardian from '@/lib/client/model/EleosGuardian';
-import { EleosHelpTips } from '../functional/EleosHelpTips';
-import { HelpTextId } from '@/lib/client/model/EleosMisc';
-import { EleosRole } from '@/lib/client/model/EleosDataTypes';
+import EleosLabel 
+                from '../atoms/EleosLabel';
+import EleosGuardian 
+                from '@/lib/client/model/EleosGuardian';
+import { EleosHelpTips } 
+                from '../functional/EleosHelpTips';
+import { HelpTextId } 
+                from '@/lib/client/model/EleosMisc';
+import EleosRole, { EleosRoleId }                
+                from '@/lib/client/model/EleosRole';
 
 const ChildrenGuardian: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -61,14 +67,14 @@ const ChildrenGuardian: React.FC = () => {
         }
         
         // update existing potential guadians
-        setExistingPeople([...ref.current.potentialGuardians])
+        // setExistingPeople([...ref.current.potentialGuardians])
 
         // go to the next step
         const step = ref.current.nextStep()
         setStep(step)
     };
 
-    const onAddGaudian = (person: EleosPerson) => {
+    const onAddGaudian = (person: EleosRole) => {
         if (!ref || !ref.current)  {
             throw Error('Eleos is not initialized')  
         }
@@ -80,12 +86,10 @@ const ChildrenGuardian: React.FC = () => {
             throw new Error('Not a guardian object')
         }
 
-        /*
-        if (ref.current.checkPersonExists(newGuardian)) {
-            alert('The added guardian shares the same name with someone else. You can append sr or jr to the name is the first name and last name are the same')
+        if (guardians.find(g => g.display === newGuardian.display) !== undefined) {
+            alert('The guardian has already been added')
             return;
         }
-        */
 
         const newGuardians = [...guardians, newGuardian];
         const result = setGuardians(newGuardians)
@@ -117,7 +121,7 @@ const ChildrenGuardian: React.FC = () => {
                     <>
                     <AddPersonModal
                         buttonText={buttonText}
-                        role={EleosRole.child_guardian}
+                        role={EleosRoleId.child_guardian}
                         needEmail={true}
                         needDob={false}
                         existingPeople={existingPeople}

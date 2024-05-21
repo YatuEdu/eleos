@@ -24,16 +24,24 @@ import { EleosHelpTips }
                 from "../functional/EleosHelpTips"
 import { HelpTextId } 
                 from "@/lib/client/model/EleosMisc"
+import EleosPrincipal 
+                from "@/lib/client/model/EleosPrincipal"
 
 const NAME_EMAIL = 'email'
 const NAME_STATE = 'state'
 
 const BasicInfo: React.FC = () => {
     const {ref} = useElos() ?? {};
+    if (!ref || !ref.current)  {
+        throw Error('Eleos is not initialized')  
+    }
+
+    const existingPrincipal = ref.current.principal as EleosPrincipal
 
     // initialize the form with the current values saved earlier
-    const {firstName, middleName, lastName, suffix, email, residenceState} = (ref && ref.current && ref.current.principal) ? ref.current.principal 
-        : {firstName: '', middleName: '', lastName: '', suffix: '', email: '', residenceState: null}
+    const {firstName, middleName, lastName, suffix, email} = existingPrincipal ? existingPrincipal.person
+        : {firstName: '', middleName: '', lastName: '', suffix: '', email: ''}
+    const residenceState = existingPrincipal ? existingPrincipal.residenceState : null
 
     const [invalidEmail, setInvalidEmail] = useState(email ? '' : WARNING_REQUIRED)
     const [invalidState, setInvalidState] = useState(residenceState ? '' : WARNING_REQUIRED)

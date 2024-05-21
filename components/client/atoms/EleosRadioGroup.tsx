@@ -19,14 +19,15 @@ import RadioButtonUncheckedIcon
 interface RadioButtonGroupProps {
     title: string;                                  // Label for the group, e.g., "Gender"
     options: { value: string; label: string }[];    // Array of options
+    disabledOptions?: string[];                     // Array of disabled options
     value: string;                                  // Current value
     onChange: (value: string) => void;              // Callback when value changes
     direction?: 'row' | 'column';                   // Direction of radio buttons
 }
 
-function RadioButtonGroup({ title, options, value, onChange, direction }: RadioButtonGroupProps) {
+function RadioButtonGroup({ title, options, value, disabledOptions, onChange, direction }: RadioButtonGroupProps) {
     const [selectedOption, setSelectedOption] = useState(value);
-
+    const [diabledRadioOptions, setDisabledRadioOptions] = useState(disabledOptions ? disabledOptions : []); // Add this line to disable the radio button
     const setControlState = (value: string) => {
         setSelectedOption(value);
         onChange(value)
@@ -68,7 +69,8 @@ function RadioButtonGroup({ title, options, value, onChange, direction }: RadioB
                     <FormControlLabel
                         key={option.value}
                         value={option.value}
-                        control={<Radio   
+                        control={<Radio 
+                            disabled={diabledRadioOptions.includes(option.value)} // Add this line to disable the radio button  
                             icon={<RadioButtonUncheckedIcon sx={{ color: 'black' }} />} // default icon
                             checkedIcon={<CheckIcon />} // icon when checked
                             sx={{ color: 'black', '&.Mui-checked': { color: 'green' } }}
