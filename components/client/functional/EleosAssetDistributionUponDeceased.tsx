@@ -63,14 +63,11 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
 
     //const [distribution, setDistribution] = useState<string>('');
     const [heirs, setHeirs] = useState<EleosRole[]>(!survived ? ref.current.children : [...ref.current.children, survived])
-    const [showAddHeirs, setShowAddHeirs] = useState<boolean>(survived === null);
-    const [percentage, setPercentage] = useState<number>(100);
+    const [showAddHeirs, setShowAddHeirs] = useState<boolean>(survived === null || ref.current.getAssetDistributionMethod(timing) === AssetDistributionMethod.amongOtherHeirs);
     const [assetDistributionMethod, setAssetDistributionMethod] = useState(ref.current.getAssetDistributionMethod(timing) ?? AssetDistributionMethod.allToSpouse);
     const isValid = assetDistributionMethod === AssetDistributionMethod.allToSpouse || false;
     const [valid, setValid] = useState(isValid);
-    const [assetDistributionMap, setAssetDistributionMap] = useState(assets.map((a) => ({ key: a.name, value: undefined })))
     const [distribution, setDistribution] = useState<Distribution>({})
-    const assetFinalDistributions = assets.map((a) => ({ key: a.name, value: undefined }));
 
     const getAssetByName = (name: string) => {
         return assets.find(a => a.name === name)
@@ -85,21 +82,22 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
             if (!asset) {
                 throw Error(`Asset '${entry[0]} 'not found`)
             }
+            console.log('asset total share for this timing', asset.totalShareForTiming(timing), entry[1].totalPercentage)
             return asset.totalShareForTiming(timing) !== entry[1].totalPercentage
         })
-      
+        console.log('inbalance', inbalance)
         setValid(!inbalance)
    }
 
     
 
-    const handleDistributionNethodChange = (value: string) => {
+    const handleDistributionMethodChange = (value: string) => {
+        if (!ref || !ref.current || !ref.current.principal) {
+            throw Error('Eleos is not initialized for this page')  
+        }
         setAssetDistributionMethod(value as AssetDistributionMethod)
         setShowAddHeirs(value === AssetDistributionMethod.amongOtherHeirs);
-    }
-
-    const addHeir = () => {
-        alert('add heir: tbd')
+        ref.current.setAssetDistributionMethod(timing, value as AssetDistributionMethod)
     }
    
     const distributionOptions = [
@@ -150,7 +148,7 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
                     title=''
                     options={distributionOptions}
                     value={assetDistributionMethod}
-                    onChange={handleDistributionNethodChange}
+                    onChange={handleDistributionMethodChange}
                     direction='column'
                 />
             </div>)
@@ -170,12 +168,6 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
                             />
                             ))}
                         </div>
-                    )}
-                       
-                    {percentage < 100 &&  (
-                        <button onClick={() => addHeir()}>
-                            + new person as hari
-                        </button>
                     )}
                   
                 </div>

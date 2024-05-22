@@ -45,7 +45,7 @@ import { EleosRoleId }
 type AddPersonModalProps = {
     buttonText: string,
     role: EleosRoleId,
-    existingPeople: EleosPerson[],
+    existingPeople: EleosRole[],
     needDob?: boolean,
     needEmail?: boolean,
     order? : number,
@@ -117,7 +117,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     
     const handleExistingPersonChange = (value: string) => {
         setExistingPersonName(value)
-        setValid(!!value && setValidBasedOnOptionalState())
+        setValid(!!value)
     }
 
     const handleClickOpen = () => {
@@ -128,13 +128,13 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
         setOpen(false);
     }
 
-    const convertToRole = (person: EleosPerson, role: EleosRoleId) => {
+    const convertToRole = (personWithRole: EleosRole, role: EleosRoleId) => {
         switch(role) {
             case EleosRoleId.child:
                 throw new Error('cannot convert a person to a child')
             case EleosRoleId.child_guardian:
-                if (person instanceof EleosChild) {
-                    const child = person as EleosChild
+                const child = personWithRole instanceof EleosChild ? personWithRole as EleosChild : null
+                if (child) {
                     if (child.isMinor) {
                         throw new Error('A minor cannot be a guardian')
                     }
@@ -142,15 +142,16 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 if (order === undefined) {
                     throw new Error('Order is undefined')
                 }
-                return new EleosGuardian(person, email, order)
+                return new EleosGuardian(personWithRole.person, email, order)
                 
             case EleosRoleId.other_benificiary:
-                if (person instanceof OtherBenificiary) {
-                    return person
-                } else if (person instanceof EleosChild) {
+                if (personWithRole instanceof OtherBenificiary) {
+                    return personWithRole
+                } else if (personWithRole instanceof EleosChild) {
                     throw new Error('A child cannot be another benificiary')
+                } else {
+                    return new OtherBenificiary(personWithRole.person)
                 }
-                return new OtherBenificiary(person)
             case EleosRoleId.executor:
             default:
                 throw new Error('Unimplemented')

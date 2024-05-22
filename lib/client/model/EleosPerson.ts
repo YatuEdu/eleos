@@ -105,6 +105,10 @@ class EleosPerson extends EleosEntity {
         return this._roles[EleosRoleId.child_guardian] !== undefined
     }
 
+    get isOtherBenificiary() {
+        return this._roles[EleosRoleId.other_benificiary] !== undefined
+    }
+
     get display(): string {
         return `${this._firstName} ${this._middleName} ${this._lastName} ${this._suffix}`
     }

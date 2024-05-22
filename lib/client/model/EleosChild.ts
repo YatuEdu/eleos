@@ -40,7 +40,7 @@ class EleosChild extends EleosRole {
     }
 
     get signature(): string {
-        return `${this.display} relation: (${this._person.relationship} age: ${new Date().getFullYear() - this.birthYear})`
+        return `${this.display} (${this._person.relationship} age: ${new Date().getFullYear() - this.birthYear})`
     }
 
     get childId(): number {
