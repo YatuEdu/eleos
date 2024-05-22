@@ -1,9 +1,5 @@
 import { EleosAsset } 
                 from '@/lib/client/model/EleosAsset';
-import { EleosAssetOwnerShipType } 
-                from '@/lib/client/model/EleosAssetOwnerShipType';
-import EleosPerson 
-                from '@/lib/client/model/EleosPerson';
 import React, { useState } 
                 from 'react';
 import EleosLabel 
@@ -17,7 +13,7 @@ import { useElos }
 import AssetDistribution, {AssetDistributionTiming}
                 from '@/lib/client/model/AssetDistribution';
 import EleosRole, { EleosRoleId } from '@/lib/client/model/EleosRole';
-import { green } from '@mui/material/colors';
+import EleosPerson from '@/lib/client/model/EleosPerson';
 
 interface Distribution {
     [key: string]: number; // Maps heir ID to their percentage
@@ -38,7 +34,7 @@ const AssetDistributionForm: React.FC<AssetDistributionProps> = ({ heirs, asset,
 
     let totalShare = asset.totalShareForTiming(timing)
     const [distributionSum, setDistributionSum] = useState<number|undefined>(totalShare)
-
+    const [addedHeirs, setAddedHeirs] = useState<OtherBenificiary[]>([])
       
     // @ts-ignore
     const basicShare = Math.floor(totalShare / heirs.length);
@@ -65,26 +61,62 @@ const AssetDistributionForm: React.FC<AssetDistributionProps> = ({ heirs, asset,
         return initialDistribution;
     })
     
+    function createAssetDistribution(currentDistribution: Distribution) {
+        const assetDistribution = new AssetDistribution()
+        Object.entries(currentDistribution).forEach(([key, value]) => {
+            assetDistribution.addDistribution(key, value)
+        })
+        onVlidation(assetDistribution)
+        return assetDistribution
+    }
 
     const addNewHeir = (person: EleosRole) => {
-        let newHeir = null
-        if (person instanceof OtherBenificiary) {
-            newHeir = person as OtherBenificiary
-        } else {
-            throw new Error('Not a hier')
+        if (!ref || !ref.current || !ref.current.principal || !ref.current.marritalStatus)  {
+            throw Error('Eleos is not initialized')  
         }
+
+        if (person instanceof OtherBenificiary) {
+            if (addedHeirs.find(heir => heir.display === person.display) !== undefined) {
+                alert('This heir already exists')
+                return;
+            }
+            
+            ref.current.addOtherBenificiaries([person])
+            setAddedHeirs([...addedHeirs, person])
+        } else {
+            throw new Error('Not a valid enificiary')
+        }
+
         setDistribution(prev => {
-            const dist = {...prev, [newHeir.display]: 0}
+            const dist = {...prev, [person.display]: 0}
+            createAssetDistribution(dist)
             return dist
         })
     }
 
+    /**
+     * Potiantial heirs that can be added, who are people that qualify to be added as heirs and have not been added yet
+     * 
+     * @returns 
+     */
+    const addPotentialHeir = (): EleosRole[] => {
+        if (!ref || !ref.current || !ref.current.principal || !ref.current.marritalStatus)  {
+            throw Error('Eleos is not initialized')  
+        }
+       return ref.current.findPeopleByRole(EleosRoleId.other_benificiary)
+                        //.filter(heir => !addedHeirs.find(added => added.display === heir.display))
+                        .filter(heir => !Object.keys(distribution).includes(heir.display))
+    }
+
     const handlePercentageChange = (id: string, value: string) => {
         const percentage = parseInt(value, 10);
+
         if (!isNaN(percentage) && percentage >= 1 && percentage <= 100) {
+            console.log('id:pct', id, percentage)
             setDistribution(prev => {
                 const dist = {...prev, [id]: percentage}
                 setDistributionSum(Object.values(dist).reduce((acc, dist) => acc + dist, 0))
+                createAssetDistribution(dist)
                 return dist
             })
         }
@@ -128,7 +160,7 @@ const AssetDistributionForm: React.FC<AssetDistributionProps> = ({ heirs, asset,
                     <AddPersonModal
                         buttonText={'Add a new heir'}
                         role={EleosRoleId.other_benificiary}
-                        existingPeople={ref.current.findPeopleByRole(EleosRoleId.other_benificiary).map(r => r.person)}
+                        existingPeople={addPotentialHeir()}
                         needDob={true} 
                         onSave={addNewHeir} />
                     </div>

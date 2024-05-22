@@ -169,15 +169,18 @@ class Eleos {
 
     get children() {return this.findPeopleByRole(EleosRoleId.child)}
 
-    get potentialGuardians() {
+    /**
+     * get a list a principal's children who are not minors and potential guardians
+     */
+    get potentialGuardians(): EleosChild[] {
         return Array.from(this._people.values()).filter(p => {
             const child = p.getRole(EleosRoleId.child) as EleosChild
             if (child) {
                 return child.isMinor === false && !p.isGuardian
             } else {
-                return !p.isGuardian && !p.isPrincipal && !p.isSpouse 
+                return false 
             }
-        })
+        }).map(p => p .getRole(EleosRoleId.child) as EleosChild)
     }
 
     get adultChildren(): EleosChild[] {
@@ -258,6 +261,7 @@ class Eleos {
 
     
     findPeopleByRole(role: EleosRoleId): EleosRole[] {
+        // console.log('findPeopleByRole', Array.from(this._people.values()))
         // @ts-ignore
         return Array.from(this._people.values())
                 .filter(p => p.hasRole(role))
@@ -441,15 +445,16 @@ class Eleos {
 
         // updatre children one by one
         childrenExisting.forEach((ec, i) => {
-            const newChild = children.find(ch => ch.childId === ec.childId)
-            if (newChild) {
+            const newChildIndex = children.findIndex(ch => ch.childId === ec.childId)
+            if (newChildIndex != -1) {
+                const newChild = children[newChildIndex]
                 if (newChild.signature !== ec.signature) {
                     this._people.set(newChild.display, newChild.person)
                     console.log('Child already exists, update the child name in case was spelled wrong', ec.display, newChild.display)
                     this._people.delete(ec.display)
                 }
-                // remove the added child
-                children.splice(i, 1)
+                // remove the existing child
+                children.splice(newChildIndex, 1)
             }
         })
 
@@ -488,6 +493,29 @@ class Eleos {
                     return {succeeded: false, error: 'Guardian instance expexcted'}
                 }
                 this._people.set(g.display, g.person)
+            }
+        })
+      
+        return {succeeded: true};
+    }
+
+    addOtherBenificiaries(benificiaries: EleosRole[]): EleosApiResult {
+        // make sure that none of the benificiaries is principal or spouse himself
+        benificiaries.forEach(b => {
+            const existingPerson = this._people.get(b.display)
+            if (existingPerson) {
+                if (!existingPerson.isOtherBenificiary) {
+                    if (existingPerson.isPrincipal || existingPerson.isSpouse || existingPerson.isChild) {                     
+                        return {succeeded: false, error: 'Benificiaries cannot be the existing subjects of the will'}
+                    } else {
+                        existingPerson.addRole(b)
+                    }
+                }
+            } else {
+                if (!(b instanceof EleosRole)) {
+                    return {succeeded: false, error: 'Benificiaries instance expexcted'}
+                }
+                this._people.set(b.display, b.person)
             }
         })
       

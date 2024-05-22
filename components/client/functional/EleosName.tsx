@@ -37,7 +37,6 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
      * @param isValid 
      */
     const onchange = (name:string, value: string, isValid: boolean) => {
-        console.log({ name, value, isValid})
         let isValidNow = false
         switch(name) {
             case NAME_FIRSTNAME:
