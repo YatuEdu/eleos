@@ -227,23 +227,29 @@ class Eleos {
     get assetsNeedDistribution() {
         return this._assets.filter(asset => 
             asset.type !== EleosAssetType.lifeInsurance && 
-            asset.type !== EleosAssetType.investment &&
-            asset.ownership !== EleosAssetOwnerShipType.prenuptial &&
             asset.ownership !== EleosAssetOwnerShipType.trust
            )
         }
 
+    /**
+     * The following assets are the assets that need to be distributed if the spouse is deceased
+     */
     get assetsSurvidedBySpouse() { 
         return this.assetsNeedDistribution
-                    .filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
-                                (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.spouse))
+                    .filter(a => a.ownership === EleosAssetOwnerShipType.joint || 
+                           (a.ownership === EleosAssetOwnerShipType.prenuptial && a.spousePercentage ? a.spousePercentage > 0 : false) ||
+                           (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.spouse))
     }  
 
+    /**
+     * The following assets are the assets that need to be distributed if the principal is deceased
+     */
     get assetsSurvidedByPrincipal() { 
         return this.assetsNeedDistribution
                     .filter(a => a.ownership === EleosAssetOwnerShipType.joint ||
-                                (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.principal) ||
-                                (a.ownership === EleosAssetOwnerShipType.individualForSingle))
+                           (a.ownership === EleosAssetOwnerShipType.prenuptial && a.principalPercentage ? a.principalPercentage > 0 : false) ||
+                           (a.ownership === EleosAssetOwnerShipType.separate && a.owner === this.principal) ||
+                           (a.ownership === EleosAssetOwnerShipType.individualForSingle))
     }
     
     deleteOnePersonByRole(role: EleosRoleId): EleosPerson | undefined {

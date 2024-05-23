@@ -196,7 +196,7 @@ const AddChildren: React.FC = () => {
             <div className="mt-4">
                 {childrenStatus === EleosChildrenStatusValue.hasChildren && (
                 <div className='ml-2 mr-2'>
-                    {childrenList.length > 0 && <EleosLabel text="List of children" />}
+                    {childrenList.length > 0 && <EleosLabel text="List of every child in the family" />}
                     <EleosItemsList entities={childrenList} onDelete={onDeleteName} />
                     <ConfirmationDialog
                         open={openConfirmationDialog}
