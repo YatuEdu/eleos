@@ -68,6 +68,7 @@ const NAME_NOTE = 'note'
 const NAME_TYPE = 'type'
 const NAME_OWNERSHIP = 'ownership'
 const NAME_PRINCIPAL_PCT = 'principal_pct'
+const NAME_SPOUSE_PCT = 'spouse_pct'
 const NAME_OWNER = 'owner'
 const NAME_RESET = 'reset'
 const LOCATION_LABEL_LOC = 'Location'
@@ -143,6 +144,10 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
             case NAME_PRINCIPAL_PCT:
                 newState = { ...state, principalPercentage: +action.value }
                 break
+            case NAME_SPOUSE_PCT:
+                newState = { ...state, principalPercentage: 100 - (+action.value) }
+                break
+
             case NAME_OWNER:
                 newState = { ...state, owner: action.value }    
                 break
@@ -240,15 +245,30 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                         <EleosSelect name={NAME_OWNERSHIP} options={ownerShipTypeLabelValuePairs}
                                     onChange={(selectedOption) => dispatch({type: NAME_OWNERSHIP, value: selectedOption ? selectedOption.value: ''})} 
                                     value={{label: state.ownerShip, value: state.ownerShip}} />
-                         {state.ownerShip === EleosAssetOwnerShipType.joint && 
-                            <div>
-                                <EleosLabel text={`Percentage by ${principal}`} />
-                                <EleosInputBase 
-                                    value={state.principalPercentage ? state.principalPercentage+'' : '50'} 
-                                    mustHave={true} 
-                                    name={NAME_PRINCIPAL_PCT} 
-                                    onTextEntered={(value, vliadCode) => dispatch({type: NAME_PRINCIPAL_PCT, value: value}) } 
-                                />
+                         {state.ownerShip === EleosAssetOwnerShipType.joint || state.ownerShip === EleosAssetOwnerShipType.prenuptial && 
+                            <div className="grid grid-cols-6 gap-0">
+                                <div className="col-span-3 mt-2 mr-2">
+                                    <EleosLabel text={`${principal}`} />
+                                    <EleosInputBase 
+                                        value={state.principalPercentage ? state.principalPercentage + '' : '50'} 
+                                        mustHave={true} 
+                                        name={NAME_PRINCIPAL_PCT}
+                                        min={0}
+                                        max={100}
+                                        onTextEntered={(value, vliadCode) => dispatch({type: NAME_PRINCIPAL_PCT, value: value}) } 
+                                    />
+                                </div>
+                                <div className="col-span-3 text-left  mt-2 ml-2">
+                                    <EleosLabel text={`${spouse}`} />
+                                    <EleosInputBase 
+                                        value={state.principalPercentage ? 100 - state.principalPercentage + '' : '50'} 
+                                        mustHave={true} 
+                                        name={NAME_SPOUSE_PCT} 
+                                        min={0}
+                                        max={100}
+                                        onTextEntered={(value, vliadCode) => dispatch({type: NAME_SPOUSE_PCT, value: value}) } 
+                                    />
+                                </div>
                             </div>
                         }
                         {state.ownerShip === EleosAssetOwnerShipType.separate && <>
