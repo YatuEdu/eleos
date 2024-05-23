@@ -15,8 +15,10 @@ export default async function page({}) {
   //const mySecurityContext = new SecurityContext(session)
 
   return (
-    <main className="px-12 py-12">
-      <Title>Login</Title>
+    <main className="px-12 py-0">
+      <img src="/image/family2.png" alt="Eleos Logo" className="w-600 h-auto" />
+      <img src="/image/family1.png" alt="Eleos Logo" className="w-600 h-auto" />
+      <img src="/image/family.png" alt="Eleos Logo" className="w-600 h-auto" />
       <div className="mt-8">
         <div className="mt-4">
           <LoginButton />

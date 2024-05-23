@@ -37,9 +37,7 @@ export default function RootLayout({
                   justifyContent: 'center', 
                   alignItems: 'flex-start', 
                   height: '100vh', 
-                  backgroundImage: 'url(/image/serene.png)', 
-                  backgroundSize: 'cover', 
-                  backgroundPosition: 'bottom' }}>
+                 }}>
                 <WizardProvider>
                   {children}
                 </WizardProvider>
