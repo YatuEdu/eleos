@@ -452,7 +452,7 @@ class Eleos {
         // updatre children one by one
         childrenExisting.forEach((ec, i) => {
             const newChildIndex = children.findIndex(ch => ch.childId === ec.childId)
-            if (newChildIndex != -1) {
+            if (newChildIndex > -1) {
                 const newChild = children[newChildIndex]
                 if (newChild.signature !== ec.signature) {
                     this._people.set(newChild.display, newChild.person)

@@ -5,7 +5,7 @@ export enum EleosAssetOwnerShipType {
     individualForSingle = 'Individually Owned Assets',
     separate = 'Separate Assets for each spouse',
     trust = 'Owned by a trust',
-    prenuptial = 'Governed by a prenuptial agreement',
+    prenuptial = 'Use prenuptial agreement',
     other = 'Untitiled Assets',
 }
 

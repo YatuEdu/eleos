@@ -46,6 +46,7 @@ type AddPersonModalProps = {
     buttonText: string,
     role: EleosRoleId,
     existingPeople: EleosRole[],
+    existingPerson?: EleosRole,
     needDob?: boolean,
     needEmail?: boolean,
     order? : number,
@@ -55,22 +56,24 @@ type AddPersonModalProps = {
 const NAME_DOB = 'dob'
 const NAME_EMAIL = 'email'
 
-const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, existingPeople, needDob, needEmail, order, onSave }) => {
+const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, existingPeople, existingPerson, needDob, needEmail, order, onSave }) => {
     const [open, setOpen] = useState(false)
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
-    const [midtName, setMidName] = useState('')
-    const [birthYear, setBirthYear] = useState('')
-    const [email, setEmail] = useState('')
-    const [suffix, setSuffix] = useState('')
-    const [relationShip, setRelationShip] = useState('')
+    // console.log('existingPerson', existingPerson)
+    const [firstName, setFirstName] = useState(existingPerson ? existingPerson.person.firstName : '')
+    const [lastName, setLastName] = useState(existingPerson ? existingPerson.person.lastName : '')
+    const [midtName, setMidName] = useState(existingPerson ? existingPerson.person.middleName : '')
+    // @ts-ignore
+    const [birthYear, setBirthYear] = useState(existingPerson && existingPerson.birthYear ? existingPerson.birthYear.toString() : '')
+    const [email, setEmail] = useState(existingPerson && existingPerson.person.email ? existingPerson.person.email: '')
+    const [suffix, setSuffix] = useState(existingPerson ? existingPerson.person.suffix : '')
+    const [relationShip, setRelationShip] = useState(existingPerson ? existingPerson.person.relationship : '')
     const [valid, setValid] = useState(setValidBasedOnState())
     const [invalidEmail, setInvalidEmail] = useState((needEmail && email || !needEmail) ? '' : WARNING_REQUIRED)
     const [invalidDob, setInvalidDob] = useState((needDob && birthYear || !needDob) ? '' : WARNING_REQUIRED)
     const [invalidRelation, setInvalidRelation] = useState(relationShip ? '' : WARNING_REQUIRED)
     const [existingPersonName, setExistingPersonName] = useState('')
     
-    const titleText = role === EleosRoleId.child ? 'Add a child' :
+    const titleText = role === EleosRoleId.child ? existingPerson ? 'Update a child' : 'Add a child' :
     role === EleosRoleId.child_guardian ? 'Add a guardian' :
     role === EleosRoleId.other_benificiary ? 'Add a benificiary' :
     role === EleosRoleId.executor ? 'Add an exuctor': ''
@@ -85,15 +88,17 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
      * Reset the form when the dialog is closed
      */
     useEffect(() => {   
-        setBirthYear('')
-        setEmail('')
-        setFirstName('')
-        setLastName('')
-        setMidName('')
-        setSuffix('')
-        setRelationShip('')
-        setExistingPersonName('')
-        setValid(false)
+        if (!existingPerson) {
+            setBirthYear('')
+            setEmail('')
+            setFirstName('')
+            setLastName('')
+            setMidName('')
+            setSuffix('')
+            setRelationShip('')
+            setExistingPersonName('')
+            setValid(false)
+        }
     }, [open])
 
     function setValidBasedOnState() {
@@ -186,7 +191,16 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     }
      
     const handleSave = () => {
-        const newPerson = createNewPerson()
+        let newPerson = existingPerson
+        if (newPerson) {
+            newPerson = createNewPerson()
+            if (newPerson instanceof EleosChild && existingPerson instanceof EleosChild) {
+                newPerson.childId = existingPerson.childId
+            }
+        } else {
+            newPerson = createNewPerson()
+        }
+
         onSave(newPerson)
         setOpen(false)
     }
@@ -253,11 +267,11 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                     {existingPersonName === '' && 
                     <div>
                         <EleosName
-                        firstNameInput={''}
-                        middleNameInput={''}
-                        lastNameInput={''}
-                        suffixInput={''}
-                        onNameChange={onChildNameChange}
+                            firstNameInput={firstName}
+                            middleNameInput={midtName}
+                            lastNameInput={lastName}
+                            suffixInput={suffix}
+                            onNameChange={onChildNameChange}
                         /> 
                         
                         <div className='ml-2 mr-2'>

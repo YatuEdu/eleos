@@ -26,6 +26,7 @@ import { HelpTextId }
                 from "@/lib/client/model/EleosMisc"
 import EleosPrincipal 
                 from "@/lib/client/model/EleosPrincipal"
+import EleosTitle from "../atoms/EleosTitle"
 
 const NAME_EMAIL = 'email'
 const NAME_STATE = 'state'
@@ -145,28 +146,27 @@ const BasicInfo: React.FC = () => {
  
     return (
         <>
-        <div className="mb-8 flex items-center">
+        <div className="mb-8 ml-4 flex items-center">
             <h1 style={{ fontSize: '2rem', color: 'inherit', marginRight: '1rem', display: 'inline-block' }}>Enter your basic information</h1>
         </div>
         <main style={{ position: 'relative' }}>
+            <div className="ml-4 mr-4 mb-8">
+                <EleosLabel text="The state you live in" invalidMessage={invalidState} />
+                <EleosAutoComplete
+                    selectedOption={state}
+                    onOptionSelect={onStateSelection}
+                    options={allEleosStates.map(s => s.name)}
+                />
+                <EleosLabel text="Your email" invalidMessage={invalidEmail} />
+                <EleosInputBase 
+                    value={email2} 
+                    mustHave={true} 
+                    name={NAME_EMAIL} 
+                    regEx={REGEX_EMAIL} 
+                    onTextEntered={(value, validCode) => onEmailChange(value, validCode)} />
+            </div>
             <div className="grid grid-cols-2 gap-1 ml-2">
-                <div>
-                    <EleosLabel text="Select the state you live in" invalidMessage={invalidState} />
-                    <EleosAutoComplete
-                        selectedOption={state}
-                        onOptionSelect={onStateSelection}
-                        options={allEleosStates.map(s => s.name)}
-                    />
-                </div>
-                <div>
-                    <EleosLabel text="Your email" invalidMessage={invalidEmail} />
-                    <EleosInputBase 
-                        value={email2} 
-                        mustHave={true} 
-                        name={NAME_EMAIL} 
-                        regEx={REGEX_EMAIL} 
-                        onTextEntered={(value, validCode) => onEmailChange(value, validCode)} />
-                </div>
+                
             </div>
             <EleosName 
                 firstNameInput={firstName2}

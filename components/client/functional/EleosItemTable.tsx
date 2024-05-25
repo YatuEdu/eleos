@@ -56,7 +56,7 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
-                            <TableCell key={column.label} sx={{ backgroundColor: '#74848e', color: '#FFD700', fontWeight: 'bold', fontSize: '1rem' }}>{column.label}</TableCell>
+                            <TableCell key={column.label} sx={{ backgroundColor: '#D3D3D3', color: 'bleck', fontSize: '1rem' }}>{column.label}</TableCell>
                         ))}
                     </TableRow>
                 </TableHead>

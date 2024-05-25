@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React from 'react';
 import styled from 'styled-components';
@@ -6,11 +6,17 @@ import styled from 'styled-components';
 const MainPage = () => {
   return (
     <Container>
-      <PhotoContainer>
-        <MainPhoto src="/image/family2.png" alt="Main Photo" />
-        <StartButton href="/basics">Start Protecting Your Legacy</StartButton>
-      </PhotoContainer>
-      
+      <VideoButton href="/basics">
+        <VideoBackground autoPlay loop muted>
+          <source src="/videos/home.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </VideoBackground>
+        <ButtonText>
+          Start the process
+          <br />
+          and give your family a peace of mind
+        </ButtonText>
+      </VideoButton>
     </Container>
   );
 };
@@ -24,44 +30,40 @@ const Container = styled.div`
   align-items: center;
   height: 100vh;
   background-color: #f8f9fa;
+  padding: 20px;
+`;
+
+const VideoButton = styled.a`
   position: relative;
-  padding: 4 20px;
-  margin-top: 6px;
-`;
-
-const PhotoContainer = styled.div`
-  position: relative;
-`;
-
-const MainPhoto = styled.img`
-  max-width: 80%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-`;
-
-const ButtonWrapper = styled.div`
-  position: absolute;
-  top: 10%;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-`;
-
-const StartButton = styled.a`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 10px 20px;
-  background-color: green;
-  color: white;
-  text-align: center;
-  text-decoration: none;
+  width: 50%;
+  max-width: 400px; /* Limit the maximum width */
+  overflow: hidden;
   border-radius: 5px;
-  font-size: 1rem;
-  max-width: 200px;
-  word-wrap: break-word;
-  &:hover {
-    background-color: green;
-  }
+  text-align: center;
+  color: white;
+  text-decoration: none;
+  background-color: green; /* Fallback for browsers that don't support video */
+  padding-top: 56.25%; /* 16:9 aspect ratio */
 `;
+
+const VideoBackground = styled.video`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+`;
+
+const ButtonText = styled.span`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+`;
+
