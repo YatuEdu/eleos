@@ -33,6 +33,7 @@ import EleosChildrenStatus, { EleosChildrenStatusValue }
                 from '@/lib/client/model/EleosChildrenStatus';
 import { EleosRelationshipType } from '@/lib/client/model/EleosRelationshipType';
 import EleosRole, { EleosRoleId } from '@/lib/client/model/EleosRole';
+import ChildrenTable from '../functional/ChildrenTable';
 
 
 const AddChildren: React.FC = () => {
@@ -76,11 +77,13 @@ const AddChildren: React.FC = () => {
             return;
         }
 
-        if (childrenList.find(child => child.display === newChild.display)!== undefined) {
+        if (childrenList.find(child => child.display === newChild.display) !== undefined) {
             console.log(childrenList)
             alert('This child already exists')
             return;
         }
+        // before child is formally added to Elso, set the childId toa negative number
+        newChild.childId = (childrenList.length + 1) * -1
         setChildrenList([...childrenList, newChild])
         setValid(true)
      }
@@ -165,10 +168,21 @@ const AddChildren: React.FC = () => {
         }
     }
 
+    const childUpdated = (childUpdated: EleosChild) => {
+        const childrenUodated = childrenList.map(c => {
+            if (c.childId === childUpdated.childId) {
+                //console.log('childUpdated', childUpdated)
+                return childUpdated
+            }
+            return c
+        })
+        setChildrenList(childrenUodated)
+    }
+
     return (
         <div>
-            <div className="mb-8">
-                <h1 className="text-2xl">Add your children as heirs</h1>
+            <div className="mb-8 ml-4">
+                <h1 className="text-2xl">Add all children</h1>
             </div>
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
@@ -180,7 +194,12 @@ const AddChildren: React.FC = () => {
                     direction='row'
                 />
             </div>
-            <div className="flex items-left ml-2">
+            <div className="mt-4">
+                {childrenList.length > 0 && (
+                    <ChildrenTable children={childrenList} className={'ml-4 mr-4'} onChildChange={(c) => childUpdated(c)}/>
+                )}
+            </div>
+            <div className="flex items-left ml-4">
                 {childrenStatus === EleosChildrenStatusValue.hasChildren && (
                     <>
                     <AddPersonModal 
@@ -191,21 +210,6 @@ const AddChildren: React.FC = () => {
                         onSave={onAddChild} />
                 
                     </>
-                )}
-            </div>
-            <div className="mt-4">
-                {childrenStatus === EleosChildrenStatusValue.hasChildren && (
-                <div className='ml-2 mr-2'>
-                    {childrenList.length > 0 && <EleosLabel text="List of every child in the family" />}
-                    <EleosItemsList entities={childrenList} onDelete={onDeleteName} />
-                    <ConfirmationDialog
-                        open={openConfirmationDialog}
-                        title="Are you sure you want remove this child?"
-                        message="Are you sure you want to do this?"
-                        onConfirm={handleConfirmDeletion}
-                        onCancel={handleCancelDeletion}
-                    />
-                </div>
                 )}
             </div>
             <EleosWizardButtonLayout leftChild={

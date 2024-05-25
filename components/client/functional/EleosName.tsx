@@ -67,7 +67,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
     }
 
     return (
-        <div className="grid grid-cols-2 gap-1 ml-2 mr-2">
+        <div className="grid grid-cols-2 gap-1 ml-4 mr-4">
             <div>
                 <EleosLabel text="First Name" invalidMessage={invalidFirstName}/>
                 <EleosInputBase 

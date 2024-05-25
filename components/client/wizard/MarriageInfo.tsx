@@ -14,6 +14,7 @@ import RadioButtonGroup
                 from '../atoms/EleosRadioGroup';
 import { EleosMaritalStatus, } 
                 from '@/lib/client/model/EleosDataTypes';
+import EleosTitle from '../atoms/EleosTitle';
 
 const RADIO_GROUP_TITLE = '';
 const maritalOptions = [
@@ -133,8 +134,8 @@ const MarriageInfo: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '90%' }}>
-             <div className="mb-8">
-                <h1 style={{ fontSize: '2rem', color: 'inherit' }}>Enter your marriage status</h1>
+             <div className="mb-8 ml-4">
+                <h1 style={{ fontSize: '2rem', color: 'inherit' }}>Your marriage status</h1>
             </div>
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
@@ -147,9 +148,7 @@ const MarriageInfo: React.FC = () => {
                 />
             </div>
             {maritalSatus === EleosMaritalStatus.married && <div>
-                <div className="mb-4">
-                    <h1 style={{ fontSize: '1.5rem', color: 'inherit' }}>Enter the name of your spouse</h1>
-                </div>
+                <EleosTitle text='Spouse info' />
                 <EleosName 
                     firstNameInput={spouseFirstName}
                     middleNameInput={sposeMiddleName}

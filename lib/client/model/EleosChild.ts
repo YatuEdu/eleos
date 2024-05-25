@@ -31,6 +31,10 @@ class EleosChild extends EleosRole {
         return this._birthYear;
     }
 
+    get age(): number {
+        return new Date().getFullYear() - this.birthYear
+    }
+
     get isMinor(): boolean {
         return new Date().getFullYear() - this.birthYear < 18
     }

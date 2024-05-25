@@ -22,6 +22,8 @@ import { HelpTextId }
                 from '@/lib/client/model/EleosMisc';
 import EleosRole, { EleosRoleId }                
                 from '@/lib/client/model/EleosRole';
+import GuadianTable from '../functional/GaurdianTable';
+import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
 
 const ChildrenGuardian: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -103,61 +105,61 @@ const ChildrenGuardian: React.FC = () => {
         setGuardians(newGuardians);
     }
 
+    const miniros = ref.current.minors.map((m) => m.display).join(', ')
+
     return (
         <>
-        <div className="grid grid-cols-12 gap-1">
-            <div className="col-span-7 border border-gray-600 rounded-md shadow-md">
+            <div className='ml-4 mr-4'>
+                <EleosLabel classNames='mb-2 mt-0'  text={`Guardians for ${ref.current.possessivePronouns.toLowerCase()} minors (${miniros})`} />
                 {/* List of all guadians */}
                 {guardians.length > 0 && (
-                    <div>
-                        <EleosLabel text="List of gaurdians" />
-                        <EleosItemsList 
-                            entities={guardians} 
-                            onDelete={onDeleteGuardian} />
+                    <div >
+                       <GuadianTable guardians={guardians} className="mt-2" onGuardianChange={onAddGaudian} />
                     </div>
                 )}
                 {/* Add your controls here */}
+            </div>
+            <div className="flex items-left ml-4">
                 {guardians.length < 3 && (
-                    <>
-                    <AddPersonModal
-                        buttonText={buttonText}
-                        role={EleosRoleId.child_guardian}
-                        needEmail={true}
-                        needDob={false}
-                        existingPeople={existingPeople}
-                        order={guardians.length + 1}
-                        onSave={onAddGaudian}
-                    />
-                    <EleosHelpTips helpTextEnId={HelpTextId.Guardians} />
-                    </>
- 
+                    <div>
+                        <AddPersonModal
+                            buttonText={buttonText}
+                            role={EleosRoleId.child_guardian}
+                            needEmail={true}
+                            needDob={false}
+                            existingPeople={existingPeople}
+                            order={guardians.length + 1}
+                            onSave={onAddGaudian}
+                        />
+                        {/* <EleosHelpTips helpTextEnId={HelpTextId.Guardians} /> */}
+                    </div>
                 )}
             </div>
-            <div className='col-span-5'>
-                <EleosLabel text="List of minor children" />
-                <EleosItemsList entities={minors} />
-            </div>
-        </div>
-        <div className="flex justify-between mt-4">
-             <EleosButton
-                    type='wizard'
-                    disabled={false}
-                    text=" < Back"
-                    onClick={onPrev}
-                    tipDisable="Enter all the required info and then submit"
-                    tipEnabled="Click to save and continue"
-                />
+            <div>
+        <EleosWizardButtonLayout
+                leftChild={
                 <EleosButton
+                        type='wizard'
+                        disabled={false}
+                        text=" < Back"
+                        onClick={onPrev}
+                        tipDisable="Enter all the required info and then submit"
+                        tipEnabled="Click to save and continue"
+                    />
+                }
+                rightChild={ <EleosButton
                     type='wizard'
                     disabled={!valid}
                     text="Save and Continue >"
                     onClick={onNext}
                     tipDisable="Enter all the required info and then submit"
                     tipEnabled="Click to save and continue"
-                />
+                    />
+                }   
+            />
         </div>
         </>
-    );
+    )
 };
 
 export default ChildrenGuardian;
