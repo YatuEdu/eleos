@@ -110,7 +110,7 @@ class EleosPerson extends EleosEntity {
     }
 
     get display(): string {
-        return `${this._firstName} ${this._middleName} ${this._lastName} ${this._suffix}`
+        return `${this._firstName}${this._middleName ? ' ' + this._middleName : ''} ${this._lastName}${this._suffix ? ' ' + this._suffix : ''}`
     }
 
     get signature(): string {
@@ -132,14 +132,25 @@ class EleosPerson extends EleosEntity {
         return a.firstName === b.firstName && a.middleName === b.middleName && a.lastName === b.lastName && a.suffix === b.suffix
     }
 
+    updatePerson(person: EleosPerson) {
+        this._firstName = person.firstName
+        this._middleName = person.middleName
+        this._lastName = person.lastName
+        this._suffix = person.suffix
+        this._relationship = person.relationship
+        //this._email = person.email
+        //this._phone = person.phone
+    }
+
     addRole(role: EleosRole) {
         if (this._roles[role.roleId] !== undefined) {
             return
         }
 
-        this._roles[role.roleId] = role
+        // we cannot assign a role to a person since the role might point to another person
+        // we need to clone the role's data and assign it to the person
+        this._roles[role.roleId] = role.clone(this)
     }  
-
 }
 
 export default EleosPerson

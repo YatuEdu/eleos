@@ -6,3 +6,31 @@ export function normalizeName(name: string) {
     }
     return ''
 }
+
+export function autoCompleteEmail(value: string): string {
+    if (!value) 
+        return '';
+
+    let newEmail = value.toLowerCase();
+
+    // Check if the user has entered '@' and provide a suggestion if not already present
+    if (value.includes('@')) {
+        if (value.endsWith('@g')) {
+            newEmail = value + 'mail.com';
+        } else if (value.endsWith('@h')) {
+            newEmail = value + 'otmail.com';
+        } else if (value.endsWith('@y')) {
+            newEmail = value + 'ahoo.com';
+        } else if (value.endsWith('@a')) {
+            newEmail = value + 'ol.com';
+        } else if (value.endsWith('@q')) {
+            newEmail = value + 'q.com';
+        } else if (value.endsWith('@i')) {
+            newEmail = value + 'cloud.com';
+        } else if (value.endsWith('@o')) {
+            newEmail = value + 'utlook.com';
+        }
+    }
+
+    return newEmail;
+}   

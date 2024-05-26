@@ -6,12 +6,11 @@ import { EleosRelationshipType } from './EleosRelationshipType';
 
 
 class EleosGuardian extends EleosRole {
-    private _email: string
     private _order: number
 
     constructor(person: EleosPerson, email: string, order: number) {
         super(person, EleosRoleId.child_guardian);
-        this._email = email;
+        this._person.email = email;
         this._order = order;
     }
 
@@ -22,11 +21,22 @@ class EleosGuardian extends EleosRole {
         return new EleosGuardian(person, email, order)
     }
 
+    updateRole(guardian: EleosGuardian) {
+        this._person.email = guardian._person.email
+        this._order = guardian._order
+    }
+
+    clone (person: EleosPerson): EleosRole {
+        return new EleosGuardian(person, this.email, this.order)
+    }
+
     /**
      * getters
      */
 
-    get order() { return this._order; } 
+    get order() { return this._order } 
+
+    set order(order: number) { this._order = order } 
 
     get isPrimary() { return this._order === 1 }
 
@@ -34,12 +44,16 @@ class EleosGuardian extends EleosRole {
 
     get isTertiary () { return this._order === 3 }
 
+    get email() { return this._person.email }
+
+    set email(email: string) { this._person.email = email }
+
     /**
      * public methods
      */
 
     get signature(): string {
-        return `${this.display} ${this.isPrimary ? '(primary guardian)' : this.isSecondary ? '(alternative guardian1)' : '(alternative guardian2)'}`
+        return `${this.email} ${this.order}'}`
     }
 }
 

@@ -26,7 +26,7 @@ class EleosRole extends EleosEntity {
         super()
         this._id = id
         this._person = person
-        person.addRole(this)
+        person.roles[id] = this
     }
 
     get person () {
@@ -39,6 +39,14 @@ class EleosRole extends EleosEntity {
 
     get roleId() {
         return this._id
+    }
+
+    updateRole(role: EleosRole) {
+        throw new Error('Method not implemented.')
+    }
+    
+    clone(person: EleosPerson): EleosRole {
+        throw new Error('Method not implemented.')
     }
 }
 

@@ -39,6 +39,7 @@ import OtherBenificiary
 import ChildrenGuardian from '../../wizard/ChildrenGuaddian';
 import { EleosRoleId } 
                 from '@/lib/client/model/EleosRole';
+import { autoCompleteEmail } from '@/lib/common/utilities/StringUtil';
 
 
 
@@ -74,7 +75,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     const [existingPersonName, setExistingPersonName] = useState('')
     
     const titleText = role === EleosRoleId.child ? existingPerson ? 'Update a child' : 'Add a child' :
-    role === EleosRoleId.child_guardian ? 'Add a guardian' :
+    role === EleosRoleId.child_guardian ? existingPerson ? 'Update a guardian' : 'Add a guardian' :
     role === EleosRoleId.other_benificiary ? 'Add a benificiary' :
     role === EleosRoleId.executor ? 'Add an exuctor': ''
 
@@ -121,6 +122,11 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     }
     
     const handleExistingPersonChange = (value: string) => {
+        let existingPerson = existingPeople.find( p => p.display === value) 
+        if (!existingPerson) {
+            throw new Error('Existing person is not found, impossible scenario!')
+        }
+        setEmail(existingPerson.person.email)
         setExistingPersonName(value)
         setValid(!!value)
     }
@@ -196,6 +202,8 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
             newPerson = createNewPerson()
             if (newPerson instanceof EleosChild && existingPerson instanceof EleosChild) {
                 newPerson.childId = existingPerson.childId
+            } else if (newPerson instanceof EleosGuardian && existingPerson instanceof EleosGuardian) {
+                newPerson.order = existingPerson.order
             }
         } else {
             newPerson = createNewPerson()
@@ -215,9 +223,10 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 setInvalidDob(WARNING_REQUIRED)
             }
         } else if (name === NAME_EMAIL) {
-            setEmail(value)
-            if (value) {
-                isValid = new RegExp(REGEX_EMAIL).test(value)
+            const email = autoCompleteEmail(value)
+            setEmail(email)
+            if (email) {
+                isValid = new RegExp(REGEX_EMAIL).test(email)
                 setInvalidEmail(isValid ? '' : WARNING_INVALID)
             } else {
                 setInvalidEmail(WARNING_REQUIRED)
@@ -255,7 +264,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                     {titleText}</DialogTitle>
                 <DialogContent>
                     {existingPeople.length > 0 && 
-                        <div className="ml-2 mr-2">
+                        <div className="ml-4 mr-4">
                             <EleosLabel text="Select a person from the following:" invalidMessage={invalidDob} />
                             <EleosSelect name={'EXISTING_PEOPLE'} 
                                          options={existingPeople.map((p) => ({ label: p.display, value: p.display }))} // Fix: Wrap the object in parentheses instead of double curly braces
@@ -264,7 +273,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                             />
                         </div>
                     }
-                    {existingPersonName === '' && 
+                    {existingPersonName === '' && (!existingPerson || role === EleosRoleId.child) && 
                     <div>
                         <EleosName
                             firstNameInput={firstName}
@@ -274,14 +283,14 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                             onNameChange={onChildNameChange}
                         /> 
                         
-                        <div className='ml-2 mr-2'>
+                        <div className='ml-4 mr-4'>
                             <EleosLabel text="Relationship" invalidMessage={invalidRelation} />
                             <EleosSelect name={'RELATIONSHIP'} 
                                         options={relationSelection}
                                         onChange={(selectedOption) => handleRelationShipChange(selectedOption ? selectedOption.value : '')}
                                         value={{label:relationShip, value: relationShip}} />
                         </div>
-                        {needDob && <div className="ml-2 mr-2">
+                        {needDob && <div className="ml-4 mr-4">
                         <EleosLabel text="Birth Year" invalidMessage={invalidDob} />
                         <EleosInputBase
                             value={birthYear} 
@@ -293,7 +302,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                         </div>
                         }
                         {needEmail && 
-                        <div className='ml-2 mr-2'>
+                        <div className='ml-4 mr-4'>
                             <EleosLabel text="Email" invalidMessage={invalidEmail} />
                             <EleosInputBase
                                 value={email} 

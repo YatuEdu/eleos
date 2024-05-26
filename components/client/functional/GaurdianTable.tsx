@@ -62,11 +62,9 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
         } else {
             return {icon: <GroupIcon />, toolTip: guardian.person.relationship}
         }
-
-        throw new Error('Invalid relationship type')
     }
 
-    const onUpdateChild = (c:EleosRole) => {
+    const onUpdateGuardian = (c:EleosRole) => {
         onGuardianChange(c as EleosGuardian)
     }
 
@@ -79,14 +77,16 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
                     Relation: icon.icon,
                     ToolTip: icon.toolTip,
                     Email: g.person.email, 
-                    Modify: <div className='mt-0'>
+                    Note: g.isPrimary ? 'Primary guardian' : g.isSecondary ? 'Alternate guardian' : 'Alternate guardian 2',
+                    '   ': <div className='mt-0'>
                          <AddPersonModal
                             buttonText={'Change'}
                             role={EleosRoleId.child_guardian}
                             existingPeople={[]}
                             existingPerson={g}
+                            order={g.order}
                             needEmail={true}
-                            onSave={onUpdateChild} />
+                            onSave={onUpdateGuardian} />
                     </div>
                         
                 }
@@ -95,7 +95,8 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
                 { label: 'Name', type: 'text' },
                 { label: 'Relation', type: 'icon',},
                 { label: 'Email', type: 'text' },
-                { label: 'Modify', type: 'button' },
+                { label: 'Note', type: 'text' },
+                { label: '   ', type: 'button' },
             ]}
         />
       
