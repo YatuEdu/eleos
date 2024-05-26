@@ -49,12 +49,15 @@ class Eleos {
     init(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState) {
         const newPrincipal = EleosPrincipal.create(firstName, middleName, lastName, suffix, email, state)
         //console.log('Principal created', newPrincipal)
-        const principalOld = this.findOnePersonByRole(EleosRoleId.principal)
+        const principalOld = this.findOnePersonByRole(EleosRoleId.principal) as EleosPrincipal
         let addNew = true
         if (principalOld) {
             if (principalOld.signature !== newPrincipal.signature) {
-                // principal already exists, update the principal
-                this._people.delete(principalOld.display)
+                const result = this.updateRole(principalOld, newPrincipal)
+                if (result.succeeded === false) {
+                    return result
+                }
+                    
                 console.log('Principal already exists, update the principal', principalOld, newPrincipal)
             } else {
                 addNew = false
@@ -68,6 +71,30 @@ class Eleos {
             
         // wizard move to the BASIC_INFO step
         this._steps.push(WizardStep.BASIC_INFO)
+        return {succeeded: true}
+    }
+
+    /**
+     * A common scenario is that the user may want to update it's role related info such as email, address, etc.
+     * 
+     * @param oldRole 
+     * @param newRole 
+     * @returns 
+     */
+    updateRole<T extends EleosRole>(oldRole: T, newRole: T): EleosApiResult {
+        const existingPerson = this._people.get(newRole.person.display)
+        if (existingPerson) {
+            return {succeeded: false, error: `The person with the same name [${existingPerson.relationship} ${existingPerson.display}] already exists. Please make sure to check your name spelling.`}
+        }
+        const oldKey = oldRole.display
+        oldRole.updateRole(newRole)
+
+        // person key changed? (this happens if a person's name is updated)
+        if (oldKey !== newRole.display) {
+            this._people.delete(oldKey)
+            this._people.set(newRole.display, oldRole.person)
+        }
+        return {succeeded: true}
     }
 
      /**
@@ -333,17 +360,13 @@ class Eleos {
             throw Error('Principal is not set')
         }
         const newSpouse = EleosSpouse.create(firstName, middleName, lastName, suffix)
-        const spouseOld = this.findOnePersonByRole(EleosRoleId.spouse)
+        const spouseOld = this.findOnePersonByRole(EleosRoleId.spouse) as EleosSpouse
         if (spouseOld) {
             if (spouseOld.display !== newSpouse.display) {
-                const existingPerson = this._people.get(newSpouse.display)
-                // make sure spouse and principal are not the same
-                if (existingPerson) {
-                    return {succeeded: false, error: 'Spouse cannot have the same name as other people. Please double check your spelling'}
+                const result = this.updateRole(spouseOld, newSpouse)
+                if (result.succeeded === false) {
+                    return result
                 }
-                // spouse already exists, update the spouse
-                this._people.delete(spouseOld.display)
-                this._people.set(newSpouse.display, newSpouse.person) 
                 console.log('Spouse already exists, update the spouse name in case was spelled wrong')
             }
 
@@ -422,7 +445,7 @@ class Eleos {
         // 1) check duplicated names
        const existing = children.find(c => this.checkPersonExists(c.person.display))
        if (existing) {
-            return {succeeded: false, error: `The person with the same name [${existing.display}] already exists. Please make sure to check your name spelling.`}
+            return {succeeded: false, error: `The person with the same name [${existing.person.relationship} ${existing.display}] already exists. Please make sure to check your name spelling.`}
         }
 
         // 2) add children one by one
@@ -455,9 +478,10 @@ class Eleos {
             if (newChildIndex > -1) {
                 const newChild = children[newChildIndex]
                 if (newChild.signature !== ec.signature) {
-                    this._people.set(newChild.display, newChild.person)
-                    console.log('Child already exists, update the child name in case was spelled wrong', ec.display, newChild.display)
-                    this._people.delete(ec.display)
+                    const result = this.updateRole(ec, newChild)
+                    if (result.succeeded === false) {
+                        return result
+                    }
                 }
                 // remove the existing child
                 children.splice(newChildIndex, 1)
@@ -483,7 +507,7 @@ class Eleos {
         
         // make sure that none of the guardian is principal or spouse himself
         guardians.forEach(g => {
-            const existingPerson = this._people.get(g.display)
+            const existingPerson = this._people.get(g.person.display)
             if (existingPerson) {
                 if (!existingPerson.isGuardian) {
                     if (existingPerson.isPrincipal || existingPerson.isSpouse) {                     
@@ -491,7 +515,13 @@ class Eleos {
                     } else if (existingPerson.isChild && (existingPerson.getRole(EleosRoleId.child) as EleosChild).isMinor) {
                         return {succeeded: false, error: 'Guardian cannot be minors'}
                     } else {
+                        existingPerson.email = g.email // important !!!
                         existingPerson.addRole(g)
+                    }
+                } else {
+                    // update the existing guardian
+                    if (existingPerson.getRole(EleosRoleId.child_guardian).signature !== g.signature) {
+                        (existingPerson.getRole(EleosRoleId.child_guardian) as EleosGuardian).updateRole(g)
                     }
                 }
             } else {

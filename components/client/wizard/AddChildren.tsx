@@ -196,7 +196,7 @@ const AddChildren: React.FC = () => {
             </div>
             <div className="mt-4">
                 {childrenList.length > 0 && (
-                    <ChildrenTable children={childrenList} className={'ml-4 mr-4'} onChildChange={(c) => childUpdated(c)}/>
+                    <ChildrenTable children={childrenList} className={'ml-4 mr-4'} onChildChange={childUpdated}/>
                 )}
             </div>
             <div className="flex items-left ml-4">

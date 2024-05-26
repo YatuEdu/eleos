@@ -27,6 +27,7 @@ import { HelpTextId }
 import EleosPrincipal 
                 from "@/lib/client/model/EleosPrincipal"
 import EleosTitle from "../atoms/EleosTitle"
+import { autoCompleteEmail } from "@/lib/common/utilities/StringUtil"
 
 const NAME_EMAIL = 'email'
 const NAME_STATE = 'state'
@@ -57,6 +58,7 @@ const BasicInfo: React.FC = () => {
     const [validName, setValidName] = useState(firstName && lastName ? true : false)
     const {setStep} = useWizard()
     const submitRef = useRef<HTMLButtonElement | null>(null)
+    const firstNameRef = useRef<HTMLInputElement | null>(null)
 
     const checkValid = () => {
        if (valid) {
@@ -81,31 +83,15 @@ const BasicInfo: React.FC = () => {
     }
 
     const onEmailChange = (value: string, validCode: number) => {
-        let newEmail = value;
+        let newEmail = autoCompleteEmail(value)
 
         // Check if the user has entered '@' and provide a suggestion if not already present
-        if (value.includes('@')) {
+        if (newEmail !== value) {
+            // autocompleted:
             validCode = 1
-            if (value.endsWith('@g')) {
-                newEmail = value + 'mail.com';
-            } else if (value.endsWith('@h')) {
-                newEmail = value + 'otmail.com';
-            } else if (value.endsWith('@y')) {
-                newEmail = value + 'ahoo.com';
-            } else if (value.endsWith('@a')) {
-                newEmail = value + 'ol.com';
-            } else if (value.endsWith('@q')) {
-                newEmail = value + 'q.com';
-            } else if (value.endsWith('@i')) {
-                newEmail = value + 'cloud.com';
-            } else if (value.endsWith('@o')) {
-                newEmail = value + 'utlook.com';
-            }   else {
-                validCode = -1
-            }
         }
 
-        console.log({ value, validCode, newEmail })
+        // console.log({ value, validCode, newEmail })
         setEmail(newEmail);
         setValid(validCode === 1 && validName)
         if (validCode === 0) {
@@ -138,7 +124,12 @@ const BasicInfo: React.FC = () => {
         }
         
         // initialize eleose object with the current values
-        ref.current.init(firstName2, middleName2, lastName2, suffix2, email2, mystate)
+        const result = ref.current.init(firstName2, middleName2, lastName2, suffix2, email2, mystate)
+        if (!result.succeeded) {
+            alert(result.error)
+            return
+        }
+
         // move to the next step
         const step = ref.current.nextStep()
         setStep(step)

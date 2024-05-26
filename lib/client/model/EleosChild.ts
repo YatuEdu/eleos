@@ -27,6 +27,15 @@ class EleosChild extends EleosRole {
         return new EleosChild(person, birthYear, id);
     }
 
+    updateRole(child: EleosChild): void {
+        this._person.updatePerson(child.person)
+        this._birthYear = child.birthYear
+    }
+
+    clone(person: EleosPerson): EleosRole {
+        return new EleosChild(person, this._birthYear, this._childId)
+    }
+
     get birthYear(): number {
         return this._birthYear;
     }
@@ -44,7 +53,7 @@ class EleosChild extends EleosRole {
     }
 
     get signature(): string {
-        return `${this.display} (${this._person.relationship} age: ${new Date().getFullYear() - this.birthYear})`
+        return `${this.display} ${this._person.relationship} ${this.birthYear}`
     }
 
     get childId(): number {

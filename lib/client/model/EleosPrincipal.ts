@@ -22,6 +22,12 @@ class EleosPrincipal extends EleosRole {
         return new EleosPrincipal(person, state)
     }
 
+    updateRole(principal: EleosPrincipal) {
+        this._person.updatePerson(principal._person)
+        this._person.email = principal._person.email
+        this._residenceState = principal._residenceState
+    }
+
     /**
      * overrides
      */

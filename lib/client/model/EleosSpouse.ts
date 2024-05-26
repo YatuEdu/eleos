@@ -16,6 +16,10 @@ class EleosSpouse extends EleosRole {
         return new EleosSpouse(person)
     }
 
+    updateRole(spouse: EleosSpouse) {   
+        this._person.updatePerson(spouse._person)
+    }
+
     /**
      * overrides
      */

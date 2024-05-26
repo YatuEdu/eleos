@@ -105,6 +105,17 @@ const ChildrenGuardian: React.FC = () => {
         setGuardians(newGuardians);
     }
 
+    const onGaudianChange = (guardianUpdated: EleosGuardian) => {
+        const guardiansUpdated = guardians.map(g => {
+            if (g.order === guardianUpdated.order) {
+                //console.log('childUpdated', childUpdated)
+                return guardianUpdated
+            }
+            return g
+        })
+        setGuardians(guardiansUpdated)
+    }
+
     const miniros = ref.current.minors.map((m) => m.display).join(', ')
 
     return (
@@ -114,7 +125,7 @@ const ChildrenGuardian: React.FC = () => {
                 {/* List of all guadians */}
                 {guardians.length > 0 && (
                     <div >
-                       <GuadianTable guardians={guardians} className="mt-2" onGuardianChange={onAddGaudian} />
+                       <GuadianTable guardians={guardians} className="mt-2" onGuardianChange={onGaudianChange} />
                     </div>
                 )}
                 {/* Add your controls here */}
