@@ -1,4 +1,4 @@
-import React, { useState } 
+import React, { useEffect, useRef, useState } 
                 from 'react';
 import EleosButton 
                 from '../atoms/EleosButton';
@@ -14,7 +14,10 @@ import RadioButtonGroup
                 from '../atoms/EleosRadioGroup';
 import { EleosMaritalStatus, } 
                 from '@/lib/client/model/EleosDataTypes';
-import EleosTitle from '../atoms/EleosTitle';
+import EleosTitle 
+                from '../atoms/EleosTitle';
+import { FIRST_NAME_ELEMENT_ID, focusOnDomElement } 
+                from '@/lib/client/utilies/UIHelper';
 
 const RADIO_GROUP_TITLE = '';
 const maritalOptions = [
@@ -22,7 +25,7 @@ const maritalOptions = [
     { value: EleosMaritalStatus.divorced, label: EleosMaritalStatus.divorced },
     { value: EleosMaritalStatus.single, label: EleosMaritalStatus.single },
     { value: EleosMaritalStatus.widowed, label: EleosMaritalStatus.widowed },
-];
+]
 
 const MarriageInfo: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -37,13 +40,8 @@ const MarriageInfo: React.FC = () => {
     const [sposeLastName, setSpouseLastName] = useState(spouse ? spouse.person.lastName : '')
     const [spouseSuffix, setSpouseSuffix] = useState(spouse ? spouse.person.suffix : '')
     const [valid, setValid] = useState(testValidness(spouseFirstName, sposeLastName, maritalSatus))
-  
-    if (ref && ref.current && ref.current.principal) {
-        console.log('principal', ref.current.principal)
-    } else {
-        console.log('principal', null)
-    }
-    
+    const [firstNameElement, setFirstNameElement] = useState<HTMLElement|null>(null)    
+
     const {setStep} = useWizard()
 
     const handleMarriageStatusChange = (status: string) => {
@@ -62,6 +60,7 @@ const MarriageInfo: React.FC = () => {
             setSpouseSuffix('')
             setValid(true)
         } else {
+            focusOnDomElement(FIRST_NAME_ELEMENT_ID)
             setValid(testValidness(spouseFirstName, sposeLastName, status as EleosMaritalStatus))
         }
     }
@@ -69,12 +68,12 @@ const MarriageInfo: React.FC = () => {
     function testValidness(firstName: string, lastName: string, maritalSatus: EleosMaritalStatus | undefined) {
         const isValid = maritalSatus === undefined ? false :
                         maritalSatus === EleosMaritalStatus.married ? firstName && lastName : !firstName && !lastName
-        console.log(`testValidness: ${isValid}, ${maritalSatus}, ${firstName}, ${lastName}`)
+        //console.log(`testValidness: ${isValid}, ${maritalSatus}, ${firstName}, ${lastName}`)
         return isValid
     }
 
     const onSpouseNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
-        console.log({ firstName, middleName, lastName, suffix, isValid })
+        //console.log({ firstName, middleName, lastName, suffix, isValid })
         setSpouseFirstName(firstName)
         setSposeMiddleName(middleName)
         setSpouseLastName(lastName)
@@ -150,6 +149,7 @@ const MarriageInfo: React.FC = () => {
             {maritalSatus === EleosMaritalStatus.married && <div>
                 <EleosTitle text='Spouse info' />
                 <EleosName 
+                    id='spouse_name'
                     firstNameInput={spouseFirstName}
                     middleNameInput={sposeMiddleName}
                     lastNameInput={sposeLastName}

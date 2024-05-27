@@ -79,7 +79,7 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
                     Relation: icon.icon,
                     ToolTip: icon.toolTip,
                     Age: c.age+'', 
-                    Modify: <div className='mt-0'>
+                    '  ': <div className='mt-0'>
                          <AddPersonModal
                             buttonText={'Change'}
                             role={EleosRoleId.child}
@@ -95,7 +95,7 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
                 { label: 'Name', type: 'text' },
                 { label: 'Relation', type: 'icon',},
                 { label: 'Age', type: 'text' },
-                { label: 'Modify', type: 'button' },
+                { label: '  ', type: 'button' },
             ]}
         />
       

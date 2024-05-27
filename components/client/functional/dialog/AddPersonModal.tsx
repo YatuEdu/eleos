@@ -40,6 +40,7 @@ import ChildrenGuardian from '../../wizard/ChildrenGuaddian';
 import { EleosRoleId } 
                 from '@/lib/client/model/EleosRole';
 import { autoCompleteEmail } from '@/lib/common/utilities/StringUtil';
+import { ELEOS_BTN_ID, FIRST_NAME_INPUT_ID, ELEOS_NAME_ID, focusOnDomElement, INPUT_ID } from '@/lib/client/utilies/UIHelper';
 
 
 
@@ -51,13 +52,14 @@ type AddPersonModalProps = {
     needDob?: boolean,
     needEmail?: boolean,
     order? : number,
+    id?: string,
     onSave: (newRole: EleosRole) => void
 };
 
 const NAME_DOB = 'dob'
 const NAME_EMAIL = 'email'
 
-const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, existingPeople, existingPerson, needDob, needEmail, order, onSave }) => {
+const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, existingPeople, existingPerson, needDob, needEmail, order, id, onSave }) => {
     const [open, setOpen] = useState(false)
     // console.log('existingPerson', existingPerson)
     const [firstName, setFirstName] = useState(existingPerson ? existingPerson.person.firstName : '')
@@ -133,6 +135,10 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
 
     const handleClickOpen = () => {
         setOpen(true);
+        if (id ) {
+            focusOnDomElement(id + ELEOS_NAME_ID + FIRST_NAME_INPUT_ID + INPUT_ID)
+        }
+        
     };
 
     const handleClose = () => {
@@ -246,6 +252,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     return (
         <div>
              <EleosButton
+                id={id ? id + ELEOS_BTN_ID : ''}
                 type='add'
                 className="mb-2 float-right"
                 disabled={false}
@@ -276,6 +283,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                     {existingPersonName === '' && (!existingPerson || role === EleosRoleId.child) && 
                     <div>
                         <EleosName
+                            id={id ? id + ELEOS_NAME_ID : ELEOS_NAME_ID}
                             firstNameInput={firstName}
                             middleNameInput={midtName}
                             lastNameInput={lastName}

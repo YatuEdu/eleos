@@ -15,10 +15,11 @@ type EleosButtonProps = {
     disabled?: boolean
     tipDisable?: string
     tipEnabled?: string
+    id?: string
     onClick: () => void
 };
 
-const EleosButton: React.FC<EleosButtonProps> = ({ref, type, className, disabled, tipDisable, tipEnabled, text, onClick}) => {
+const EleosButton: React.FC<EleosButtonProps> = ({ref, type, className, disabled, tipDisable, tipEnabled, id, text, onClick}) => {
     const [disabledState, setDisabledState] = React.useState(disabled || false)
 
     let btnClass = type === 'wizard' ? BUTTON_CLASS_GREEN : 
@@ -34,6 +35,7 @@ const EleosButton: React.FC<EleosButtonProps> = ({ref, type, className, disabled
         <Tooltip title={disabledState ? tipDisable : tipEnabled} disableHoverListener={true}>
             <span>
             <Button
+                id={id ? id + '_btn': ''}
                 ref={ref ? ref : null}
                 className={disabledState ? btnDisabledClasses : btnEnabledClasses}
                 disabled={disabledState}

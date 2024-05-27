@@ -23,17 +23,18 @@ import { EleosHelpTips }
                 from '../functional/EleosHelpTips';
 import { HelpTextId } 
                 from '@/lib/client/model/EleosMisc';
-import ConfirmationDialog 
-                from '../functional/dialog/ConfirmationDialog';
 import EleosWizardButtonLayout 
                 from '../atoms/EleosWizardButtonLayout';
 import RadioButtonGroup from 
                 '../atoms/EleosRadioGroup';
 import EleosChildrenStatus, { EleosChildrenStatusValue } 
                 from '@/lib/client/model/EleosChildrenStatus';
-import { EleosRelationshipType } from '@/lib/client/model/EleosRelationshipType';
-import EleosRole, { EleosRoleId } from '@/lib/client/model/EleosRole';
-import ChildrenTable from '../functional/ChildrenTable';
+import EleosRole, { EleosRoleId } 
+                from '@/lib/client/model/EleosRole';
+import ChildrenTable 
+                from '../functional/ChildrenTable';
+import { ADD_CHILD, BTN_ID, ELEOS_BTN_ID, MODAL_ID, addChildModalButtonId, focusOnDomElement } 
+                from '@/lib/client/utilies/UIHelper';
 
 
 const AddChildren: React.FC = () => {
@@ -164,6 +165,8 @@ const AddChildren: React.FC = () => {
             setChildrenList([])
             setValid(true)
         } else {
+            const btnId = addChildModalButtonId()
+            focusOnDomElement(btnId)
             setValid(childrenList.length > 0)
         }
     }
@@ -203,6 +206,7 @@ const AddChildren: React.FC = () => {
                 {childrenStatus === EleosChildrenStatusValue.hasChildren && (
                     <>
                     <AddPersonModal 
+                        id={ADD_CHILD + MODAL_ID}
                         buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
                         role={EleosRoleId.child}
                         needDob={true} 
