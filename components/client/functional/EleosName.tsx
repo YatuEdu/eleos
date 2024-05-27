@@ -12,6 +12,8 @@ interface EleosNameProps {
     middleNameInput?: string;
     lastNameInput: string;
     suffixInput?: string;
+    controlName?: string;
+    id?: string;
     onNameChange: (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => void;
 }
 
@@ -20,7 +22,7 @@ const NAME_MIDDLENAME = 'middlename'
 const NAME_LASTNAME = 'lastname'
 const NAME_SUFFIX = 'suffix'
 
-const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, lastNameInput, suffixInput, onNameChange}) => {
+const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, lastNameInput, suffixInput, controlName, id, onNameChange}) => {
     const [suffix, setSuffix] = useState(suffixInput ?? '');
     const [lastName, setLastName] = useState(lastNameInput);
     const [middleName, setMiddleName] = useState(middleNameInput ?? '');
@@ -71,6 +73,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
             <div>
                 <EleosLabel text="First Name" invalidMessage={invalidFirstName}/>
                 <EleosInputBase 
+                    id={id ? id + '_firstname' : ''   }
                     value={firstName} 
                     mustHave={true} 
                     name={NAME_FIRSTNAME} 

@@ -16,7 +16,6 @@ import { EleosAsset }
                 from '@/lib/client/model/EleosAsset';
 import EleosEntity 
                 from "@/lib/client/model/EleosEntity"
-import { Label, Note } from '@mui/icons-material';
 import EleosItemTable 
                 from '../functional/EleosItemTable';
 import { EleosPropertyTypIconAndToolTip, EleosAssetType} 
@@ -47,15 +46,23 @@ import { EleosAssetOwnerShipType }
                 from '@/lib/client/model/EleosAssetOwnerShipType';
 import EleosRole 
                 from '@/lib/client/model/EleosRole';
+import RadioButtonGroup 
+                from '../atoms/EleosRadioGroup';
+import { EleosAssetDistributionGrandScheme } from '@/lib/client/model/EleosDataTypes';
 
 const AddAsset: React.FC = () => {
     const {ref} = useElos() ?? {};
     if (!ref || !ref.current || !ref.current.principal)  {
         throw Error('Eleos is not initialized')  
     }
+    const RADIO_GROUP_TITLE = 'Asset Distribution Scheme'
+    const options = ref.current.helpText.getEnumLables(EleosAssetDistributionGrandScheme, 'EleosAssetDistributionGrandScheme')
+
     const {setStep} = useWizard()
     const [showDialog, setShowDialog] = useState(false);
     const [assetList, setAssetList] = useState<EleosEntity[]>(ref.current.assets);
+    const [assetDistributionGrandScheme, setAssetDistributionGrandScheme] = useState(ref.current.assetDistributionGrandScheme)
+    const [valid, setValid] = useState(ref.current.assets.length > 0 || ref.current.assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.simple)
 
     /**
      * A new asset item is added and we need to save it to Elsoe
@@ -86,8 +93,29 @@ const AddAsset: React.FC = () => {
             return
         }
         setShowDialog(false);
-    };
+    }
 
+    const onAssetDistributionGrandSchemeChange = (value: string) => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+        console.log('onAssetDistributionGrandSchemeChange:', value)
+        setAssetDistributionGrandScheme(+value as EleosAssetDistributionGrandScheme)
+        ref.current.assetDistributionGrandScheme = +value as EleosAssetDistributionGrandScheme
+        setValid(assetList.length > 0 || +value === EleosAssetDistributionGrandScheme.simple)
+    }
+
+    const getAssetDistributionGrandSchemeText = (): string => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+        if (!assetDistributionGrandScheme) {
+            return ''
+        }
+    
+        return options[assetDistributionGrandScheme].value
+    }
+        
     /**
      * Submit the form and goes to the seconds page
      */
@@ -146,16 +174,29 @@ const AddAsset: React.FC = () => {
         }
     }
 
+
     return (
         <>
-            <div className="flex items-center space-x-2 ml-3">
-                <AddAssetDialog
-                    principal={ref.current.principal.display}
-                    spouse={ref.current.spouse?.display}
-                    buttonText="Add a new asset"
-                    onSave={handleAddAsset}
+            <div style={{ margin: 20 }}>
+                <RadioButtonGroup
+                    title={RADIO_GROUP_TITLE}
+                    options={options}
+                    disabledOptions={[]}
+                    value={assetDistributionGrandScheme+''}
+                    onChange={onAssetDistributionGrandSchemeChange}
+                    direction='row'
                 />
             </div>
+            {assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.complex &&
+                <div className="flex items-center space-x-2 ml-3">
+                    <AddAssetDialog
+                        principal={ref.current.principal.display}
+                        spouse={ref.current.spouse?.display}
+                        buttonText="Add a new asset"
+                        onSave={handleAddAsset}
+                    />
+                </div>
+            }
             {assetList.length > 0 && 
              <div className="mt-4 mr-3 ml-3 mb-2">
                 <EleosLabel classNames='mb-2 mt-0'  text={`${ref.current.possessivePronouns} Assets`} />
@@ -199,7 +240,7 @@ const AddAsset: React.FC = () => {
                 rightChild={
                     <EleosButton
                         type='wizard'
-                        disabled={false}
+                        disabled={!valid}
                         text="Save and Continue >"
                         onClick={onNext}
                         tipDisable="Enter all the required info and then submit"

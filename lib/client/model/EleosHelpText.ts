@@ -1,5 +1,33 @@
 import { Language, HelpTextId, HelpText, HelpTextObject } 
                 from "@/lib/client/model/EleosMisc";
+import { EleosAssetDistributionGrandScheme } 
+                from "./EleosDataTypes";
+
+                
+const assetDistributionSchemeText = [
+    {
+        enum: EleosAssetDistributionGrandScheme.simple, 
+        text: [
+            'All assets go to to other spouse when one spouse dies and children evenly when both die',
+            '当夫妻一方去世时，所有资产都归另一方所有；夫妻都去世后，所有资产都由孩子平均分配'
+        ]
+    },   
+    {
+        enum: EleosAssetDistributionGrandScheme.complex, 
+        text: [
+            'Some assets need complex and precise distribution rules',
+            '有些资产需要复杂、精确的分配规则'
+        ],
+    }
+]
+
+const ENUM_lABLES = [
+     {
+        enumName: 'EleosAssetDistributionGrandScheme',
+        data: assetDistributionSchemeText
+    },
+]
+
 
 class EleosHelpText {
     private lang: Language = Language.En
@@ -77,6 +105,19 @@ class EleosHelpText {
                 h2Subject: textEntry.subject
         }
         return helpBody
+    }
+
+    public getEnumLables<E> (e: E, numName: string): {label: string, value: any}[] {
+        const lanIndex = this.lang - 1
+        switch (numName) {
+            case 'EleosAssetDistributionGrandScheme':
+                const enumLabelEntry = ENUM_lABLES.find(e => e.enumName === numName)
+                if (enumLabelEntry) {
+                    return enumLabelEntry.data.map(e => ({label: e.text[lanIndex], value: e.enum}))
+                }
+                throw new Error(`Enum ${numName} not found`)
+        }
+        return []
     }
 
     private getLangTag(): keyof HelpText {

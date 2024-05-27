@@ -9,12 +9,13 @@ interface EleosInputBaseProps {
                     mustHave?: boolean;
                     min?: number;
                     max?: number;
+                    id?: string;
                     onTextEntered: (value: string, validCode: number) => void;
 }
 
 const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     //const [mi, setValue] = useState<string>(props.value);
-    const {min, max, value } = props;
+    const {min, max, value, id} = props;
     const inputType = min && max ? 'number' : 'text';
     const [isValid, setIsValid] = useState<number>(validate(props.value)); // 0 = empty, -1 = in valid, 1 = valid
     const inputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +57,7 @@ const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     return (
         <div >
             <input
+                id={id ? id +'_input' : ''}
                 className={`bg-light-gray border border-gray-300 p-2 shadow-3d focus:bg-darker-gray focus:shadow-3d-focus focus:outline-none transition-colors duration-300 w-full `  + props.className}
                 type={inputType}
                 min={min}

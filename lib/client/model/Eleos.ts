@@ -16,7 +16,7 @@ import { EleosState }
                 from "./EleosState"
 import { EleosAsset } 
                 from "./EleosAsset"
-import {  EleosMaritalStatus, } 
+import {  EleosAssetDistributionGrandScheme, EleosMaritalStatus, } 
                 from "./EleosDataTypes"
 import { EleosChildrenStatusValue } 
                 from "./EleosChildrenStatus"
@@ -42,6 +42,7 @@ class Eleos {
     private _people: Map<string, EleosPerson> = new Map()
     private _marritalStatus: EleosMaritalStatus | undefined = undefined
     private _childrenStatus: EleosChildrenStatusValue | undefined = undefined
+    private _assetDistributionGrandScheme: EleosAssetDistributionGrandScheme | undefined = undefined
     private _assetDistributionMethods: Map<AssetDistributionTiming, AssetDistributionMethod> = new Map()
 
     private _steps: number[] = []
@@ -125,12 +126,16 @@ class Eleos {
                 this._steps.push(WizardStep.ADD_ASSET)
                 break
             case WizardStep.ADD_ASSET:
-                if (this.assetsSurvidedByPrincipal.length > 0) {
-                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES)
-                } else if (this.assetsSurvidedBySpouse.length > 0) {
-                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES)
+                if (this.assetsNeedDistribution.length > 0) {
+                    if (this.assetsSurvidedByPrincipal.length > 0) {
+                        this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES)
+                    } else if (this.assetsSurvidedBySpouse.length > 0) {
+                        this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES)
+                    } else {
+                        this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
+                    }
                 } else {
-                    this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
+                    this._steps.push(WizardStep.MARRIED_PACKAGE)
                 }
                 break
             case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES:
@@ -168,6 +173,12 @@ class Eleos {
     get lang() { return this._helpText.language} 
 
     set lang(lang: Language) { this._helpText.setLanguage(lang)}
+
+    get helpText() { return this._helpText}
+
+    get assetDistributionGrandScheme(): EleosAssetDistributionGrandScheme | undefined { return this._assetDistributionGrandScheme}
+
+    set assetDistributionGrandScheme(scheme: EleosAssetDistributionGrandScheme) { this._assetDistributionGrandScheme = scheme}
 
     get principal() { return this.findOnePersonByRole(EleosRoleId.principal)}
 
