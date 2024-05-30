@@ -41,6 +41,8 @@ import { EleosRoleId }
                 from '@/lib/client/model/EleosRole';
 import { autoCompleteEmail } from '@/lib/common/utilities/StringUtil';
 import { ELEOS_BTN_ID, FIRST_NAME_INPUT_ID, ELEOS_NAME_ID, focusOnDomElement, INPUT_ID } from '@/lib/client/utilies/UIHelper';
+import EleosPhoneInput from '../../atoms/ElesoPhoneInput';
+import EmailOrPhoneInput from '../EmailOrPhone';
 
 
 
@@ -49,8 +51,6 @@ type AddPersonModalProps = {
     role: EleosRoleId,
     existingPeople: EleosRole[],
     existingPerson?: EleosRole,
-    needDob?: boolean,
-    needEmail?: boolean,
     order? : number,
     id?: string,
     onSave: (newRole: EleosRole) => void
@@ -58,8 +58,9 @@ type AddPersonModalProps = {
 
 const NAME_DOB = 'dob'
 const NAME_EMAIL = 'email'
+const NAME_PHONE = 'phone'
 
-const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, existingPeople, existingPerson, needDob, needEmail, order, id, onSave }) => {
+const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, existingPeople, existingPerson, order, id, onSave }) => {
     const [open, setOpen] = useState(false)
     // console.log('existingPerson', existingPerson)
     const [firstName, setFirstName] = useState(existingPerson ? existingPerson.person.firstName : '')
@@ -67,24 +68,27 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     const [midtName, setMidName] = useState(existingPerson ? existingPerson.person.middleName : '')
     // @ts-ignore
     const [birthYear, setBirthYear] = useState(existingPerson && existingPerson.birthYear ? existingPerson.birthYear.toString() : '')
-    const [email, setEmail] = useState(existingPerson && existingPerson.person.email ? existingPerson.person.email: '')
+    const [email, setEmail] = useState(existingPerson ? existingPerson.person.email: '')
+    const [phone, setPhone] = useState(existingPerson ? existingPerson.person.phone: '')
     const [suffix, setSuffix] = useState(existingPerson ? existingPerson.person.suffix : '')
     const [relationShip, setRelationShip] = useState(existingPerson ? existingPerson.person.relationship : '')
-    const [valid, setValid] = useState(setValidBasedOnState())
-    const [invalidEmail, setInvalidEmail] = useState((needEmail && email || !needEmail) ? '' : WARNING_REQUIRED)
+    const [needDob, setNeedDob] = useState(role === EleosRoleId.child)
+    const [needEmailOrPhone, setNeedEmailOrPhone] = useState(role === EleosRoleId.child_guardian || role === EleosRoleId.executor)
+    const [invalidEmail, setInvalidEmail] = useState((needEmailOrPhone && email || !needEmailOrPhone) ? '' : WARNING_REQUIRED)
+    const [invalidPhone, setInvalidPhone] = useState((needEmailOrPhone && phone || !needEmailOrPhone) ? '' : WARNING_REQUIRED)
     const [invalidDob, setInvalidDob] = useState((needDob && birthYear || !needDob) ? '' : WARNING_REQUIRED)
     const [invalidRelation, setInvalidRelation] = useState(relationShip ? '' : WARNING_REQUIRED)
     const [existingPersonName, setExistingPersonName] = useState('')
-    
+    const [valid, setValid] = useState(setValidBasedOnState())
     const titleText = role === EleosRoleId.child ? existingPerson ? 'Update a child' : 'Add a child' :
     role === EleosRoleId.child_guardian ? existingPerson ? 'Update a guardian' : 'Add a guardian' :
     role === EleosRoleId.other_benificiary ? 'Add a benificiary' :
-    role === EleosRoleId.executor ? 'Add an exuctor': ''
+    role === EleosRoleId.executor ? 'Add an exuctor (must be 18 or older)': ''
 
     const relationSelection = role === EleosRoleId.child ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForChildren() : 
                               role === EleosRoleId.child_guardian ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForGuardian() :
                               role === EleosRoleId.other_benificiary ? ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForAdditionalHeirs() :
-                              ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForExecutor()
+                              role === EleosRoleId.executor ?  ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForExecutor() : []
 
     ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairs()
     /**
@@ -105,7 +109,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     }, [open])
 
     function setValidBasedOnState() {
-        return (needDob && birthYear || !needDob) && (needEmail && email || !needEmail) && firstName && lastName && relationShip ? true : false
+        return (needDob && birthYear || !needDob) && (needEmailOrPhone && email || !needEmailOrPhone) && firstName && lastName && relationShip ? true : false
     }
 
     function setValidBasedOnMustHaveState() {
@@ -113,14 +117,22 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     }
 
     function setValidBasedOnOptionalState() {
-        return (needDob && birthYear || !needDob) && (needEmail && email || !needEmail) ? true : false
+        return (needDob && birthYear || !needDob) && (needEmailOrPhone && email || !needEmailOrPhone) ? true : false
     }
 
     const handleRelationShipChange = (value: string) => {
-        const newValid = (needDob && birthYear || !needDob) && (needEmail && email || !needEmail) && firstName && lastName && value ? true : false
+        const newValid = (needDob && birthYear || !needDob) && (needEmailOrPhone && email || !needEmailOrPhone) && firstName && lastName && value ? true : false
         setRelationShip(value)
         setValid(newValid)
         setInvalidRelation(value ? '' : WARNING_REQUIRED)
+        // for son or daughter needs biorh year
+        if (value === 'Son' || value === 'Daughter') {
+            setNeedDob(true)
+            setInvalidDob(birthYear ? '' : WARNING_REQUIRED)
+        } else {
+            setNeedDob(false)
+            setInvalidDob('')
+        }
     }
     
     const handleExistingPersonChange = (value: string) => {
@@ -309,7 +321,13 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                         }
                         </div>
                         }
-                        {needEmail && 
+                        { needEmailOrPhone &&
+                            <div className='ml-4 mr-4'>
+                                <EmailOrPhoneInput />
+                            </div>
+                            
+                        }
+                        {needEmailOrPhone && 
                         <div className='ml-4 mr-4'>
                             <EleosLabel text="Email" invalidMessage={invalidEmail} />
                             <EleosInputBase
@@ -319,7 +337,16 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                                 name={NAME_EMAIL} 
                                 onTextEntered={(value, vliadCode) => onOptionalFieldChange(NAME_EMAIL, value, vliadCode === 1)} />
                         </div>
-                        }      
+                        }  
+                        {needEmailOrPhone &&
+                        <div className='ml-4 mr-4'>
+                            <EleosLabel text="Phone" invalidMessage={invalidPhone} />
+                            <EleosPhoneInput
+                                value={phone} 
+                                name={NAME_PHONE} 
+                                onPhoneChanged={(value, vliadCode) => onOptionalFieldChange(NAME_PHONE, value, vliadCode === 1)} />
+                        </div>
+                        }    
                 </DialogContent>
                 <DialogActions>
                     <EleosButton

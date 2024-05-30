@@ -10,6 +10,16 @@ export enum EleosAssetDistributionGrandScheme {
     complex = 1,
 }
 
+export enum EmailOrPhoneType {
+    email, 
+    phone,
+}
+
+export type EmailOrPhone = {
+    type: EmailOrPhoneType,
+    value: string,
+}
+   
 export const assetDistributionSchemeText = [
     {
         scheme: EleosAssetDistributionGrandScheme.simple, 

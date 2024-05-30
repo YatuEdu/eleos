@@ -42,6 +42,8 @@ const RELATIONSHIP_GUARDIAN_LIST: EleosRelationshipType[] = [
 ]
 
 const RELATIONSHIP_EXECUTOR_LIST: EleosRelationshipType[] = [
+    EleosRelationshipType.son,
+    EleosRelationshipType.daughter,
     EleosRelationshipType.other_relative,
     EleosRelationshipType.friend,
     EleosRelationshipType.lawyer,

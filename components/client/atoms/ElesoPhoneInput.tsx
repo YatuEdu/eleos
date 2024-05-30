@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
+import React, { useState } 
+                from 'react'
+import TextField 
+                from '@mui/material/TextField'
+import { ELEOS_PHONE_INPUT_ID } from '@/lib/client/utilies/UIHelper';
 
-function EleosPhoneInput() {
-    const [phone, setPhone] = useState('');
+interface EleosInputForUSPhoneProps {
+    name: string;
+    value: string;
+    onPhoneChanged: (value: string, validCode: number) => void;
+}
+
+const EleosPhoneInput: React.FC<EleosInputForUSPhoneProps> = (props) => {
+    const {name, value, onPhoneChanged} = props;
+    const [phone, setPhone] = useState(value);
 
     // Function to handle phone number input changes
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,10 +32,14 @@ function EleosPhoneInput() {
         }
 
         setPhone(formattedNumber); // Update the state
-    };
+        onPhoneChanged(formattedNumber, 1); // Call the parent function
+    }
 
     return (
         <TextField
+            className='mt-2'
+            id={ELEOS_PHONE_INPUT_ID}
+            name={name}
             label="US Mobile Phone"
             value={phone}
             onChange={handleChange}
@@ -36,4 +50,4 @@ function EleosPhoneInput() {
     );
 }
 
-export default EleosPhoneInput;
+export default EleosPhoneInput

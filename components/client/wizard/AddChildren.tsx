@@ -33,7 +33,7 @@ import EleosRole, { EleosRoleId }
                 from '@/lib/client/model/EleosRole';
 import ChildrenTable 
                 from '../functional/ChildrenTable';
-import { ADD_CHILD, BTN_ID, ELEOS_BTN_ID, MODAL_ID, addChildModalButtonId, focusOnDomElement } 
+import { ADD_CHILD, MODAL_ID, eleosModalButtonId, focusOnDomElement } 
                 from '@/lib/client/utilies/UIHelper';
 
 
@@ -165,7 +165,7 @@ const AddChildren: React.FC = () => {
             setChildrenList([])
             setValid(true)
         } else {
-            const btnId = addChildModalButtonId()
+            const btnId = eleosModalButtonId(ADD_CHILD)
             focusOnDomElement(btnId)
             setValid(childrenList.length > 0)
         }
@@ -209,7 +209,6 @@ const AddChildren: React.FC = () => {
                         id={ADD_CHILD + MODAL_ID}
                         buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
                         role={EleosRoleId.child}
-                        needDob={true} 
                         existingPeople={[]}
                         onSave={onAddChild} />
                 

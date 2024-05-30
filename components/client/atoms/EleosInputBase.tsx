@@ -2,15 +2,15 @@ import React, { useState, useRef, ChangeEvent, useEffect }
                 from 'react';
 
 interface EleosInputBaseProps {
-                    name: string;
-                    value: string;
-                    className?: string;
-                    regEx?: RegExp;
-                    mustHave?: boolean;
-                    min?: number;
-                    max?: number;
-                    id?: string;
-                    onTextEntered: (value: string, validCode: number) => void;
+    name: string;
+    value: string;
+    className?: string;
+    regEx?: RegExp;
+    mustHave?: boolean;
+    min?: number;
+    max?: number;
+    id?: string;
+    onTextEntered: (value: string, validCode: number) => void;
 }
 
 const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {

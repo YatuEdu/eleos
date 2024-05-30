@@ -25,6 +25,7 @@ export enum HelpTextId {
     Marriage2 = 3,
     Childrens = 4,
     Guardians  = 5,
+    Eexcutor = 6,
     
     Id3 = 4,
     // Add more symbolic names as needed

@@ -60,7 +60,41 @@ class EleosHelpText {
                 特别是在婚姻状况发生任何变化之后。因此，我们建议您加入我们作为年度会员，以保持您的遗嘱保持最新。`
              } 
         ],
+        [HelpTextId.Eexcutor, 
+            {
+                subject: 'The importance of an Executor in a Will',
+                en: `Administering the Estate:
 
+                Executors are responsible for managing and distributing the estate of the deceased. This includes gathering all assets, paying off debts and taxes, and distributing the remaining assets to the beneficiaries as specified in the will .
+                Probate Process:
+                
+                Executors must navigate the probate process, which involves proving the validity of the will in court. They file the necessary paperwork, attend probate hearings, and ensure that the legal requirements are met .
+                Financial Management:
+                
+                Executors manage the estate's finances during the probate process. This includes maintaining the estate's assets, such as real estate and investments, until they can be distributed to the beneficiaries .
+                Communication with Beneficiaries:
+                
+                Executors act as the primary point of contact for the beneficiaries, keeping them informed about the progress of the estate administration and addressing any concerns or questions they may have .
+                Legal and Ethical Duties:
+                
+                Executors have a fiduciary duty to act in the best interests of the beneficiaries and the estate. They must act with honesty, integrity, and impartiality throughout the administration process .`,
+                cn: `管理遗产：
+
+                遗嘱执行人负责管理和分配已故者的遗产。这包括收集所有资产、偿还债务和税款，并按照遗嘱中规定的方式将剩余资产分配给受益人。
+                遗嘱认证过程：
+                
+                遗嘱执行人必须处理遗嘱认证过程，这涉及在法院证明遗嘱的有效性。他们需要提交必要的文件，出席遗嘱认证听证会，并确保满足法律要求。
+                财务管理：
+                
+                遗嘱执行人在遗嘱认证过程中管理遗产的财务。这包括维持遗产的资产，如房地产和投资，直到它们可以分配给受益人为止。
+                与受益人的沟通：
+                
+                遗嘱执行人是受益人的主要联络点，保持他们知晓遗产管理的进展，并解答他们的疑虑或问题。
+                法律和道德义务：
+                
+                遗嘱执行人对受益人和遗产负有信托责任。他们必须在整个管理过程中以诚实、正直和公正的态度行事。`
+             } 
+        ],
         [HelpTextId.Guardians, 
             {
                 subject: 'Significance of Guardians in a Will',

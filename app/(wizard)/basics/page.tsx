@@ -8,6 +8,7 @@ import AddAsset
                 from '@/components/client/wizard/AddAsset';
 import AddChildren 
                 from '@/components/client/wizard/AddChildren';
+import AddExecutor from '@/components/client/wizard/AddExecutor';
 import AssetDistributionIfBothGoes 
                 from '@/components/client/wizard/AssetDistributionIfBothGo';
 import AssetDistributionIfPrincipalGoes 
@@ -46,6 +47,9 @@ export default function Page() {
                 <div>
                     { (currentStep === WizardStep.BASIC_INFO) && (
                         <EleosWizardParent leftChild={<BasicInfo />} rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.EmailUsage]}/>} />
+                    ) }
+                     { (currentStep === WizardStep.ADD_EXECUTOR) && (
+                        <EleosWizardParent leftChild={<AddExecutor />}  rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.Eexcutor,]}/>} />
                     ) }
                     { (currentStep === WizardStep.MARRIAGE_INFO) && (
                         <EleosWizardParent leftChild={<MarriageInfo />}  rightChild={<EleosHelpPane helpTextEnIds={[HelpTextId.Marriage, HelpTextId.Marriage2]}/>} />
