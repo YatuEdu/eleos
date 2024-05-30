@@ -4,7 +4,10 @@ import EleosEntity
                 from './EleosEntity'
 import { EleosRelationshipType } 
                 from './EleosRelationshipType'
-import EleosRole, { EleosRoleId } from './EleosRole'
+import EleosRole, { EleosRoleId } 
+                from './EleosRole'
+import { EmailOrPhone, } 
+                from './EleosDataTypes'
 
 interface IEleosRoleMap {
     [roleId: string]: EleosRole
@@ -16,8 +19,7 @@ class EleosPerson extends EleosEntity {
     private _lastName: string
     private _suffix: string
     private _relationship: EleosRelationshipType
-    private _email: string = ''
-    private _phone: string = ''
+    private _emailOrPhone: EmailOrPhone | undefined = undefined
     private _roles: IEleosRoleMap = {}
 
     constructor(firstName: string, 
@@ -63,9 +65,9 @@ class EleosPerson extends EleosEntity {
     
     get roles() { return this._roles }  
 
-    get email() { return this._email }
+    get emailOrPhone(): EmailOrPhone | undefined { return this._emailOrPhone }
 
-    get phone() { return this._phone }
+    set emailOrPhone(emailOrPhone: EmailOrPhone|undefined) { this._emailOrPhone = emailOrPhone }
 
     get isPrincipal() { 
         if (this._roles[EleosRoleId.principal] !== undefined) {
@@ -119,10 +121,6 @@ class EleosPerson extends EleosEntity {
 
     get id(): string {
         return this.display
-    }
-
-    set email(email: string) {
-        this._email = email
     }
 
     /**

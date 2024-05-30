@@ -3,31 +3,31 @@ import EleosRole  ,{ EleosRoleId }
 import EleosPerson 
                 from './EleosPerson'
 import { EleosRelationshipType } from './EleosRelationshipType';
+import { EmailOrPhone } from './EleosDataTypes';
 
 
 class EleosGuardian extends EleosRole {
     private _order: number
 
-    constructor(person: EleosPerson, email: string, order: number) {
+    constructor(person: EleosPerson, emailOrPhone: EmailOrPhone | undefined, order: number) {
         super(person, EleosRoleId.child_guardian);
-        this._person.email = email;
+        this._person.emailOrPhone = emailOrPhone;
         this._order = order;
     }
 
     static create(firstName: string, midtName: string, lastName: string, suffix: string, 
-                  relation: EleosRelationshipType, email: string, order: number) : EleosGuardian {
+                  relation: EleosRelationshipType, emailOrPhone: EmailOrPhone, order: number) : EleosGuardian {
         const person = new EleosPerson(firstName, midtName, lastName, suffix, relation)
-        person.email = email
-        return new EleosGuardian(person, email, order)
+        return new EleosGuardian(person, emailOrPhone, order)
     }
 
     updateRole(guardian: EleosGuardian) {
-        this._person.email = guardian._person.email
+        this._person.emailOrPhone = guardian._person.emailOrPhone
         this._order = guardian._order
     }
 
     clone (person: EleosPerson): EleosRole {
-        return new EleosGuardian(person, this.email, this.order)
+        return new EleosGuardian(person, this.emailOrPhone, this.order)
     }
 
     /**
@@ -44,16 +44,16 @@ class EleosGuardian extends EleosRole {
 
     get isTertiary () { return this._order === 3 }
 
-    get email() { return this._person.email }
+    get emailOrPhone(): EmailOrPhone | undefined { return this._person.emailOrPhone }
 
-    set email(email: string) { this._person.email = email }
+    set emailOrPhone(emailOrPhone: EmailOrPhone | undefined) { this._person.emailOrPhone = emailOrPhone }
 
     /**
      * public methods
      */
 
     get signature(): string {
-        return `${this.email} ${this.order}'}`
+        return `${this.emailOrPhone} ${this.order}'}`
     }
 }
 

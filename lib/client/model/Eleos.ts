@@ -30,6 +30,7 @@ import EleosSpouse from
                 "./EleosSpouse"
 import { AssetDistributionMethod, AssetDistributionTiming } 
                 from "./AssetDistribution"
+import EleosEexecutor from "./EleosEexcutor"
 
 
 /**
@@ -44,7 +45,6 @@ class Eleos {
     private _childrenStatus: EleosChildrenStatusValue | undefined = undefined
     private _assetDistributionGrandScheme: EleosAssetDistributionGrandScheme | undefined = undefined
     private _assetDistributionMethods: Map<AssetDistributionTiming, AssetDistributionMethod> = new Map()
-
     private _steps: number[] = []
 
     init(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState) {
@@ -110,6 +110,9 @@ class Eleos {
                 this._steps.push(WizardStep.BASIC_INFO)
                 break
             case WizardStep.BASIC_INFO: 
+                this._steps.push(WizardStep.ADD_EXECUTOR)
+                break
+            case WizardStep.ADD_EXECUTOR:
                 this._steps.push(WizardStep.MARRIAGE_INFO)
                 break
             case WizardStep.MARRIAGE_INFO:
@@ -206,6 +209,8 @@ class Eleos {
     set childrenStatus(status: EleosChildrenStatusValue) { this._childrenStatus = status}
 
     get children() {return this.findPeopleByRole(EleosRoleId.child)}
+
+    get executors(): EleosEexecutor[] | undefined { return this.findPeopleByRole(EleosRoleId.executor) as EleosEexecutor[]}
 
     /**
      * get a list a principal's children who are not minors and potential guardians
