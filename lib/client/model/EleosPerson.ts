@@ -6,8 +6,9 @@ import { EleosRelationshipType }
                 from './EleosRelationshipType'
 import EleosRole, { EleosRoleId } 
                 from './EleosRole'
-import { EmailOrPhone, } 
-                from './EleosDataTypes'
+import EmailOrPhone
+                from './EmailOrPhone'
+import EleosChild from './EleosChild'
 
 interface IEleosRoleMap {
     [roleId: string]: EleosRole
@@ -65,9 +66,19 @@ class EleosPerson extends EleosEntity {
     
     get roles() { return this._roles }  
 
-    get emailOrPhone(): EmailOrPhone | undefined { return this._emailOrPhone }
+    get emailOrPhone(): EmailOrPhone | undefined { 
+        return this._emailOrPhone
+    }
 
-    set emailOrPhone(emailOrPhone: EmailOrPhone|undefined) { this._emailOrPhone = emailOrPhone }
+    get email(): string { 
+        return this._emailOrPhone && this._emailOrPhone.email ? this._emailOrPhone.email : ''
+    }
+
+    get phone(): string { 
+        return this._emailOrPhone && this._emailOrPhone.phone ? this._emailOrPhone.phone : ''
+    }
+
+    set emailOrPhone(emailOrPhone: EmailOrPhone | undefined) { this._emailOrPhone = emailOrPhone }
 
     get isPrincipal() { 
         if (this._roles[EleosRoleId.principal] !== undefined) {
@@ -93,6 +104,11 @@ class EleosPerson extends EleosEntity {
 
     get isChild() {
         return this._roles[EleosRoleId.child] !== undefined
+    }
+
+    get isChildAndMinor() {
+        const child = this._roles[EleosRoleId.child]
+        return child && (this._roles[EleosRoleId.child] as EleosChild).isMinor
     }
 
     get isExSpouse() {
@@ -128,6 +144,10 @@ class EleosPerson extends EleosEntity {
      */
     static equealTo(a: EleosPerson, b: EleosPerson): boolean {
         return a.firstName === b.firstName && a.middleName === b.middleName && a.lastName === b.lastName && a.suffix === b.suffix
+    }
+
+    static isChildRetaionship(relationship: EleosRelationshipType): boolean {
+        return relationship === EleosRelationshipType.son || relationship === EleosRelationshipType.daughter
     }
 
     updatePerson(person: EleosPerson) {

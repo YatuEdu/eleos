@@ -40,9 +40,14 @@ import ChildrenGuardian from '../../wizard/ChildrenGuaddian';
 import { EleosRoleId } 
                 from '@/lib/client/model/EleosRole';
 import { autoCompleteEmail } from '@/lib/common/utilities/StringUtil';
-import { ELEOS_BTN_ID, FIRST_NAME_INPUT_ID, ELEOS_NAME_ID, focusOnDomElement, INPUT_ID } from '@/lib/client/utilies/UIHelper';
-import EleosPhoneInput from '../../atoms/ElesoPhoneInput';
-import EmailOrPhoneInput from '../EmailOrPhone';
+import { ELEOS_BTN_ID, FIRST_NAME_INPUT_ID, ELEOS_NAME_ID, focusOnDomElement, INPUT_ID } 
+                from '@/lib/client/utilies/UIHelper';
+import EmailOrPhoneInput 
+                from '../EmailOrPhoneInput';
+import EmailOrPhone 
+                from '@/lib/client/model/EmailOrPhone';
+import EleosEexecutor from '@/lib/client/model/EleosEexcutor';
+import { EmailOrPhoneRequirementType } from '@/lib/client/model/EleosDataTypes';
 
 
 
@@ -68,14 +73,12 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     const [midtName, setMidName] = useState(existingPerson ? existingPerson.person.middleName : '')
     // @ts-ignore
     const [birthYear, setBirthYear] = useState(existingPerson && existingPerson.birthYear ? existingPerson.birthYear.toString() : '')
-    const [email, setEmail] = useState(existingPerson ? existingPerson.person.email: '')
-    const [phone, setPhone] = useState(existingPerson ? existingPerson.person.phone: '')
+    const [emailOrPhone, setEmailOrPhone] = useState(existingPerson ? existingPerson.person.emailOrPhone : undefined)
     const [suffix, setSuffix] = useState(existingPerson ? existingPerson.person.suffix : '')
     const [relationShip, setRelationShip] = useState(existingPerson ? existingPerson.person.relationship : '')
     const [needDob, setNeedDob] = useState(role === EleosRoleId.child)
     const [needEmailOrPhone, setNeedEmailOrPhone] = useState(role === EleosRoleId.child_guardian || role === EleosRoleId.executor)
-    const [invalidEmail, setInvalidEmail] = useState((needEmailOrPhone && email || !needEmailOrPhone) ? '' : WARNING_REQUIRED)
-    const [invalidPhone, setInvalidPhone] = useState((needEmailOrPhone && phone || !needEmailOrPhone) ? '' : WARNING_REQUIRED)
+    const [invalidEmailOrPhone, setInvalidEmailOrPhone] = useState((needEmailOrPhone && emailOrPhone || !emailOrPhone) ? '' : WARNING_REQUIRED)
     const [invalidDob, setInvalidDob] = useState((needDob && birthYear || !needDob) ? '' : WARNING_REQUIRED)
     const [invalidRelation, setInvalidRelation] = useState(relationShip ? '' : WARNING_REQUIRED)
     const [existingPersonName, setExistingPersonName] = useState('')
@@ -97,7 +100,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     useEffect(() => {   
         if (!existingPerson) {
             setBirthYear('')
-            setEmail('')
+            setEmailOrPhone(undefined)
             setFirstName('')
             setLastName('')
             setMidName('')
@@ -109,7 +112,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     }, [open])
 
     function setValidBasedOnState() {
-        return (needDob && birthYear || !needDob) && (needEmailOrPhone && email || !needEmailOrPhone) && firstName && lastName && relationShip ? true : false
+        return (needDob && birthYear || !needDob) && (needEmailOrPhone && emailOrPhone || !needEmailOrPhone) && firstName && lastName && relationShip ? true : false
     }
 
     function setValidBasedOnMustHaveState() {
@@ -117,11 +120,11 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     }
 
     function setValidBasedOnOptionalState() {
-        return (needDob && birthYear || !needDob) && (needEmailOrPhone && email || !needEmailOrPhone) ? true : false
+        return (needDob && birthYear || !needDob) && (needEmailOrPhone && emailOrPhone || !needEmailOrPhone) ? true : false
     }
 
     const handleRelationShipChange = (value: string) => {
-        const newValid = (needDob && birthYear || !needDob) && (needEmailOrPhone && email || !needEmailOrPhone) && firstName && lastName && value ? true : false
+        const newValid = (needDob && birthYear || !needDob) && (needEmailOrPhone && emailOrPhone || !needEmailOrPhone) && firstName && lastName && value ? true : false
         setRelationShip(value)
         setValid(newValid)
         setInvalidRelation(value ? '' : WARNING_REQUIRED)
@@ -140,7 +143,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
         if (!existingPerson) {
             throw new Error('Existing person is not found, impossible scenario!')
         }
-        setEmail(existingPerson.person.email)
+        setEmailOrPhone(existingPerson.person.emailOrPhone)
         setExistingPersonName(value)
         setValid(!!value)
     }
@@ -171,7 +174,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 if (order === undefined) {
                     throw new Error('Order is undefined')
                 }
-                return new EleosGuardian(personWithRole.person, email, order)
+                return new EleosGuardian(personWithRole.person, emailOrPhone as EmailOrPhone, order)
                 
             case EleosRoleId.other_benificiary:
                 if (personWithRole instanceof OtherBenificiary) {
@@ -189,6 +192,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
     }
 
     const createNewPerson = () => {
+
         let person = existingPersonName ? existingPeople.find( p => p.display === existingPersonName) : null
         if (person) {
             return convertToRole(person, role)
@@ -203,10 +207,16 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 if (!order) {
                     throw new Error("Order is needed for a guardian")
                 }
-                newRole = EleosGuardian.create(firstName, midtName, lastName, suffix, relation, email, order)
+                newRole = EleosGuardian.create(firstName, midtName, lastName, suffix, relation, emailOrPhone, order)
                 break
             case EleosRoleId.other_benificiary:
                 newRole = OtherBenificiary.create(firstName, midtName, lastName, suffix, relation)
+                break
+            case EleosRoleId.executor:
+                if (!order) {
+                    throw new Error("Order is needed for a guardian")
+                }
+                newRole = EleosEexecutor.createFromUi(firstName, midtName, lastName, suffix, emailOrPhone, order, relation, birthYear)
                 break
             default:
                 throw new Error("Unknown role for a person")
@@ -224,11 +234,20 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 newPerson.order = existingPerson.order
             }
         } else {
+            // if the person is a child, his age must be 18 or older
+            if (role === EleosRoleId.executor && EleosPerson.isChildRetaionship(relationShip as EleosRelationshipType) && (new Date().getFullYear()) - birthYear < 18) {
+                alert('The child must be 18 or older to be an executor')
+                return
+            }
             newPerson = createNewPerson()
         }
 
         onSave(newPerson)
         setOpen(false)
+    }
+
+    const onEmailOrPhoneCahnged = (emailOrPhone: EmailOrPhone) => {
+        setEmailOrPhone(emailOrPhone)
     }
 
     const onOptionalFieldChange = (name: string, value: string, isValid: boolean) => {
@@ -240,16 +259,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
             } else {
                 setInvalidDob(WARNING_REQUIRED)
             }
-        } else if (name === NAME_EMAIL) {
-            const email = autoCompleteEmail(value)
-            setEmail(email)
-            if (email) {
-                isValid = new RegExp(REGEX_EMAIL).test(email)
-                setInvalidEmail(isValid ? '' : WARNING_INVALID)
-            } else {
-                setInvalidEmail(WARNING_REQUIRED)
-            }
-        }
+        } 
         setValid(isValid && setValidBasedOnMustHaveState())
     }
 
@@ -323,30 +333,11 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                         }
                         { needEmailOrPhone &&
                             <div className='ml-4 mr-4'>
-                                <EmailOrPhoneInput />
+                                <EmailOrPhoneInput emailOrPhone={undefined } onChanged={onEmailOrPhoneCahnged} requirement={EmailOrPhoneRequirementType.optional} />
                             </div>
                             
                         }
-                        {needEmailOrPhone && 
-                        <div className='ml-4 mr-4'>
-                            <EleosLabel text="Email" invalidMessage={invalidEmail} />
-                            <EleosInputBase
-                                value={email} 
-                                mustHave={true} 
-                                regEx={REGEX_EMAIL} 
-                                name={NAME_EMAIL} 
-                                onTextEntered={(value, vliadCode) => onOptionalFieldChange(NAME_EMAIL, value, vliadCode === 1)} />
-                        </div>
-                        }  
-                        {needEmailOrPhone &&
-                        <div className='ml-4 mr-4'>
-                            <EleosLabel text="Phone" invalidMessage={invalidPhone} />
-                            <EleosPhoneInput
-                                value={phone} 
-                                name={NAME_PHONE} 
-                                onPhoneChanged={(value, vliadCode) => onOptionalFieldChange(NAME_PHONE, value, vliadCode === 1)} />
-                        </div>
-                        }    
+                       
                 </DialogContent>
                 <DialogActions>
                     <EleosButton

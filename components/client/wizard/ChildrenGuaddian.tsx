@@ -136,8 +136,6 @@ const ChildrenGuardian: React.FC = () => {
                         <AddPersonModal
                             buttonText={buttonText}
                             role={EleosRoleId.child_guardian}
-                            needEmail={true}
-                            needDob={false}
                             existingPeople={existingPeople}
                             order={guardians.length + 1}
                             onSave={onAddGaudian}

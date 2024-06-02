@@ -6,6 +6,7 @@ import EleosRole
 , { EleosRoleId }                from "./EleosRole"
 import { EleosState } 
                 from "./EleosState"
+import EmailOrPhone from "./EmailOrPhone"
 
 class EleosPrincipal extends EleosRole {
     private _residenceState: EleosState
@@ -16,15 +17,15 @@ class EleosPrincipal extends EleosRole {
         this._residenceState = state
     }
 
-    static create(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState): EleosPrincipal {
+    static create(firstName: string, middleName: string, lastName: string, suffix: string, emailOrPhone: EmailOrPhone, state: EleosState): EleosPrincipal {
         const person = new EleosPerson(firstName, middleName, lastName, suffix, EleosRelationshipType.principal)
-        person.email = email
+        person.emailOrPhone = emailOrPhone
         return new EleosPrincipal(person, state)
     }
 
     updateRole(principal: EleosPrincipal) {
         this._person.updatePerson(principal._person)
-        this._person.email = principal._person.email
+        this._person.emailOrPhone = principal._person.emailOrPhone
         this._residenceState = principal._residenceState
     }
 
