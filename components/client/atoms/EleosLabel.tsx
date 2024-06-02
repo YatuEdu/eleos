@@ -10,8 +10,8 @@ interface EleosLabelProps {
 const EleosLabel: React.FC<EleosLabelProps> = ({classNames, text, invalidMessage }) => {
     return (
         <div className={classNames}>
-            <label className="font-smibold">{text}</label>
-            <span style={{ color: '#FF7F50', marginLeft: 2 }}>{invalidMessage}</span>
+            <label className="font-bold">{text}</label>
+            <small className='text-red-600 ml-1'>{invalidMessage}</small>
         </div>
     );
 };

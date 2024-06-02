@@ -10,14 +10,10 @@ export enum EleosAssetDistributionGrandScheme {
     complex = 1,
 }
 
-export enum EmailOrPhoneType {
-    email, 
-    phone,
-}
-
-export type EmailOrPhone = {
-    type: EmailOrPhoneType,
-    value: string,
+export enum EmailOrPhoneRequirementType {
+    optional = 0,
+    requireEither = 1, 
+    requireBoth = 2
 }
    
 export const assetDistributionSchemeText = [

@@ -2,8 +2,10 @@ import EleosRole  ,{ EleosRoleId }
                 from './EleosRole'
 import EleosPerson 
                 from './EleosPerson'
-import { EleosRelationshipType } from './EleosRelationshipType';
-import { EmailOrPhone } from './EleosDataTypes';
+import { EleosRelationshipType } 
+                from './EleosRelationshipType';
+import  EmailOrPhone from 
+                './EmailOrPhone';
 
 
 class EleosGuardian extends EleosRole {
@@ -11,12 +13,14 @@ class EleosGuardian extends EleosRole {
 
     constructor(person: EleosPerson, emailOrPhone: EmailOrPhone | undefined, order: number) {
         super(person, EleosRoleId.child_guardian);
-        this._person.emailOrPhone = emailOrPhone;
+        if (emailOrPhone) {
+            this._person.emailOrPhone = emailOrPhone
+        }
         this._order = order;
     }
 
     static create(firstName: string, midtName: string, lastName: string, suffix: string, 
-                  relation: EleosRelationshipType, emailOrPhone: EmailOrPhone, order: number) : EleosGuardian {
+                  relation: EleosRelationshipType, emailOrPhone: EmailOrPhone | undefined, order: number) : EleosGuardian {
         const person = new EleosPerson(firstName, midtName, lastName, suffix, relation)
         return new EleosGuardian(person, emailOrPhone, order)
     }
@@ -46,7 +50,7 @@ class EleosGuardian extends EleosRole {
 
     get emailOrPhone(): EmailOrPhone | undefined { return this._person.emailOrPhone }
 
-    set emailOrPhone(emailOrPhone: EmailOrPhone | undefined) { this._person.emailOrPhone = emailOrPhone }
+    set emailOrPhone(emailOrPhone: EmailOrPhone) { this._person.emailOrPhone = emailOrPhone }
 
     /**
      * public methods

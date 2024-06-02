@@ -1,76 +1,122 @@
-import { EmailOrPhone, EmailOrPhoneType } 
-        from '@/lib/client/model/EleosDataTypes';
-import { REGEX_EMAIL } 
+import EmailOrPhone
+        from '@/lib/client/model/EmailOrPhone'
+import { REGEX_EMAIL, REGEX_US_MOBILE_PHONE2 } 
         from '@/lib/common/constant/StringConst';
-import React, { ChangeEvent, useEffect, useRef, useState } 
+import { ELEOS_INPUT_STYLE } 
+        from '@/lib/common/constant/TailwindClasses';
+import React, { ChangeEvent, useRef, useState } 
         from 'react';
 import PhoneInput 
         from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import EleosLabel 
+        from '../atoms/EleosLabel'
+import { EmailOrPhoneRequirementType } 
+        from '@/lib/client/model/EleosDataTypes';
+import { on } from 'events';
+
 
 interface EleosInputForEmailOrPhoneProps {
-    emailOrPhone: EmailOrPhone;
-    onChanged: (value: EmailOrPhone, validCode: number) => void;
+    emailOrPhone: EmailOrPhone | undefined
+    onChanged: (value: EmailOrPhone, validCode: number) => void
+    requirement: EmailOrPhoneRequirementType
 }
 
 const EmailOrPhoneInput: React.FC<EleosInputForEmailOrPhoneProps> = (props) => {
-    const {emailOrPhone, onChanged} = props;
-    const [emailPhone, setEmailPhone] = useState(emailOrPhone);
+    const {emailOrPhone, onChanged, requirement} = props;
+    const [email, setEmail] = useState(emailOrPhone && emailOrPhone.email ? emailOrPhone.email : '')
+    const [phone, setPhone] = useState(emailOrPhone && emailOrPhone.phone ? emailOrPhone.phone : '')
+    const [invalidPhoneOrEmail, setInvalidPhoneOrEmail] = useState(emailOrPhone ? '' : (requirement !== EmailOrPhoneRequirementType.optional ? 'required' : ''))
     const phoneInputRef = useRef<any>(null); // Reference for the phone input
 
-  useEffect(() => {
-    // Set focus to the phone input when inputType changes to 'phone'
-    if (emailPhone.type === EmailOrPhoneType.phone && phoneInputRef.current) {
-      phoneInputRef.current.focus();
+  
+  const handleEmailOrPhoneChange = (inputValue: string, otherValue:string, regEx: RegExp, regEx2: RegExp, invalidMsg: string, invalidMsg2: string) => {
+    let isValid = false
+    const thisValueValid = inputValue && regEx.test(inputValue) ? true : false
+    const otherValueValid = otherValue && regEx2.test(otherValue) ? true : false
+
+    if (thisValueValid && thisValueValid) {
+      setInvalidPhoneOrEmail('')
+      return true
     }
-  }, [emailPhone]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
+    if (inputValue && !thisValueValid) {
+      setInvalidPhoneOrEmail(invalidMsg)
+      return false
+    }
 
-    if (inputValue.length >= 2) {
-      if (/\d{2}/.test(inputValue.slice(0, 2))) {
-        setEmailPhone({type: EmailOrPhoneType.phone, value: '+1' + inputValue});
-      } else {
-        setEmailPhone({type: EmailOrPhoneType.email, value: inputValue});
+    if (otherValue && !otherValueValid) {
+      setInvalidPhoneOrEmail(invalidMsg2)
+      return false
+    }
+
+    if (requirement === EmailOrPhoneRequirementType.optional) {
+      if (!inputValue && !otherValue) {
+        setInvalidPhoneOrEmail('')
+        return true
       }
-    } else {
-      setEmailPhone({type: EmailOrPhoneType.email, value: inputValue});
+    }
+
+    if (requirement === EmailOrPhoneRequirementType.requireEither) {
+      if (thisValueValid || otherValueValid) {
+        setInvalidPhoneOrEmail('')
+        return true
+      }
+
+      setInvalidPhoneOrEmail('required')
+      return false
+    }
+
+    return false
+    
+  }
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value
+    setEmail(inputValue)
+    const valid = handleEmailOrPhoneChange(inputValue, phone, REGEX_EMAIL, REGEX_US_MOBILE_PHONE2, 'Invalid email address', 'Invalid phone number')
+    if (valid) {
+      onChanged(new EmailOrPhone(inputValue, phone), valid ? 1 : -1)
     }
   }
 
-  const handlePhoneChange = (phone: string) => {
-    setEmailPhone({type: EmailOrPhoneType.phone, value: phone});
+  const handlePhoneChange = (phoneInput: string) => {
+    setPhone(phoneInput)
+    const valid = handleEmailOrPhoneChange(phoneInput, email, REGEX_US_MOBILE_PHONE2, REGEX_EMAIL, 'Invalid phone number', 'Invalid email address')
+    if (valid) {
+      onChanged(new EmailOrPhone(email, phoneInput), valid ? 1 : -1)
+    }
   }
 
   return (
     <div>
-      <label htmlFor="inputField">Email or Phone</label>
-      {emailOrPhone && emailOrPhone.type === EmailOrPhoneType.phone ? (
+      <EleosLabel text='Email or Phone' invalidMessage={invalidPhoneOrEmail}/>
+      <div className="grid grid-cols-2 gap-1">
         <PhoneInput
             inputProps={{
             ref: phoneInputRef, // Pass the ref to the underlying input element
           }}
           country={'us'}
-          value={emailOrPhone ? emailOrPhone.value : ''}
+          value={phone}
           onlyCountries={['us']} // Restrict to US only
           onChange={handlePhoneChange}
-          containerStyle={{ marginTop: '10px' }}
-          inputStyle={{ width: '100%' }}
+          placeholder="Enter phone"
+          inputClass={ELEOS_INPUT_STYLE}
+          inputStyle={{
+            height: '2.5rem', // Ensure consistent height
+            width: '100%', // Ensure consistent width
+            lineHeight: '1.5rem', // Ensure consistent line-height
+          }}
         />
-      ) : (
         <input
           id="inputField"
           type="text"
-          value={emailOrPhone ? emailOrPhone.value : ''}
-          onChange={handleChange}
-          placeholder="Enter email or phone"
-          style={{ marginTop: '10px', padding: '10px', width: '100%' }}
+          value={email}
+          onChange={handleEmailChange}
+          placeholder="Enter email"
+          className={ELEOS_INPUT_STYLE}
         />
-      )}
-      {emailOrPhone && emailOrPhone.type === EmailOrPhoneType.email && emailOrPhone.value && !REGEX_EMAIL.test(emailOrPhone.value) && (
-        <small style={{ color: 'red' }}>Please enter a valid email address.</small>
-      )}
+      </div>
     </div>
   );
 };

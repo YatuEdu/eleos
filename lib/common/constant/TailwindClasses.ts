@@ -25,3 +25,6 @@ export const BUTTON_CLASS_DISABLED = btnClassDiaabledTemplate({ bgColor: 'pink-2
 // mixed button
 export const BUTTON_CLASS_BLUE = btnClassTemplate({ bgColor: 'blue-600', hoverBgColor: 'blue-700', txtColor: 'white', extra: ''});
 
+export const ELEOS_INPUT_STYLE =  `bg-light-gray border border-gray-300 p-2 shadow-3d focus:bg-darker-gray focus:shadow-3d-focus focus:outline-none transition-colors duration-300 w-full h-10 `
+
+

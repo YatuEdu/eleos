@@ -1,9 +1,11 @@
+import { ELEOS_INPUT_STYLE } from '@/lib/common/constant/TailwindClasses';
 import React, { useState, useRef, ChangeEvent, useEffect } 
                 from 'react';
 
 interface EleosInputBaseProps {
     name: string;
     value: string;
+    placeholder?: string;
     className?: string;
     regEx?: RegExp;
     mustHave?: boolean;
@@ -15,7 +17,7 @@ interface EleosInputBaseProps {
 
 const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
     //const [mi, setValue] = useState<string>(props.value);
-    const {min, max, value, id} = props;
+    const {min, max, value, id, placeholder} = props;
     const inputType = min && max ? 'number' : 'text';
     const [isValid, setIsValid] = useState<number>(validate(props.value)); // 0 = empty, -1 = in valid, 1 = valid
     const inputRef = useRef<HTMLInputElement>(null);
@@ -58,7 +60,8 @@ const EleosInputBase: React.FC<EleosInputBaseProps> = (props) => {
         <div >
             <input
                 id={id ? id +'_input' : ''}
-                className={`bg-light-gray border border-gray-300 p-2 shadow-3d focus:bg-darker-gray focus:shadow-3d-focus focus:outline-none transition-colors duration-300 w-full `  + props.className}
+                placeholder={placeholder}
+                className={ELEOS_INPUT_STYLE  + props.className}
                 type={inputType}
                 min={min}
                 max={max}

@@ -85,7 +85,6 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
                             role={EleosRoleId.child}
                             existingPeople={[]}
                             existingPerson={c}
-                            needDob={true} 
                             onSave={onUpdateChild} />
                     </div>
                         

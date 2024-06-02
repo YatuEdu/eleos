@@ -31,6 +31,7 @@ import EleosSpouse from
 import { AssetDistributionMethod, AssetDistributionTiming } 
                 from "./AssetDistribution"
 import EleosEexecutor from "./EleosEexcutor"
+import EmailOrPhone from "./EmailOrPhone"
 
 
 /**
@@ -47,8 +48,9 @@ class Eleos {
     private _assetDistributionMethods: Map<AssetDistributionTiming, AssetDistributionMethod> = new Map()
     private _steps: number[] = []
 
-    init(firstName: string, middleName: string, lastName: string, suffix: string, email: string, state: EleosState) {
-        const newPrincipal = EleosPrincipal.create(firstName, middleName, lastName, suffix, email, state)
+    init(firstName: string, middleName: string, lastName: string, suffix: string, emailOrPhone: EmailOrPhone, state: EleosState) {
+        const newPrincipal = EleosPrincipal.create(firstName, middleName, lastName, suffix, emailOrPhone, state)
+
         //console.log('Principal created', newPrincipal)
         const principalOld = this.findOnePersonByRole(EleosRoleId.principal) as EleosPrincipal
         let addNew = true
@@ -531,7 +533,7 @@ class Eleos {
                     } else if (existingPerson.isChild && (existingPerson.getRole(EleosRoleId.child) as EleosChild).isMinor) {
                         return {succeeded: false, error: 'Guardian cannot be minors'}
                     } else {
-                        existingPerson.email = g.email // important !!!
+                        existingPerson.emailOrPhone = g.emailOrPhone // important !!!
                         existingPerson.addRole(g)
                     }
                 } else {
@@ -545,6 +547,31 @@ class Eleos {
                     return {succeeded: false, error: 'Guardian instance expexcted'}
                 }
                 this._people.set(g.display, g.person)
+            }
+        })
+      
+        return {succeeded: true};
+    }
+
+    addEexutors(executors: EleosEexecutor[]): EleosApiResult {
+        // make sure that none of the benificiaries is principal or spouse himself
+        executors.forEach(ex => {
+            const existingPerson = this._people.get(ex.display)
+            if (existingPerson) {
+                if (!existingPerson.isExecutor) {
+                    if (existingPerson.isPrincipal || existingPerson.isSpouse) {                     
+                        return {succeeded: false, error: 'Eexcutors cannot be the existing principals or spouse of the wll'}
+                    } else if (existingPerson.isChildAndMinor) {
+                        return {succeeded: false, error: 'Eexcutors cannot be minors'}
+                    } else {
+                        existingPerson.addRole(ex)
+                    }
+                }
+            } else {
+                if (!(ex instanceof EleosEexecutor)) {
+                    return {succeeded: false, error: 'Executor instance expexcted'}
+                }
+                this._people.set(ex.display, ex.person)
             }
         })
       

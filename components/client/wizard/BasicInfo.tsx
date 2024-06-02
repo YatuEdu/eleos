@@ -28,6 +28,9 @@ import EleosPrincipal
                 from "@/lib/client/model/EleosPrincipal"
 import EleosTitle from "../atoms/EleosTitle"
 import { autoCompleteEmail } from "@/lib/common/utilities/StringUtil"
+import EmailOrPhoneInput from "../functional/EmailOrPhoneInput"
+import EmailOrPhone from "@/lib/client/model/EmailOrPhone"
+import { EmailOrPhoneRequirementType } from "@/lib/client/model/EleosDataTypes"
 
 const NAME_EMAIL = 'email'
 const NAME_STATE = 'state'
@@ -41,29 +44,32 @@ const BasicInfo: React.FC = () => {
     const existingPrincipal = ref.current.principal as EleosPrincipal
 
     // initialize the form with the current values saved earlier
-    const {firstName, middleName, lastName, suffix, email} = existingPrincipal ? existingPrincipal.person
-        : {firstName: '', middleName: '', lastName: '', suffix: '', email: ''}
+    const {firstName, middleName, lastName, suffix} = existingPrincipal ? existingPrincipal.person
+        : {firstName: '', middleName: '', lastName: '', suffix: ''}
     const residenceState = existingPrincipal ? existingPrincipal.residenceState : null
-
-    const [invalidEmail, setInvalidEmail] = useState(email ? '' : WARNING_REQUIRED)
+    const emailOrPhone = existingPrincipal ? existingPrincipal.person.emailOrPhone : undefined
     const [invalidState, setInvalidState] = useState(residenceState ? '' : WARNING_REQUIRED)
-
     const [firstName2, setFirstName] = useState(firstName)
     const [middleName2, setMiddleName] = useState(middleName)
     const [lastName2, setLastName] = useState(lastName)
     const [suffix2, setSuffix] = useState(suffix)
     const [state, setState] = useState(residenceState ? residenceState.name : '')
-    const [email2, setEmail] = useState(email)
-    const [valid, setValid] = useState(email && firstName && lastName ? true : false)
+    const [emailOrPhone2, setEailOrPhone] = useState(emailOrPhone)
+    const [valid, setValid] = useState(emailOrPhone?.hasEither && firstName && lastName ? true : false)
     const [validName, setValidName] = useState(firstName && lastName ? true : false)
     const {setStep} = useWizard()
     const submitRef = useRef<HTMLButtonElement | null>(null)
-    const firstNameRef = useRef<HTMLInputElement | null>(null)
 
     const checkValid = () => {
        if (valid) {
         submitRef.current?.focus()
        }
+    }
+
+    const onEmailOrPhoneCahnged = (emailOrPhone: EmailOrPhone) => {
+        setEailOrPhone(emailOrPhone)
+        setValid(validName && !!state && emailOrPhone.hasEither)
+        checkValid()
     }
 
     const onStateSelection = (value: string) => {
@@ -78,29 +84,7 @@ const BasicInfo: React.FC = () => {
         setLastName(lastName)
         setSuffix(suffix)
         setValidName(isValid)
-        setValid(isValid && !!email2)
-        checkValid()
-    }
-
-    const onEmailChange = (value: string, validCode: number) => {
-        let newEmail = autoCompleteEmail(value)
-
-        // Check if the user has entered '@' and provide a suggestion if not already present
-        if (newEmail !== value) {
-            // autocompleted:
-            validCode = 1
-        }
-
-        // console.log({ value, validCode, newEmail })
-        setEmail(newEmail);
-        setValid(validCode === 1 && validName)
-        if (validCode === 0) {
-            setInvalidEmail(WARNING_REQUIRED)
-        } else if (validCode === -1) {
-            setInvalidEmail(WARNING_INVALID)
-        } else {
-            setInvalidEmail('')
-        } 
+        setValid(isValid && emailOrPhone2?.hasEither && state ? true : false)
         checkValid()
     }
 
@@ -116,6 +100,10 @@ const BasicInfo: React.FC = () => {
             throw Error('Invalid form: IMPOSSIBLE')  
         }
 
+        if (!emailOrPhone2) {
+            throw Error('Invalid email or phone: IMPOSSIBLE')  
+        }
+
         // @ts-ignore
         const mystate: EleosState = allEleosStates.find(s => s.name === state) 
         if (!mystate) {
@@ -124,7 +112,7 @@ const BasicInfo: React.FC = () => {
         }
         
         // initialize eleose object with the current values
-        const result = ref.current.init(firstName2, middleName2, lastName2, suffix2, email2, mystate)
+        const result = ref.current.init(firstName2, middleName2, lastName2, suffix2, emailOrPhone2, mystate)
         if (!result.succeeded) {
             alert(result.error)
             return
@@ -143,18 +131,14 @@ const BasicInfo: React.FC = () => {
         <main style={{ position: 'relative' }}>
             <div className="ml-4 mr-4 mb-8">
                 <EleosLabel text="The state you live in" invalidMessage={invalidState} />
-                <EleosAutoComplete
-                    selectedOption={state}
-                    onOptionSelect={onStateSelection}
-                    options={allEleosStates.map(s => s.name)}
-                />
-                <EleosLabel text="Your email" invalidMessage={invalidEmail} />
-                <EleosInputBase 
-                    value={email2} 
-                    mustHave={true} 
-                    name={NAME_EMAIL} 
-                    regEx={REGEX_EMAIL} 
-                    onTextEntered={(value, validCode) => onEmailChange(value, validCode)} />
+                <div className="bg-light-gray border border-gray-300 shadow-3d mb-4 -p-2">
+                    <EleosAutoComplete
+                        selectedOption={state}
+                        onOptionSelect={onStateSelection}
+                        options={allEleosStates.map(s => s.name)}
+                    />
+                </div>
+                <EmailOrPhoneInput emailOrPhone={emailOrPhone2} onChanged={onEmailOrPhoneCahnged} requirement={EmailOrPhoneRequirementType.requireEither} />
             </div>
             <div className="grid grid-cols-2 gap-1 ml-2">
                 

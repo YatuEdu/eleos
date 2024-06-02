@@ -31,7 +31,7 @@ const AddExecutor: React.FC = () => {
 
     const executorUpdated = (value: EleosRole) => {
         const executor =  value as EleosEexecutor 
-        setExecutorList(executorList.map((e) => e.order === executor.order ? executor : e))
+        setExecutorList([...executorList, executor])
     }
 
     useEffect(() => {
@@ -71,7 +71,8 @@ const AddExecutor: React.FC = () => {
                 id={ADD_EXECUTOR}
                 buttonText={executorList.length ? 'Add alternate executor' : 'Add an executor'}
                 role={EleosRoleId.executor}
-                existingPeople={[]}
+                existingPeople={executorList}
+                order={executorList.length + 1}
                 onSave={executorUpdated} />
             }
         </div>

@@ -79,7 +79,6 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                             role={EleosRoleId.executor}
                             existingPeople={[]}
                             existingPerson={ex}
-                            needDob={true} 
                             onSave={onUpdateExecutor} />
                     </div>
                         
