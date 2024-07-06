@@ -27,7 +27,7 @@ export enum HelpTextId {
     Guardians  = 5,
     Eexcutor = 6,
     
-    Id3 = 4,
+    Id3 = 7,
     // Add more symbolic names as needed
 };
 

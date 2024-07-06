@@ -26,12 +26,13 @@ const AddExecutor: React.FC = () => {
     }
 
     const [executorList, setExecutorList] = useState(ref.current.executors ? [...ref.current.executors] : []);
-    const [valid, setValid] = useState(false)
+    const [valid, setValid] = useState(ref.current.executors.length > 0 )
     const {setStep} = useWizard()
 
     const executorUpdated = (value: EleosRole) => {
         const executor =  value as EleosEexecutor 
         setExecutorList([...executorList, executor])
+        setValid(true)
     }
 
     useEffect(() => {
@@ -54,6 +55,8 @@ const AddExecutor: React.FC = () => {
             throw Error('Eleos is not initialized')  
         }
          
+        ref.current.addEexutors(executorList)
+
         // move to the next step
         const step = ref.current.nextStep()
         setStep(step)

@@ -110,10 +110,11 @@ class EleosHelpText {
             {
                 subject: 'Importance of Adding Children as Heirs',
                 en: `This is where you can add your children as heirs. 
-                It is important to add all your children so that they can be included in your estate plan.
+                It is important to add all your children, including the biological children from all your marriges, and all your adopted chailren if any, so that they can be included in your estate plan.
+                Even if you want to exclude one or more children from inheriting your estate, please add them as well and specify the properties they are not to inherit.
                 If you do not have children, you can skip this step.`,
-                cn: `这是您可以将您的孩子添加为继承人的地方。请添加所有的孩子，以便他们可以包括在您的财产计划中。
-                即使您不计划某个或多个孩子继承您的财产，也请添加他们。 <br />
+                cn: `这是您可以将您的孩子添加为继承人的地方。请添加所有的孩子，包括您的所有婚姻中的亲生子女，以及所有的收养子女， 以便他们可以包括在您的财产计划中。
+                即使您不计划某个或多个孩子继承您的财产，也请添加他们。 
                 如果您没有孩子，您可以跳过此步骤。`
             }
         ],

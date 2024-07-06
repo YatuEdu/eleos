@@ -10,10 +10,14 @@ import EleosItemTable
                 from "./EleosItemTable";
 import { EleosRelationshipType } 
                 from "@/lib/client/model/EleosRelationshipType";
-import ChildCareIcon 
-                from '@mui/icons-material/ChildCare';
+import GavelIcon  
+                from '@mui/icons-material/VerifiedUser';
 import PersonIcon 
                 from '@mui/icons-material/Person';
+import HandshakeIcon 
+                from '@mui/icons-material/Handshake';
+
+
 import WomanIcon 
                 from '@mui/icons-material/Woman'; 
 import AddPersonModal 
@@ -55,7 +59,15 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
             return {icon: <WomanIcon />, toolTip: 'Adult daughter'}
         }
 
-        throw new Error('Invalid relationship type')
+        if (exe.person.relationship === EleosRelationshipType.lawyer) {
+            return {icon: <GavelIcon  />, toolTip: 'Lawyer'}
+        }
+
+        if (exe.person.relationship === EleosRelationshipType.other_relative) {
+            return {icon: <PersonIcon  />, toolTip: 'Relative'}
+        }
+
+        return {icon: <HandshakeIcon />, toolTip: 'Friend'}
     }
 
     const onUpdateExecutor = (ex: EleosRole) => {
@@ -72,6 +84,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                     Name: ex.display, 
                     Relation: icon.icon,
                     ToolTip: icon.toolTip,
+                    Age: ex.age, 
                     Order: ex.order+'', 
                     '  ': <div className='mt-0'>
                          <AddPersonModal

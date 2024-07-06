@@ -1,7 +1,7 @@
 import EleosChild from "./EleosChild";
 import EleosPerson 
                 from "./EleosPerson";
-import { EleosRelationshipType } 
+import EleosRelationshipTypeHelper, { ELEOS_RELATIONSHIP_TYPE_HELPER, EleosRelationshipType } 
                 from "./EleosRelationshipType";
 import EleosRole, { EleosRoleId } 
                 from "./EleosRole";
@@ -18,8 +18,9 @@ class EleosEexecutor extends EleosRole {
     static createFromUi(firstName: string, middleName:string, lastName: string, suffix: string, 
                         emailOrPhone: EmailOrPhone | undefined, orddr: number, relationship: EleosRelationshipType, 
                         birthYear: number): EleosEexecutor {
-        if (relationship !== EleosRelationshipType.son && relationship !== EleosRelationshipType.daughter) {
-            throw new Error('Invalid relationship type for a child')
+        const age = birthYear ? new Date().getFullYear() - birthYear : 18
+        if (EleosRelationshipTypeHelper.isChild(relationship) && age < 18){
+            throw new Error('Executor cannot be a minor')
         }
         if (orddr < 1 || orddr > 3) {
             throw new Error('Invalid order for an executor')
@@ -53,6 +54,10 @@ class EleosEexecutor extends EleosRole {
 
     get order(): number {
         return this._order
+    }
+
+    get age(): string {
+        return this.person.isChild ? (this.person.getRole(EleosRoleId.child) as EleosChild).age+'' : 'Adult'
     }
 
     set order(order: number) {
