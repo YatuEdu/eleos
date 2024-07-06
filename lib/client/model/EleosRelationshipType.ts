@@ -60,6 +60,10 @@ class EleosRelationshipTypeHelper {
         return this.relationshipType.entries
     }
 
+    static isChild(relation: EleosRelationshipType): boolean{
+        return RELATIONSHIP_CHILDREN_LIST.includes(relation)
+    }
+
     keyToValue(key: string): string {
         return this.relationshipType.keyToValue(key)
     }
@@ -98,4 +102,5 @@ class EleosRelationshipTypeHelper {
 }
 
 export const ELEOS_RELATIONSHIP_TYPE_HELPER = new EleosRelationshipTypeHelper()
+export default EleosRelationshipTypeHelper
 

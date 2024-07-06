@@ -212,7 +212,7 @@ class Eleos {
 
     get children() {return this.findPeopleByRole(EleosRoleId.child)}
 
-    get executors(): EleosEexecutor[] | undefined { return this.findPeopleByRole(EleosRoleId.executor) as EleosEexecutor[]}
+    get executors(): EleosEexecutor[] { return this.findPeopleByRole(EleosRoleId.executor) as EleosEexecutor[]}
 
     /**
      * get a list a principal's children who are not minors and potential guardians
@@ -572,6 +572,12 @@ class Eleos {
                     return {succeeded: false, error: 'Executor instance expexcted'}
                 }
                 this._people.set(ex.display, ex.person)
+
+                // change children status to hasChildren if executor is a child, 
+                // this can happen if thw user has not reached the children step yet
+                if (ex.person.isChild) {
+                    this._childrenStatus = EleosChildrenStatusValue.hasChildren
+                }
             }
         })
       

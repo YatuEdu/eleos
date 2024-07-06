@@ -132,6 +132,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
         if (value === 'Son' || value === 'Daughter') {
             setNeedDob(true)
             setInvalidDob(birthYear ? '' : WARNING_REQUIRED)
+            setValid(birthYear ? true : false)
         } else {
             setNeedDob(false)
             setInvalidDob('')
@@ -246,8 +247,10 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
         setOpen(false)
     }
 
-    const onEmailOrPhoneCahnged = (emailOrPhone: EmailOrPhone) => {
+    const onEmailOrPhoneCahnged = (emailOrPhone: EmailOrPhone, validCode: number) => {
         setEmailOrPhone(emailOrPhone)
+        const newValid = (needDob && birthYear || !needDob) && firstName && lastName && (validCode === 1)  ? true : false
+        setValid(newValid)
     }
 
     const onOptionalFieldChange = (name: string, value: string, isValid: boolean) => {
