@@ -26,15 +26,21 @@ export enum HelpTextId {
     Childrens = 4,
     Guardians  = 5,
     Eexcutor = 6,
+    AssetBankAccountHelpText = 7,
+    AssetRealEstateHelpText = 8,
+    AssetLifeInsuranceHelpText = 9,
+    AssetRetirementHelpText = 10,
+    AssetInvestmentHelpText = 11,
+    AssetOtherHelpText = 12,
     
-    Id3 = 7,
+    Id3 = 100,
     // Add more symbolic names as needed
 };
 
 export type HelpText = {
-    en: string;
-    cn: string;
     subject: string;
+    brief: string;
+    all: string;
 }
 
 export interface HelpTextObject {
