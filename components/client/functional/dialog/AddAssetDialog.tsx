@@ -27,6 +27,8 @@ import { EPT_HELPER, EleosAssetType}
                 from '@/lib/client/model/EleosAssetType';
 import { EAOT_HELPER, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipType } 
                 from '@/lib/client/model/EleosAssetOwnerShipType';
+import { useWizard } 
+                from '@/lib/providers/WizardProvider';
 
 type AddAssetProps = {
     buttonText: string,
@@ -93,6 +95,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         valid: false
     }
 
+    const {setHelpTextIds} = useWizard()
     const [state, dispatch] = useReducer(stateReducer, initialState)
     const [open, setOpen] = useState(false)
     const ownerShipTypeLabelValuePairs = spouse ? 
@@ -137,6 +140,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                 break
             case NAME_TYPE:
                 newState = { ...state, type: action.value, locationLabel: setLocationLabel(action.value) }
+                setHelpContext(NAME_TYPE, action.value)
                 break
             case NAME_OWNERSHIP:
                 newState = { ...state, ownerShip: action.value }
@@ -159,6 +163,32 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         }
 
         return checkValid(newState)
+    }
+
+    function setHelpContext(type: string, value: string) {
+        if (type === NAME_TYPE) {
+            switch(value) {
+                case EleosAssetType.bankAccount:
+                    setHelpTextIds([HelpTextId.AssetBankAccountHelpText])
+                    break
+                case EleosAssetType.lifeInsurance:
+                    setHelpTextIds([HelpTextId.AssetLifeInsuranceHelpText])
+                    break
+                case EleosAssetType.investment:
+                    setHelpTextIds([HelpTextId.AssetInvestmentHelpText])
+                    break
+                case EleosAssetType.retirement:
+                    setHelpTextIds([HelpTextId.AssetRetirementHelpText])
+                    break
+                case EleosAssetType.realEstate:
+                    setHelpTextIds([HelpTextId.AssetRealEstateHelpText])
+                    break
+                default:
+                    setHelpTextIds([HelpTextId.AssetOtherHelpText])
+                    break
+            }
+            
+        }
     }
 
     function setLocationLabel(name: string): string {
@@ -302,7 +332,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                             onTextEntered={(value, vliadCode) => dispatch({type: NAME_NOTE, value: value}) } />    
                     </div>
                     <div className='col-span-5'>
-                        <EleosHelpPane helpTextEnIds={[HelpTextId.EmailUsage]} />
+                        <EleosHelpPane />
                     </div>
 
                 </DialogContent>

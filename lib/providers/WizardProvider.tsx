@@ -22,9 +22,11 @@ export enum WizardStep {
 
 interface WizardContextType {
     currentStep: WizardStep;
+    currentHelpTextIds: number[];
     wizardData: WizardData;
     updateWizardData: (data: Partial<WizardData>) => void;
     setStep: (step: WizardStep) => void;
+    setHelpTextIds: (ids: number[]) => void;
 }
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
@@ -40,17 +42,19 @@ interface Props {
 }
 
 export const WizardProvider: React.FC<Props> = ({ children }) => {
-    const [currentStep, setCurrentStep] = useState<number>(WizardStep.BASIC_INFO);
+    const [currentStep, setStep] = useState<number>(WizardStep.BASIC_INFO);
+    const [currentHelpTextIds, setHelpTextIds] = useState<number[]>([]);
     const [wizardData, setWizardData] = useState<WizardData>({});
     
     const updateWizardData = (data: Partial<WizardData>) => {
         setWizardData(prev => ({ ...prev, ...data }));
     }
 
-    const setStep = (step: WizardStep) => setCurrentStep(step);
+    //const setStep = (step: WizardStep) => setCurrentStep(step);
+    //const setHelpTextIds = (ids: number[]) => setCurrentHelpTextIds(ids);
 
     return (
-        <WizardContext.Provider value={{ currentStep, wizardData, updateWizardData, setStep}}>
+        <WizardContext.Provider value={{ currentStep, currentHelpTextIds, wizardData, updateWizardData, setStep, setHelpTextIds}}>
             {children}
         </WizardContext.Provider>
     );

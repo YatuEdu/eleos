@@ -32,112 +32,245 @@ const ENUM_lABLES = [
 class EleosHelpText {
     private lang: Language = Language.En
 
-    private static helpTextMap: Map<HelpTextId, HelpText> = new Map<HelpTextId, HelpText>([
+    private static helpTextMap: Map<HelpTextId, HelpText[]> = new Map<HelpTextId, HelpText[]>([
         [HelpTextId.EmailUsage, 
-            {
-                subject: 'Privacy Policy',
-                en: `We will collect some information in order to assit you to create the last will.
-                     We use email to uniquely identify a user. However, we will not use your information, inclusing your email,
-                    for any other purpose.`,
-                cn: `我们将收集一些信息，以帮助您创建遗嘱。我们使用电子邮件来唯一标识用户。但是，我们不会将您的信息，包括您的电子邮件，用于任何其他目的。`
-             } 
+            [
+                {
+                    subject: 'Privacy Policy',
+                    brief: `We will collect some information in order to assit you to create the last will.
+                        We use email to uniquely identify a user. However, we will not use your information, inclusing your email,
+                        for any other purpose.`,
+                    all:''
+                
+                },
+                {
+                    subject: '隐私政策',
+                    brief: `我们将收集一些信息，以帮助您创建遗嘱。我们使用电子邮件来唯一标识用户。但是，我们不会将您的信息，包括您的电子邮件，用于任何其他目的。`,
+                    all:''
+                }
+            ]
         ],
         [HelpTextId.Marriage, 
-            {
-                subject: 'Importance of Marital Status in a Will',
-                en: `Discussing marital status in a will is crucial as it can significantly influence how assets are distributed and how various provisions within the will are executed. 
-                    Here’s a detailed look at how marital status can impact the creation and execution of a will.`,
-                cn: `在遗嘱中讨论婚姻状况至关重要，因为它可以显著影响资产的分配方式以及遗嘱中的各种规定的执行方式`
-             } 
+            [
+                {
+                    subject: 'Marriage',
+                    brief: `Marriage is a legal contract between two people. It is important to understand the legal implications of marriage.`,
+                    all:''
+                },
+                {
+                    subject: '婚姻',
+                    brief: `婚姻是两个人之间的法律合同。了解婚姻的法律含义很重要。`,
+                    all:''
+                }
+            ]
         ],
         [HelpTextId.Marriage2, 
-            {
-                subject: 'Concluding Thoughts on Marital Status in Estate Planning',
-                en: `Marital status significantly impacts estate planning. It’s crucial to consider how this status influences the distribution of assets, tax implications, 
-                and legal rights of surviving family members. Regular updates to your will can ensure that it accurately reflects your current situation and wishes,
-                 particularly after any changes in marital status. Therefore, we recommend that you join us as a yearly member to keep your will up to date.`,
-                cn: `婚姻状况对财产规划产生了重大影响。重要的是要考虑这种状况如何影响资产的分配、税收影响以及幸存家庭成员的法律权利。定期更新您的遗嘱可以确保它准确反映您当前的情况和愿望，
-                特别是在婚姻状况发生任何变化之后。因此，我们建议您加入我们作为年度会员，以保持您的遗嘱保持最新。`
-             } 
-        ],
-        [HelpTextId.Eexcutor, 
-            {
-                subject: 'The importance of an Executor in a Will',
-                en: `Administering the Estate:
-
-                Executors are responsible for managing and distributing the estate of the deceased. This includes gathering all assets, paying off debts and taxes, and distributing the remaining assets to the beneficiaries as specified in the will .
-                Probate Process:
-                
-                Executors must navigate the probate process, which involves proving the validity of the will in court. They file the necessary paperwork, attend probate hearings, and ensure that the legal requirements are met .
-                Financial Management:
-                
-                Executors manage the estate's finances during the probate process. This includes maintaining the estate's assets, such as real estate and investments, until they can be distributed to the beneficiaries .
-                Communication with Beneficiaries:
-                
-                Executors act as the primary point of contact for the beneficiaries, keeping them informed about the progress of the estate administration and addressing any concerns or questions they may have .
-                Legal and Ethical Duties:
-                
-                Executors have a fiduciary duty to act in the best interests of the beneficiaries and the estate. They must act with honesty, integrity, and impartiality throughout the administration process .`,
-                cn: `管理遗产：
-
-                遗嘱执行人负责管理和分配已故者的遗产。这包括收集所有资产、偿还债务和税款，并按照遗嘱中规定的方式将剩余资产分配给受益人。
-                遗嘱认证过程：
-                
-                遗嘱执行人必须处理遗嘱认证过程，这涉及在法院证明遗嘱的有效性。他们需要提交必要的文件，出席遗嘱认证听证会，并确保满足法律要求。
-                财务管理：
-                
-                遗嘱执行人在遗嘱认证过程中管理遗产的财务。这包括维持遗产的资产，如房地产和投资，直到它们可以分配给受益人为止。
-                与受益人的沟通：
-                
-                遗嘱执行人是受益人的主要联络点，保持他们知晓遗产管理的进展，并解答他们的疑虑或问题。
-                法律和道德义务：
-                
-                遗嘱执行人对受益人和遗产负有信托责任。他们必须在整个管理过程中以诚实、正直和公正的态度行事。`
-             } 
-        ],
-        [HelpTextId.Guardians, 
-            {
-                subject: 'Significance of Guardians in a Will',
-                en: `The guardians of your minor children are the most important aspect of a will. 
-             Most commonly, a single guardian is appointed to ensure clarity and consistency in the upbringing and care of the children. 
-             This is often straightforward and avoids potential conflicts that might arise between multiple guardians.`,
-                cn: `您未成年子女的监护人是遗嘱中最重要的一部分。
-                最常见的情况是指定一个监护人，以确保子女的抚养和照顾方面的清晰性和一致性。
-                这通常是简单明了的，避免了可能在多个监护人之间产生的潜在冲突。`
-             } 
+            [
+                {
+                    subject: 'Marriage',
+                    brief: `Marriage is a legal contract between two people. It is important to understand the legal implications of marriage.`,
+                    all:''
+                },
+                {
+                    subject: '婚姻',
+                    brief: `婚姻是两个人之间的法律合同。了解婚姻的法律含义很重要。`,
+                    all:''
+                }
+            ]
         ],
         [HelpTextId.Childrens, 
-            {
-                subject: 'Importance of Adding Children as Heirs',
-                en: `This is where you can add your children as heirs. 
-                It is important to add all your children, including the biological children from all your marriges, and all your adopted chailren if any, so that they can be included in your estate plan.
+            [
+                {
+                    subject: 'Importance of Adding Children as Heirs',
+                    brief: `It is important to add all your children, including the biological children from all your marriges, and all your adopted chailren if any, so that they can be included in your estate plan.
                 Even if you want to exclude one or more children from inheriting your estate, please add them as well and specify the properties they are not to inherit.
                 If you do not have children, you can skip this step.`,
-                cn: `这是您可以将您的孩子添加为继承人的地方。请添加所有的孩子，包括您的所有婚姻中的亲生子女，以及所有的收养子女， 以便他们可以包括在您的财产计划中。
+                all:`<h1>Importance to listing all children</h1><p>
+               When creating a will, you must list all your children, even if some of them are not inheriting any property. This is often done to acknowledge their existence and to make it clear that they 
+               have not been unintentionally omitted.
+               <h2>For exaple</h2>Eleos will put this clause in your will : I have three children: John Wong, Jane Wong, and Robert Wong. I am intentionally not providing any inheritance to Robert Wong, as he is financially 
+               independent and have agreed to this arrangement.</p> <p>This explicit mention can help prevent potential disputes or claims of oversight. Answering all the questions presented by Eleos application will 
+               ensure it meets all legal requirements and reflects your wishes accurately.</p>`
+                },
+                {
+                    subject: '孩子在遗嘱中的重要性',
+                    brief: `这是您可以将您的孩子添加为继承人的地方。请添加所有的孩子，包括您的所有婚姻中的亲生子女，以及所有的收养子女， 以便他们可以包括在您的财产计划中。
                 即使您不计划某个或多个孩子继承您的财产，也请添加他们。 
-                如果您没有孩子，您可以跳过此步骤。`
-            }
+                如果您没有孩子，您可以跳过此步骤。`,
+                    all:`<h1>列出所有孩子的重要性</h1><p>创建遗嘱时，您必须列出所有的孩子，即使其中一些孩子不继承任何财产。通常这样做是为了承认他们的存在，并明确表明他们没有被无意中遗漏。</p><h2>例子</h2><p>
+                    我有三个孩子：约翰·多伊，简·多伊和罗伯特·多伊。我故意不为简·多伊和罗伯特·多伊提供任何继承权，因为他们经济独立并同意这种安排。</p><p>这种明确的提及可以帮助防止潜在的争议或遗漏索赔。在起草遗嘱时，始终与法律专业人士咨询，
+                    以确保其符合所有法律要求并准确反映您的意愿。</p>`
+                }
+            ]
+        ],
+        [HelpTextId.Guardians, 
+            [
+                {
+                    subject: 'Guardians',
+                    brief: `Guardians are people who take care of children when their parents are not able to.`,
+                    all:''
+                },
+                {
+                    subject: '监护人',
+                    brief: `监护人是在父母无法照顾孩子时照顾孩子的人。`,
+                    all:''
+                }
+            ]
+        ],
+        [HelpTextId.Eexcutor, 
+            [
+                {
+                    subject: 'Executor',
+                    brief: `Executor is the person who will carry out the instructions in the will.`,
+                    all:''
+                },
+                {
+                    subject: '执行人',
+                    brief: `执行人是将执行遗嘱中指示的人。`,
+                    all:''
+                }
+            ]
+        ],
+        [HelpTextId.AssetBankAccountHelpText, 
+            [
+                {
+                    subject: 'Bank Account',
+                    brief: `Bank account is a financial account maintained by a bank for a customer.`,
+                    all:`It is generally a good idea to include bank accounts in a will. Including bank accounts ensures that the executor of your estate has clear instructions on how to distribute the funds. Here are some key points to consider:
+Advantages of Including Bank Accounts in a Will:
+Clarity: Specifies who should receive the funds, reducing potential disputes among heirs.
+Legal Authority: Gives the executor the legal authority to access and distribute the accounts according to your wishes.
+Complete Estate Plan: Ensures that all assets, including bank accounts, are covered in your estate plan.`
+                },
+                {
+                    subject: '银行账户',
+                    brief: `银行账户是银行为客户维护的金融账户。`,
+                    all:''
+                }
+            ]
+        ],
+        [HelpTextId.AssetRealEstateHelpText, 
+            [
+                {
+                    subject: 'Real Estate',
+                    brief: `Real estate is property consisting of land and the buildings on it.`,
+                    all:''
+                },
+                {
+                    subject: '房地产',
+                    brief: `房地产是由土地和上面的建筑物组成的财产。`,
+                    all:''
+                }
+            ]
+        ],
+        [HelpTextId.AssetLifeInsuranceHelpText, 
+            [
+                {
+                    subject: 'Life Insurance',
+                    brief: `Life insurance is a contract between an insurer and a policyholder.`,
+                    all:''
+                },
+                {
+                    subject: '人寿保险',
+                    brief: `人寿保险是保险人和投保人之间的合同。`,
+                    all:''
+                }
+            ]
+        ],
+        [HelpTextId.AssetRetirementHelpText, 
+            [
+                {
+                    subject: 'Retirement Account',
+                    brief: `Retirement account is a type of account that you save money for retirement.`,
+                    all:''
+                },
+                {
+                    subject: '退休账户',
+                    brief: `退休账户是一种您为退休存钱的账户。`,
+                    all:''
+                }
+            ]
+        ],
+        [HelpTextId.AssetInvestmentHelpText, 
+            [
+                {
+                    subject: 'Investment Account',
+                    brief: `Investment account is a type of account that you invest money in.`,
+                    all:''
+                },
+                {
+                    subject: '投资账户',
+                    brief: `投资账户是您投资的一种账户。`,
+                    all:''
+                }
+            ]
+        ],
+        [HelpTextId.AssetOtherHelpText, 
+            [
+                {
+                    subject: 'Other Assets',
+                    brief: `Other assets are assets that are not included in other categories.`,
+                    all:''
+                },
+                {
+                    subject: '其他资产',
+                    brief: `其他资产是不包括在其他类别中的资产。`,
+                    all:''
+                }
+            ]
         ],
         [HelpTextId.Id3, 
-            {
-                subject: 'Help text for ID 3',
-                en: 'Help text for ID 3',
-                cn: 'ID 3的帮助文本'
-            }
+            [
+                {
+                    subject: 'Id3',
+                    brief: `Id3 is a test.`,
+                    all:''
+                },
+                {
+                    subject: 'Id3',
+                    brief: `Id3 is a test.`,
+                    all:''
+                }
+            ]
         ],
-        // Add more entries as needed
-    ]);
+    ])
+    
+    private getMoreHelpUrl(id: number): string {
+        return ` <a href="/help?id=${id}&lang=${this.lang}" target="_blank">Read more ...</a>`
+    }
 
-    public getHelpText(id: number): HelpTextObject | undefined {
-        const textEntry: HelpText | undefined = EleosHelpText.helpTextMap.get(id);
-        //console.log(`textEntry: ${textEntry}`, textEntry)
+    public static getHelpTextAll(id: number, lang: number): HelpTextObject | undefined {
+        const textEntry: HelpText[] | undefined = EleosHelpText.helpTextMap.get(id);
 
         if (!textEntry) {
             return undefined;
         }
+        const index = lang - 1
+        const helpBodyHtml = textEntry[index].all ? 
+                             textEntry[index].all : 
+                            'No help content available'
         const helpBody: HelpTextObject = {
-                helpTextBody: textEntry[this.getLangTag()],
-                h2Subject: textEntry.subject
+            helpTextBody: helpBodyHtml,
+            h2Subject: textEntry[index].subject
+        }
+        return helpBody
+    }
+
+
+    public getHelpText(id: number): HelpTextObject | undefined {
+        const textEntry: HelpText[] | undefined = EleosHelpText.helpTextMap.get(id);
+
+        if (!textEntry) {
+            return undefined;
+        }
+        const index = this.getLangIndex()
+        const briefText = textEntry[index].brief
+        const helpBodyHtml = textEntry[index].all === '' ? 
+                                briefText : 
+                                briefText + this.getMoreHelpUrl(id)
+        const helpBody: HelpTextObject = {
+            helpTextBody: helpBodyHtml,
+            h2Subject: textEntry[index].subject
         }
         return helpBody
     }
@@ -155,8 +288,8 @@ class EleosHelpText {
         return []
     }
 
-    private getLangTag(): keyof HelpText {
-        return this.lang === Language.En ? 'en' : 'cn';
+    private getLangIndex(): number{
+        return this.lang === Language.En ? 0 : 1
     }
 
     /**

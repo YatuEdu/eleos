@@ -12,6 +12,8 @@ import { useElos }
         from '@/lib/providers/EleosAppProvider';
 import { Language } 
         from '@/lib/client/model/EleosMisc';
+import { useSearchParams } 
+        from 'next/navigation'
 
 // Styled components
 const StyledTitleBar = styled.div`
@@ -49,6 +51,15 @@ const TitleBar: React.FC = () => {
     throw Error('Eleos is not initialized');
   }
 
+  const searchParams = useSearchParams();
+  const lang = searchParams.get('lang');
+  let inoputLang = language
+  if (lang){
+    inoputLang = Number(lang)
+  } else {
+    inoputLang = language
+  }
+
   const handleLanguageChange = (language: Language) => {
     if (!ref || !ref.current || !setLanguage || !language) {
       throw Error('Eleos is not initialized');
@@ -61,7 +72,7 @@ const TitleBar: React.FC = () => {
   return (
     <StyledTitleBar>
       <Logo src="/image/logo.png" alt="Site Logo" />
-      <EleosLanguageButton language={language} setLanguage={handleLanguageChange} />
+      <EleosLanguageButton language={inoputLang} setLanguage={handleLanguageChange} />
       <LoginButton />
     </StyledTitleBar>
   );

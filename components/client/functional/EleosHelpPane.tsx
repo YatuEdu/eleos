@@ -1,5 +1,6 @@
 import { useElos } 
                 from '@/lib/providers/EleosAppProvider';
+import { useWizard } from '@/lib/providers/WizardProvider';
 import React , { useEffect, useState }                
                 from 'react';
 
@@ -7,18 +8,29 @@ interface HelpTextProps {
     helpTextEnIds: number[];
 }
 
-const EleosHelpPane: React.FC<HelpTextProps> = ({ helpTextEnIds }) => {
+const EleosHelpPane: React.FC = () => {
     const {ref, language} = useElos() ?? {};
     if (!ref || !ref.current) {
       throw Error('Eleos is not initialized');
     }
-    const [helpTextObjects, setHelpTextObjects] = useState(ref.current.getHelpText(helpTextEnIds))
+    const {currentHelpTextIds} = useWizard()
+    const [helpTextObjects, setHelpTextObjects] = useState(ref.current.getHelpText(currentHelpTextIds))
 
-    useEffect(() => {
+    const setHelperText = () => {
         if (!ref || !ref.current) {
             throw Error('Eleos is not initialized');
-          }
-        setHelpTextObjects(ref.current.getHelpText(helpTextEnIds))
+        }
+        if (currentHelpTextIds.length > 0) {
+            setHelpTextObjects(ref.current.getHelpText(currentHelpTextIds))
+        } 
+    }
+
+    useEffect(() => {
+        setHelperText()
+    }, [currentHelpTextIds])
+
+    useEffect(() => {
+       setHelperText()
     }, [language])
 
     return (
@@ -27,7 +39,7 @@ const EleosHelpPane: React.FC<HelpTextProps> = ({ helpTextEnIds }) => {
                  return (
                     <div key={index} className="mb-4">
                         <h2 className="text-xl font-bold">{helpTextObject.h2Subject}</h2>
-                        <p>{helpTextObject.helpTextBody}</p>
+                        <div dangerouslySetInnerHTML={{ __html: helpTextObject.helpTextBody }} />
                     </div>
                 );
             })}
