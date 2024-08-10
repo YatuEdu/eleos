@@ -22,7 +22,7 @@ import { WARNING_REQUIRED }
 import EleosSelect from '../../atoms/EleosSelect';
 import EleosHelpPane from '../EleosHelpPane';
 import { HelpTextId } from '@/lib/client/model/EleosMisc';
-import { set } from 'zod';
+import { number, set } from 'zod';
 import { EPT_HELPER, EleosAssetType} 
                 from '@/lib/client/model/EleosAssetType';
 import { EAOT_HELPER, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipType } 
@@ -40,13 +40,15 @@ type AddAssetProps = {
              type: EleosAssetType, 
              ownerShip: EleosAssetOwnerShipType, 
              principalPercentage?: number,
-             owner?: string) => void
+             owner?: string,
+             totalValue?: number) => void
 };
 
 type AddAssetState = {
     name: string,
     location: string,
     locationLabel: string,
+    totalValueLabel: string,
     note: string,
     type: string,
     invalidType?: string,
@@ -56,6 +58,7 @@ type AddAssetState = {
     ownerShip: string,
     principalPercentage?: number,
     owner?: string,
+    totalValue?: number
     valid: boolean
 }
 
@@ -69,6 +72,7 @@ const NAME_LOCATION = 'location'
 const NAME_NOTE = 'note'
 const NAME_TYPE = 'type'
 const NAME_OWNERSHIP = 'ownership'
+const NAME_TOTAL_VALUE = 'total_value'
 const NAME_PRINCIPAL_PCT = 'principal_pct'
 const NAME_SPOUSE_PCT = 'spouse_pct'
 const NAME_OWNER = 'owner'
@@ -77,6 +81,8 @@ const LOCATION_LABEL_LOC = 'Location'
 const LOCATION_LABEL_BANK_BRANCH = 'Bank Branch'
 const LOCATION_LABEL_INS = 'Insurance Company'
 const LOCATION_LABEL_BROKAGE = 'Brokage Firm'
+const TOTAl_VALUE_LABEL_MARKET = 'Market Value'
+const TOTAl_VALUE_LABEL_VALUE = 'Value'
 
 const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse, onSave }) => {
     const initialState: AddAssetState = {
@@ -92,6 +98,8 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         principalPercentage: 50,
         note: '',
         owner: undefined,
+        totalValue: undefined,
+        totalValueLabel: '',
         valid: false
     }
 
@@ -122,7 +130,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
             return
         }
 
-        onSave(state.name, state.location, state.note, typeValue, ownerShipValue, state.principalPercentage, state.owner, )
+        onSave(state.name, state.location, state.note, typeValue, ownerShipValue, state.principalPercentage, state.owner, state.totalValue)
         setOpen(false);
     }
 
@@ -135,11 +143,14 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
             case NAME_LOCATION:
                 newState = { ...state, location: action.value }
                 break
+            case NAME_TOTAL_VALUE:
+                newState = { ...state, totalValue: +action.value }
+                break
             case NAME_NOTE:
                 newState = { ...state, note: action.value }
                 break
             case NAME_TYPE:
-                newState = { ...state, type: action.value, locationLabel: setLocationLabel(action.value) }
+                newState = { ...state, type: action.value, ...setOptionalLabels(action.value) }
                 setHelpContext(NAME_TYPE, action.value)
                 break
             case NAME_OWNERSHIP:
@@ -151,7 +162,6 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
             case NAME_SPOUSE_PCT:
                 newState = { ...state, principalPercentage: 100 - (+action.value) }
                 break
-
             case NAME_OWNER:
                 newState = { ...state, owner: action.value }    
                 break
@@ -191,17 +201,17 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         }
     }
 
-    function setLocationLabel(name: string): string {
+    function setOptionalLabels(name: string): any {
         if (name === EleosAssetType.bankAccount) {
-            return LOCATION_LABEL_BANK_BRANCH
+            return {locationLabel: LOCATION_LABEL_BANK_BRANCH, totalValueLabel: TOTAl_VALUE_LABEL_VALUE}
         } else if (name === EleosAssetType.lifeInsurance) {
-            return LOCATION_LABEL_INS
+            return {locationLabel: LOCATION_LABEL_INS, totalValueLabel: TOTAl_VALUE_LABEL_VALUE} 
         } else if (name === EleosAssetType.investment  || name === EleosAssetType.retirement) {
-            return LOCATION_LABEL_BROKAGE
+            return {locationLabel: LOCATION_LABEL_BROKAGE, totalValueLabel: TOTAl_VALUE_LABEL_MARKET}  
         } else if (name === EleosAssetType.realEstate) {
-            return LOCATION_LABEL_LOC
+            return {locationLabel: LOCATION_LABEL_LOC, totalValueLabel: TOTAl_VALUE_LABEL_MARKET} 
         } else {
-            return ''
+            return {locationLabel: '', totalValueLabel: ''} 
         }
     }
 
@@ -314,6 +324,16 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                             mustHave={true} 
                             name={NAME_NAME} 
                             onTextEntered={(value, vliadCode) => dispatch({type: NAME_NAME, value: value}) } />
+                         {state.totalValueLabel !== '' && 
+                        <> 
+                            <EleosLabel text={state.totalValueLabel} />
+                            <EleosInputBase
+                                value={state.totalValue ? state.totalValue + '' : ''} 
+                                mustHave={false} 
+                                name={NAME_TOTAL_VALUE} 
+                                onTextEntered={(value, vliadCode) => dispatch({type: NAME_TOTAL_VALUE, value: value}) } />
+                        </>
+                        }
                         {state.locationLabel !== '' && 
                         <> 
                             <EleosLabel text={state.locationLabel} />

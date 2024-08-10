@@ -1,4 +1,4 @@
-import React, { useState } 
+import React, { useEffect, useState } 
                 from 'react';
 import AddAssetDialog 
                 from '@/components/client/functional/dialog/AddAssetDialog';
@@ -48,7 +48,32 @@ import EleosRole
                 from '@/lib/client/model/EleosRole';
 import RadioButtonGroup 
                 from '../atoms/EleosRadioGroup';
-import { EleosAssetDistributionGrandScheme } from '@/lib/client/model/EleosDataTypes';
+import { EleosAssetDistributionGrandScheme } 
+                from '@/lib/client/model/EleosDataTypes';
+import UpdateIcon 
+                from '@mui/icons-material/Update';            
+import DeleteIcon 
+                from '@mui/icons-material/Delete';
+import EleosIconButton 
+                from '../atoms/EleosIconButton';
+import Box from 
+                '@mui/material/Box';
+import { RowData } 
+                from '@/lib/client/model/EleosMisc';
+import EleosPrincipal from '@/lib/client/model/EleosPrincipal';
+import EleosSpouse from '@/lib/client/model/EleosSpouse';
+import ConfirmationDialog from '../functional/dialog/ConfirmationDialog';
+
+type RowUpdate = {
+    Name: string
+    Value: string
+    Location: string
+    UpdatedRow: RowData|null
+    Changed: boolean
+}
+
+const deleteAssetConfirmationMsgNoDist = "Are you sure you want to delete this asset?"
+const deleteAssetConfirmationMsgDist = "Are you sure you want to delete this asset? The asset distribution will be lost after deletion."
 
 const AddAsset: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -63,6 +88,51 @@ const AddAsset: React.FC = () => {
     const [assetList, setAssetList] = useState<EleosEntity[]>(ref.current.assets);
     const [assetDistributionGrandScheme, setAssetDistributionGrandScheme] = useState(ref.current.assetDistributionGrandScheme)
     const [valid, setValid] = useState(ref.current.assets.length > 0 || ref.current.assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.simple)
+    const [changed, setChanged] = useState(false)
+    const [changedRows, setchangedRows] = useState<RowUpdate[]>([])
+    const [assetToDelete, setAssetToDelete] = useState('')
+    const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
+    const [deleteAssetConfirmationMsg, setDeleteAssetConfirmationMsg] = useState('')
+
+    /**
+     * Initialize the changedRows array with the assets we already have
+     */
+    useEffect(() => {
+        if (!ref || !ref.current || !ref.current.principal)  {
+            throw Error('Eleos is not initialized')  
+        }
+        const arr = ref.current.assets.map((a) => {
+            return { 
+                Name: a.name, 
+                Location: a.location ? a.location : '',
+                Value: a.totalValue ? a.totalValue + '' :'', 
+                UpdatedRow: null,
+                Changed: false
+            }
+        })
+
+        setchangedRows(arr)
+    }, [assetList])
+
+    function rowUpdated (row: RowData): boolean{
+        if (!ref || !ref.current || !ref.current.principal)  {
+            throw Error('Eleos is not initialized')  
+        }
+        const asset = ref.current.assets.find(a => a.name === row.Name)
+        if (!asset) {
+            return false
+        }
+        return asset.location !== row.Location || asset.totalValue !== +row.Value || asset.name !== row.Name
+    }
+
+    function rowUpdated2 (name: String): boolean{  
+        
+        const row = changedRows.find(r => r.Name === name)
+        if (!row) {
+            return false
+        }
+        return row.Changed
+    }
 
     /**
      * A new asset item is added and we need to save it to Elsoe
@@ -77,17 +147,25 @@ const AddAsset: React.FC = () => {
                             note: string, type: EleosAssetType, 
                             ownership: EleosAssetOwnerShipType, 
                             principalPercentage?: number,
-                            owner?: string | undefined) => {
+                            owner?: string | undefined,
+                            totalValue?: number | undefined) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
         }
     
         // Attempt to find the owner and add the asset to Eleos
         let ownerFound: EleosRole | undefined = owner ? ref.current.getPrincipalOrSpouseByName(owner) : undefined
-        const asset = new EleosAsset(name, location, note, type, ownership, principalPercentage, ownerFound?.display)
+        if (ownerFound && !(ownerFound instanceof EleosPrincipal) && !(ownerFound instanceof EleosSpouse)) {
+            throw Error('Owner is not a principal or spouse')
+        }
+        const asset = new EleosAsset(name, 
+            location, note, type, ownership, 
+            principalPercentage, ownerFound,
+            totalValue)
         const result = ref.current.addEleosAsset(asset)
         if (result.succeeded) {
             setAssetList([...ref.current.assets])
+            setValid(true)
         } else {
             alert(result.error)
             return
@@ -95,6 +173,7 @@ const AddAsset: React.FC = () => {
         setShowDialog(false);
     }
 
+    
     const onAssetDistributionGrandSchemeChange = (value: string) => {
         if (!ref || !ref.current)  {
             throw Error('Eleos is not initialized')  
@@ -138,8 +217,13 @@ const AddAsset: React.FC = () => {
         setStep(step)
     } 
 
-    const onUpdateAsset = (name: string) => {
-        console.log('onDeleteAsset:', name)
+    const getIconByDistribution = (asset: EleosAsset): EleosPropertyTypIconAndToolTip => {
+        // Add a return statement at the end of the function
+        if (asset.isDistributionSet) {
+            return {icon: <PlaylistAddCheck style={{ color: '#FFD700' }}/>, toolTip: 'Distribution set'}
+        }
+        return {icon: <UpdateIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: 'No distribution set'}
+
     }
 
     const getIconByAssetType = (type: EleosAssetType): EleosPropertyTypIconAndToolTip => {
@@ -174,9 +258,58 @@ const AddAsset: React.FC = () => {
         }
     }
 
+    const handleRowChange = (changedRow: RowData) => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+        const asset = ref.current.assets.find(a => a.name === changedRow.Name)
+        if (!asset) {
+            return
+        }
+        asset.location = String(changedRow.Location)
+        asset.totalValue = Number(changedRow.Value)
+    }
+
+    const onDeleteAsset = (name: string) => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+        setAssetToDelete(name)
+        const asset = ref.current.assets.find(a => a.name === name)
+        if (!asset) {
+            throw Error('Asset not found')
+        }
+        if (asset.isDistributionSet) {
+            setDeleteAssetConfirmationMsg(deleteAssetConfirmationMsgDist)
+        } else {
+            setDeleteAssetConfirmationMsg(deleteAssetConfirmationMsgNoDist)
+        }
+        setShowConfirmationDialog(true)
+    }
+
+    const handleDeleteAsset = () => {
+        if (!ref || !ref.current)  {
+            throw Error('Eleos is not initialized')  
+        }
+        const result = ref.current.deleteEleosAsset(assetToDelete)
+        if (result.succeeded) {
+            setAssetList([...ref.current.assets])
+            setValid(ref.current.assets.length > 0 || assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.simple)
+        } else {
+            alert(result.error)
+        }
+        setShowConfirmationDialog(false)
+    }
 
     return (
         <>
+            <ConfirmationDialog 
+                open={showConfirmationDialog} 
+                message={deleteAssetConfirmationMsg}
+                title="Delete an asset" 
+                onConfirm={handleDeleteAsset}
+                onCancel={() => setShowConfirmationDialog(false)}
+            />
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
                     title={RADIO_GROUP_TITLE}
@@ -203,27 +336,32 @@ const AddAsset: React.FC = () => {
                 <EleosItemTable
                     rows={ref.current.assets.map((a) => {
                         const icon = getIconByAssetType(a.type)
+                        const icon2 = getIconByDistribution(a)
                         return { 
                             Name: a.name, 
                             Type: icon.icon,
                             ToolTip: icon.toolTip,
-                            OwnershipType: a.ownership, 
-                            Location: a.location || '', 
-                            Note: a.note || '',
-                            Action: <div className='mt-0'>
-                                        <EleosButton type='delete'
-                                                    className=' mt-1' 
-                                                    text="update" onClick={() => onUpdateAsset(a.name)} /></div>
+                            Distribution: icon2.icon,
+                            ToolTip2: icon2.toolTip,
+                            Ownership: a.ownership, 
+                            Location: a.location ? a.location : '',
+                            Value: a.totalValue ? a.totalValue + '' :'', 
+                            Change: 
+                            <Box display="flex" gap={1} alignItems="center">
+                                <EleosIconButton icon={DeleteIcon} onClick={() => onDeleteAsset(a.name)} tooltip='Delete the asset'/>
+                            </Box>
                         }
                     })}
                     columns={[
                         { label: 'Name', type: 'text' },
                         { label: 'Type', type: 'icon',},
-                        { label: 'OwnershipType', type: 'text' },
-                        { label: 'Location', type: 'text' },
-                        { label: 'Note', type: 'editable' },
-                        { label: 'Action', type: 'button' },
-                    ]}
+                        { label: 'Ownership', type: 'text' },
+                        { label: 'Location', type: 'editable' },
+                        { label: 'Value', type: 'editable' },
+                        { label: 'Distribution', type: 'icon2' },
+                        { label: 'Change', type: 'button' },
+                    ]} 
+                    onChanged={handleRowChange}
                 />
             </div> }
             <EleosWizardButtonLayout

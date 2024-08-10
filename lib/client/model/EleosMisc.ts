@@ -48,3 +48,7 @@ export interface HelpTextObject {
     helpTextBody: string
 }
 
+export type RowData = {
+    [key: string]: string | JSX.Element;
+};
+

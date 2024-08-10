@@ -1,32 +1,42 @@
-import React, { useState } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import { SxProps, Theme } from '@mui/system';
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import React, { useState } 
+                from 'react';
+import Table 
+                from '@mui/material/Table';
+import TableBody 
+                from '@mui/material/TableBody';
+import TableCell 
+                from '@mui/material/TableCell';
+import TableContainer 
+                from '@mui/material/TableContainer';
+import TableHead 
+                from '@mui/material/TableHead';
+import TableRow 
+                from '@mui/material/TableRow';
+import Paper 
+                from '@mui/material/Paper';
+import TextField 
+                from '@mui/material/TextField';
+import { SxProps, Theme } 
+                from '@mui/system';
+import Tooltip, { tooltipClasses } 
+                from '@mui/material/Tooltip';
+import { RowData } 
+                from '@/lib/client/model/EleosMisc';
 
 
 type Column = {
         label: string;
-        type: 'text' | 'icon' | 'editable' | 'button';
-};
-
-type RowData = {
-    [key: string]: string | JSX.Element;
+        type: 'text' | 'icon' | 'icon2' | 'editable' | 'button';
 };
 
 type TableProps = {
     columns: Column[];
     rows: RowData[];
+    onChanged: (row: RowData) => void;
     sx?: SxProps<Theme>;
 };
 
-const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
+const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, sx }) => {
     const [editData, setEditData] = useState<{ [key: string]: string }>({});
 
     const handleEditChange = (event: React.ChangeEvent<HTMLInputElement>, rowId: string, columnId: string) => {
@@ -35,6 +45,11 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
             [`${rowId}-${columnId}`]: event.target.value,
         };
         setEditData(newEditData);
+        const modifiedRow = {
+            ...rows[parseInt(rowId, 10)],
+            [columnId]: event.target.value,
+        };
+        onChanged(modifiedRow);  
     };
 
     const tableCellStyles = {
@@ -56,7 +71,12 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
-                            <TableCell key={column.label} sx={{ backgroundColor: '#D3D3D3', color: 'bleck', fontSize: '1rem' }}>{column.label}</TableCell>
+                            <TableCell key={column.label} sx={{ 
+                                backgroundColor: '#D3D3D3', 
+                                color: 'bleck', 
+                                fontSize: '1rem',
+                                textAlign: 'center'}}>{column.label}
+                            </TableCell>
                         ))}
                     </TableRow>
                 </TableHead>
@@ -67,6 +87,7 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                                 const cellKey   = `${idx}-${column.label}`;
                                 const cellValue = row[column.label];
                                 const toolTip  = row['ToolTip'];
+                                const toolTip2  = row['ToolTip2'];
                                 console.log('toolTip', toolTip )
                                 let content: string | JSX.Element = '';
 
@@ -97,6 +118,23 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, sx }) => {
                                             </Tooltip>
                                         ) : cellValue;
                                         break;
+                                        case 'icon2':
+                                            content = toolTip ? (
+                                                <Tooltip 
+                                                    title={toolTip2}
+                                                    componentsProps={{
+                                                        tooltip: {
+                                                          sx:{
+                                                            backgroundColor: '#36454F', 
+                                                            color: '#FFD700',
+                                                            fontSize: '1.2rem',
+                                                        }
+                                                      }}}
+                                                >
+                                                    <span>{cellValue}</span>
+                                                </Tooltip>
+                                            ) : cellValue;
+                                            break;
                                     case 'button':
                                         content = cellValue;
                                         break;

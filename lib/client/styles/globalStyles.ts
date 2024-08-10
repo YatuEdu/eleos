@@ -16,4 +16,5 @@ export default GlobalStyles;
 
 export class StaticStypes {
     static readonly TABLE_BK_COLOR = { color: '#FFD700' }
+    static readonly DIALOG_TITLE_COLOR = { color: '#36454F' }
 }
