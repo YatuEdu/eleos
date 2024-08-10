@@ -6,15 +6,18 @@ import { EleosAssetOwnerShipType }
                 from "./EleosAssetOwnerShipType";
 import AssetDistribution, { AssetDistributionTiming } 
                 from "./AssetDistribution";
+import EleosPrincipal from "./EleosPrincipal";
+import EleosSpouse from "./EleosSpouse";
 
 export class EleosAsset extends EleosEntity {
     protected _name: string;
     protected _type: EleosAssetType;
     protected _ownership: EleosAssetOwnerShipType;
     protected _principalPercentage
-    protected _owner?: string;
+    protected _owner?: EleosPrincipal | EleosSpouse;
     protected _location?: string;
     protected _note?: string;
+    protected _totalValue?: number;
     protected _assetDistribution: Map<AssetDistributionTiming, AssetDistribution> = new Map() 
 
     constructor(name: string, 
@@ -23,7 +26,8 @@ export class EleosAsset extends EleosEntity {
                 type: EleosAssetType, 
                 ownership: EleosAssetOwnerShipType,
                 principalPercentage?: number,
-                owner?: string) {
+                owner?: EleosPrincipal | EleosSpouse,
+                totalValue?: number) {
         super()
         this._name = name
         this._type = type
@@ -32,6 +36,7 @@ export class EleosAsset extends EleosEntity {
         this._principalPercentage = principalPercentage
         this._location = location
         this._note = note
+        this._totalValue = totalValue
     }
 
     /**
@@ -52,6 +57,11 @@ export class EleosAsset extends EleosEntity {
     getDistributionForTiming(timing: AssetDistributionTiming): AssetDistribution | undefined {
         return this._assetDistribution.get(timing)
     }
+
+    get isDistributionSet(): boolean {
+        return this._assetDistribution.size > 0
+    }
+
 
     /**
      * getters
@@ -79,6 +89,10 @@ export class EleosAsset extends EleosEntity {
 
     get name(): string {
         return this._name;
+    }
+
+    set name(value: string) {
+        this._name = value
     }
 
     get type(): EleosAssetType{
@@ -111,7 +125,7 @@ export class EleosAsset extends EleosEntity {
         return this._principalPercentage ? 100 - this._principalPercentage : undefined
     }
 
-    get owner(): string | undefined {
+    get owner(): EleosPrincipal | EleosSpouse | undefined {
         return this._owner;
     }
 
@@ -119,7 +133,19 @@ export class EleosAsset extends EleosEntity {
         return this._location;
     }
 
+    set location(value: string) {
+        this._location = value
+    }
+
     get note(): string | undefined {
         return this._note;
+    }
+
+    get totalValue(): number | undefined {
+        return this._totalValue;
+    }
+
+    set totalValue(value: number) {
+        this._totalValue = value
     }
 }

@@ -185,7 +185,7 @@ class Eleos {
 
     set assetDistributionGrandScheme(scheme: EleosAssetDistributionGrandScheme) { this._assetDistributionGrandScheme = scheme}
 
-    get principal() { return this.findOnePersonByRole(EleosRoleId.principal)}
+    get principal() { return this.findOnePersonByRole(EleosRoleId.principal) as EleosPrincipal}
 
     get marritalStatus(): EleosMaritalStatus | undefined { return this._marritalStatus}
 
@@ -649,7 +649,7 @@ class Eleos {
                 return { succeeded: false, error: 'The ownership must have owner'}
             }
         
-            if (principal.person.display !== asset.owner && spouse.person.display !== asset.owner) {
+            if (principal !== asset.owner && spouse !== asset.owner) {
                 return { succeeded: false, error: 'The owner must be either the principal or the spouse'} 
             }
         }
@@ -657,6 +657,22 @@ class Eleos {
         this._assets.push(asset)
         return {succeeded: true}
     }
+
+    /**
+     * Delet an existing asset in the will
+     * 
+     * @param asset 
+     * @returns 
+     */
+    deleteEleosAsset(assetName: String): EleosApiResult {
+        const index = this._assets.findIndex(a => a.name === assetName)
+        if (index > -1) {
+            this._assets.splice(index, 1)
+            return {succeeded: true}
+        }
+        return {succeeded: false, error: 'The asset not found'}
+    }
+
 }
 
 export default Eleos

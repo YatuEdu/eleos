@@ -161,7 +161,6 @@ const AssetDistributionForm: React.FC<AssetDistributionProps> = ({ heirs, asset,
                         buttonText={'Add a new heir'}
                         role={EleosRoleId.other_benificiary}
                         existingPeople={addPotentialHeir()}
-                        needDob={true} 
                         onSave={addNewHeir} />
                     </div>
             </div>

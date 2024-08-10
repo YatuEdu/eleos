@@ -46,9 +46,12 @@ import EmailOrPhoneInput
                 from '../EmailOrPhoneInput';
 import EmailOrPhone 
                 from '@/lib/client/model/EmailOrPhone';
-import EleosEexecutor from '@/lib/client/model/EleosEexcutor';
-import { EmailOrPhoneRequirementType } from '@/lib/client/model/EleosDataTypes';
-
+import EleosEexecutor 
+                from '@/lib/client/model/EleosEexcutor';
+import { EmailOrPhoneRequirementType } 
+                from '@/lib/client/model/EleosDataTypes';
+import { StaticStypes } 
+                from '@/lib/client/styles/globalStyles';
 
 
 type AddPersonModalProps = {
@@ -292,8 +295,9 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                         width: '500px', // Set fixed width
                         height: 'auto', 
                     }}}>
-                <DialogTitle  sx={{ backgroundColor: '#d3d3d3', marginBottom: '8px' }}>
-                    {titleText}</DialogTitle>
+                <DialogTitle sx={{ backgroundColor: StaticStypes.DIALOG_TITLE_COLOR, marginBottom: '8px' }}>
+                    {titleText}
+                </DialogTitle>
                 <DialogContent>
                     {existingPeople.length > 0 && 
                         <div className="ml-4 mr-4">
