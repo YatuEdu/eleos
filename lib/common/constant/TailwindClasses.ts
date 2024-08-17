@@ -24,6 +24,9 @@ export const BUTTON_CLASS_GREEN = btnClassTemplate({ bgColor: 'green-600', hover
 export const BUTTON_CLASS_DISABLED = btnClassDiaabledTemplate({ bgColor: 'pink-200', txtColor: 'white', extra: 'mt-1 mr-2 ml-2 mb-2'});
 // mixed button
 export const BUTTON_CLASS_BLUE = btnClassTemplate({ bgColor: 'blue-600', hoverBgColor: 'blue-700', txtColor: 'white', extra: ''});
+// mixed button
+export const BUTTON_CLASS_CANCEL = btnClassTemplate({ bgColor: 'transparent', hoverBgColor: 'blue-700', txtColor: 'black', extra: ''});
+
 
 export const ELEOS_INPUT_STYLE =  `bg-light-gray border border-gray-300 p-2 shadow-3d focus:bg-darker-gray focus:shadow-3d-focus focus:outline-none transition-colors duration-300 w-full h-10 `
 

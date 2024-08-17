@@ -14,6 +14,9 @@ import EleosAssetNoDistribution
                 from '@/lib/client/model/EleosAssetNoDistribution';
 import { EleosAsset } 
                 from '@/lib/client/model/EleosAsset';
+import { EleosRoleId } 
+                from '../model/EleosRole';
+import EleosPrincipal from '../model/EleosPrincipal';
 
 // Import other asset classes as needed
 
@@ -26,15 +29,24 @@ export class EleosAssetFactory {
 
     createAsset(assetName: string, location: string, 
                 note: string, assetType: EleosAssetType, 
-                ownershipType: EleosAssetOwnerShipType, owner: EleosPerson): EleosAsset {
+                ownershipType: EleosAssetOwnerShipType, 
+                owner: EleosPerson, 
+                assetValue?: number): EleosAsset {
         if (this.eleos.spouse === null) {
            // easy case, single person asset
-            return new EleosAssetSingleDistribution(assetName, location, note, assetType, ownershipType, owner)
+            return new EleosAssetSingleDistribution(assetName, 
+                location, note, assetType, 
+                ownershipType, 
+                owner.getRole(EleosRoleId.principal) as EleosPrincipal,
+                assetValue)
         }
         
         // case for multiple distributions
+        const ownerRole = owner.isPrincipal ?  this.eleos.principal : this.eleos.spouse
         if (ownershipType !== EleosAssetOwnerShipType.prenuptial && ownershipType !== EleosAssetOwnerShipType.trust) {
-            return new EleosAssetMultipleDistributions(assetName, location, note, assetType, ownershipType, owner)
+            return new EleosAssetMultipleDistributions(assetName, 
+                location, note, assetType, ownershipType, 
+                ownerRole, assetValue)
         }
 
         // case for trust and prenuptial

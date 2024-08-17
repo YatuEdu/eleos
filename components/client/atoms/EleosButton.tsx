@@ -4,7 +4,7 @@ import Button
                 from '@mui/material/Button';
 import { Tooltip } 
                 from '@mui/material';
-import { BUTTON_CLASS_BLUE, BUTTON_CLASS_GREEN, BUTTON_CLASS_DISABLED } 
+import { BUTTON_CLASS_BLUE, BUTTON_CLASS_GREEN, BUTTON_CLASS_DISABLED, BUTTON_CLASS_CANCEL } 
                 from '@/lib/common/constant/TailwindClasses';
 
 type EleosButtonProps = {
@@ -23,7 +23,8 @@ const EleosButton: React.FC<EleosButtonProps> = ({ref, type, className, disabled
     const [disabledState, setDisabledState] = React.useState(disabled || false)
 
     let btnClass = type === 'wizard' ? BUTTON_CLASS_GREEN : 
-                   type === 'add' ?  BUTTON_CLASS_BLUE : BUTTON_CLASS_GREEN
+                   type === 'add' ?  BUTTON_CLASS_BLUE  :
+                   type === 'delete' ? BUTTON_CLASS_CANCEL : BUTTON_CLASS_GREEN
     const btnEnabledClasses = className ? btnClass + " " + className : btnClass
     const btnDisabledClasses = className ? BUTTON_CLASS_DISABLED + " " + className : BUTTON_CLASS_DISABLED
 

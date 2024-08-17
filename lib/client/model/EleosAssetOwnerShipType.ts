@@ -27,7 +27,8 @@ export const ELEOS_OWNERSHIP_TYPE_LIST_MARRIED: EleosAssetOwnerShipType[] = [
     EleosAssetOwnerShipType.trust,
     EleosAssetOwnerShipType.other
 ]
-class EleosAssetOwnerShipTypeHelper {
+
+export class EleosAssetOwnerShipTypeHelper {
     private pownershipType = new EleosOptionType(EleosAssetOwnerShipType)
  
     get values() : EleosAssetOwnerShipType[] {
@@ -60,6 +61,14 @@ class EleosAssetOwnerShipTypeHelper {
         return this.pownershipType
                     .getLabelValuePairs()
                     .filter((pair) => ELEOS_OWNERSHIP_TYPE_LIST_MARRIED.includes(pair.value as EleosAssetOwnerShipType))
+    }
+
+    static getlabelValuePairsForTilitedAsset(pairs: {label: string, value: string}[] ) : {label: string, value: string} [] {
+        return pairs.filter((pair) => pair.value !== EleosAssetOwnerShipType.other)
+    }
+
+    static getlabelValuePairsForUntilitedAsset(pairs: {label: string, value: string}[] ) : {label: string, value: string} [] {
+        return pairs.filter((pair) => pair.value === EleosAssetOwnerShipType.separate || pair.value === EleosAssetOwnerShipType.individualForSingle)
     }
 
  }

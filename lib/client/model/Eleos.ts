@@ -204,7 +204,10 @@ class Eleos {
         throw new Error('No principal found')
     }
 
-    get spouse(): EleosRole | undefined { return this.findOnePersonByRole(EleosRoleId.spouse)}
+    get spouse(): EleosSpouse | undefined { 
+        const role = this.findOnePersonByRole(EleosRoleId.spouse)
+        return role ? role as EleosSpouse : undefined
+    }
     
     get childrenStatus(): EleosChildrenStatusValue | undefined { return this._childrenStatus}
 

@@ -1,4 +1,4 @@
-import AssetDistribution, { AssetDistributionUnit }
+import AssetDistribution
                 from "./AssetDistribution";
 import { EleosAssetOwnerShipType } 
                 from "./EleosAssetOwnerShipType";
@@ -8,6 +8,10 @@ import { EleosAssetType} from
                 "./EleosAssetType";
 import EleosPerson 
                 from "./EleosPerson";
+import EleosPrincipal 
+                from "./EleosPrincipal";
+import EleosSpouse 
+                from "./EleosSpouse";
 
 class EleosAssetMultipleDistributions extends EleosAssetSingleDistribution {
     private _distributionWhenPricipalDie: AssetDistribution
@@ -18,7 +22,8 @@ class EleosAssetMultipleDistributions extends EleosAssetSingleDistribution {
         note: string, 
         type: EleosAssetType, 
         ownership: EleosAssetOwnerShipType, 
-        owner?: EleosPerson) {
+        owner?: EleosPrincipal | EleosSpouse,
+        totalValue?: number) {
             super(name, location, note, type, ownership, owner)
             this._distributionWhenPricipalDie = new AssetDistribution()
             this._distributionWhenSpouseDie = new AssetDistribution()

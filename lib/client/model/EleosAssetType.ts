@@ -25,8 +25,12 @@ export interface EleosPropertyTypIconAndToolTip {
     toolTip: string;
 }
 
-class EleosPropertyTypeHelper {
+export class EleosPropertyTypeHelper {
    private propertyType = new EleosOptionType(EleosAssetType)
+
+   static isUntilited(assetType: EleosAssetType): boolean {
+         return assetType === EleosAssetType.other || assetType === EleosAssetType.cash
+   }
 
     get values() : EleosAssetType[] {
         return this.propertyType.values as EleosAssetType[]

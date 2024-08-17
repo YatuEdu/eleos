@@ -18,7 +18,7 @@ interface EleosNameProps {
 }
 
 const NAME_FIRSTNAME = 'firstname'
-const WARNING_FN_REQUIRED = 'first Name required'
+const WARNING_FN_REQUIRED = 'first name required'
 const WARNING_FN_INVALID = 'first Name invalid'
 const WARNING_LN_REQUIRED = 'last name required'
 const WARNING_LN_INVALID = 'last name invalid'

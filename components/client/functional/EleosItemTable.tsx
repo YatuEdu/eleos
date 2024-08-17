@@ -26,7 +26,7 @@ import { RowData }
 
 type Column = {
         label: string;
-        type: 'text' | 'icon' | 'icon2' | 'editable' | 'button';
+        type: 'text' | 'number' | 'icon' | 'icon2' | 'editable' | 'button';
 };
 
 type TableProps = {
@@ -92,6 +92,9 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, sx }) 
                                 let content: string | JSX.Element = '';
 
                                 switch (column.type) {
+                                    case 'number':
+                                        content = Number(cellValue).toLocaleString() 
+                                        break;
                                     case 'editable':
                                         content = (
                                             <TextField

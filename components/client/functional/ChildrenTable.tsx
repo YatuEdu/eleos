@@ -20,6 +20,7 @@ import AddPersonModal
                 from "./dialog/AddPersonModal";
 import EleosRole, { EleosRoleId } 
                 from "@/lib/client/model/EleosRole";
+import { RowData } from "@/lib/client/model/EleosMisc";
 
 interface ChildrenTableProps {
     children: EleosChild[]
@@ -67,7 +68,10 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
     const onUpdateChild = (c:EleosRole) => {
         onChildChange(c as EleosChild)
     }
-    
+
+    const handleRowChange = (changedRow: RowData) => {
+       throw new Error('Not implemented')
+    }
 
     return <div className={className}>
         <EleosLabel classNames='mb-2 mt-0'  text={`${ref.current.possessivePronouns} Children`} />
@@ -96,6 +100,7 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
                 { label: 'Age', type: 'text' },
                 { label: '  ', type: 'button' },
             ]}
+            onChanged={handleRowChange}
         />
       
     </div>

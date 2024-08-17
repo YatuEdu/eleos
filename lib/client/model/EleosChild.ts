@@ -40,6 +40,11 @@ class EleosChild extends EleosRole {
         return this._birthYear;
     }
 
+    set birthYear(year) {
+        this._birthYear = year;
+    }
+
+
     get age(): number {
         return new Date().getFullYear() - this.birthYear
     }

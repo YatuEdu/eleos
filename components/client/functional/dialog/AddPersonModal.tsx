@@ -295,7 +295,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                         width: '500px', // Set fixed width
                         height: 'auto', 
                     }}}>
-                <DialogTitle sx={{ backgroundColor: StaticStypes.DIALOG_TITLE_COLOR, marginBottom: '8px' }}>
+                <DialogTitle sx={{ backgroundColor: StaticStypes.DIALOG_TITLE_COLOR, marginBottom: '8px',  fontWeight: 800}}>
                     {titleText}
                 </DialogTitle>
                 <DialogContent>
@@ -348,7 +348,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 </DialogContent>
                 <DialogActions>
                     <EleosButton
-                        type='wizard'
+                        type='delete'
                         className="mr-1"
                         disabled={false}
                         text="Cancel"
