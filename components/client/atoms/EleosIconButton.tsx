@@ -1,7 +1,6 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import { SvgIconComponent } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
 
 type IconButtonProps = {
     icon: SvgIconComponent;
@@ -13,13 +12,13 @@ type IconButtonProps = {
 const EleosIconButton: React.FC<IconButtonProps> = ({ icon: IconComponent, onClick, tooltip, disabled }) => {
     return (
         <Tooltip title={tooltip}>
-            <Button 
+            <IconButton 
                 disabled={disabled}
-                variant="contained" 
                 color="primary" 
-                startIcon={<IconComponent />} 
                 onClick={onClick}
-            />
+            >
+                <IconComponent />
+            </IconButton>
         </Tooltip>
     );
 };

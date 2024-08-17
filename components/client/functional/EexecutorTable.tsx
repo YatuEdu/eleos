@@ -26,6 +26,8 @@ import EleosRole, { EleosRoleId }
                 from "@/lib/client/model/EleosRole";
 import EleosEexecutor 
                 from "@/lib/client/model/EleosEexcutor";
+import { RowData } 
+                from "@/lib/client/model/EleosMisc";
 
 interface EexecutorTableProps {
     executors: EleosEexecutor[]
@@ -75,6 +77,10 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
     }
     
 
+    const handleRowChange = (changedRow: RowData) => {
+        throw new Error('Not implemented')
+     }
+ 
     return <div className={className}>
         <EleosLabel classNames='mb-2 mt-0' text='The executors of the will'/>
         <EleosItemTable
@@ -103,6 +109,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                 { label: 'Age', type: 'text' },
                 { label: '  ', type: 'button' },
             ]}
+            onChanged={handleRowChange}
         />
       
     </div>

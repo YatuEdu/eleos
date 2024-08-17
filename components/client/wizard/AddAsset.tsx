@@ -320,16 +320,6 @@ const AddAsset: React.FC = () => {
                     direction='row'
                 />
             </div>
-            {assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.complex &&
-                <div className="flex items-center space-x-2 ml-3">
-                    <AddAssetDialog
-                        principal={ref.current.principal.display}
-                        spouse={ref.current.spouse?.display}
-                        buttonText="Add a new asset"
-                        onSave={handleAddAsset}
-                    />
-                </div>
-            }
             {assetList.length > 0 && 
              <div className="mt-4 mr-3 ml-3 mb-2">
                 <EleosLabel classNames='mb-2 mt-0'  text={`${ref.current.possessivePronouns} Assets`} />
@@ -348,7 +338,7 @@ const AddAsset: React.FC = () => {
                             Value: a.totalValue ? a.totalValue + '' :'', 
                             Change: 
                             <Box display="flex" gap={1} alignItems="center">
-                                <EleosIconButton icon={DeleteIcon} onClick={() => onDeleteAsset(a.name)} tooltip='Delete the asset'/>
+                                <EleosIconButton icon={UpdateIcon} onClick={() => onDeleteAsset(a.name)} tooltip='Update the asset'/>
                             </Box>
                         }
                     })}
@@ -356,14 +346,24 @@ const AddAsset: React.FC = () => {
                         { label: 'Name', type: 'text' },
                         { label: 'Type', type: 'icon',},
                         { label: 'Ownership', type: 'text' },
-                        { label: 'Location', type: 'editable' },
-                        { label: 'Value', type: 'editable' },
+                        { label: 'Location', type: 'text' },
+                        { label: 'Value', type: 'number' },
                         { label: 'Distribution', type: 'icon2' },
                         { label: 'Change', type: 'button' },
                     ]} 
                     onChanged={handleRowChange}
                 />
             </div> }
+            {assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.complex &&
+                <div className="flex items-center space-x-2 ml-3">
+                    <AddAssetDialog
+                        principal={ref.current.principal.display}
+                        spouse={ref.current.spouse?.display}
+                        buttonText="Add a new asset"
+                        onSave={handleAddAsset}
+                    />
+                </div>
+            }
             <EleosWizardButtonLayout
                 leftChild={
                     <EleosButton

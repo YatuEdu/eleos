@@ -24,6 +24,8 @@ import EleosRole, { EleosRoleId }
                 from "@/lib/client/model/EleosRole";
 import EleosGuardian 
                 from "@/lib/client/model/EleosGuardian";
+import { RowData } 
+                from "@/lib/client/model/EleosMisc";
 
 interface GuadianTableProps {
     guardians: EleosGuardian[]
@@ -68,6 +70,10 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
         onGuardianChange(c as EleosGuardian)
     }
 
+    const handleRowChange = (changedRow: RowData) => {
+        throw new Error('Not implemented')
+     }
+
     return <div className={className}>
         <EleosItemTable
             rows={existingGuardians.map((g) => {
@@ -85,7 +91,6 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
                             existingPeople={[]}
                             existingPerson={g}
                             order={g.order}
-                            needEmail={true}
                             onSave={onUpdateGuardian} />
                     </div>
                         
@@ -98,6 +103,7 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
                 { label: 'Note', type: 'text' },
                 { label: '   ', type: 'button' },
             ]}
+            onChanged={handleRowChange}
         />
       
     </div>

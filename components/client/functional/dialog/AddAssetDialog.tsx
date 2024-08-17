@@ -1,5 +1,5 @@
 
-import React, { MouseEventHandler, useReducer, useState } 
+import React, { MouseEventHandler, useEffect, useReducer, useState } 
                 from 'react';
 import Dialog 
                 from '@mui/material/Dialog';
@@ -23,12 +23,13 @@ import EleosSelect from '../../atoms/EleosSelect';
 import EleosHelpPane from '../EleosHelpPane';
 import { HelpTextId } from '@/lib/client/model/EleosMisc';
 import { number, set } from 'zod';
-import { EPT_HELPER, EleosAssetType} 
+import { EPT_HELPER, EleosAssetType, EleosPropertyTypeHelper} 
                 from '@/lib/client/model/EleosAssetType';
-import { EAOT_HELPER, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipType } 
+import { EAOT_HELPER, ELEOS_OWNERSHIP_TYPE_LIST_MARRIED, ELEOS_OWNERSHIP_TYPE_LIST_SINGLE, EleosAssetOwnerShipType, EleosAssetOwnerShipTypeHelper } 
                 from '@/lib/client/model/EleosAssetOwnerShipType';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
+import EleosNumberInput from '../../atoms/EleosNumberInput';
 
 type AddAssetProps = {
     buttonText: string,
@@ -103,12 +104,22 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         valid: false
     }
 
+    const ownerShipTypeLabelValuePairsINGeneral = spouse ? 
+                EAOT_HELPER.getlabelValuePairsForCouples() :
+                EAOT_HELPER.getlabelValuePairsForSingle()
+
     const {setHelpTextIds} = useWizard()
     const [state, dispatch] = useReducer(stateReducer, initialState)
     const [open, setOpen] = useState(false)
-    const ownerShipTypeLabelValuePairs = spouse ? 
-                        EAOT_HELPER.getlabelValuePairsForCouples() :
-                        EAOT_HELPER.getlabelValuePairsForSingle()
+    const [ownerShipTypeLabelValuePairs, setOwnerShipTypeLabelValuePairs] = useState<{label: string, value: string} []>([])
+
+     // Effect that runs whenever ownershipType changes in the reducer state
+    useEffect(() => {
+        if (state.type) {
+            // Update the ownership with the new pairs
+            changeOwnerShipList(state.type)
+        }
+  }, [state.type]);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -119,8 +130,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         setOpen(false);
     };
 
-    const handleSave = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.stopPropagation()
+    const handleSave = () => {
         const typeValue = state.type as EleosAssetType
         const ownerShipValue = state.ownerShip as EleosAssetOwnerShipType
     
@@ -201,6 +211,16 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
         }
     }
 
+    function changeOwnerShipList(typeName: string) {
+        if (EleosPropertyTypeHelper.isUntilited(typeName as EleosAssetType)) {
+            const ownershipPairs = EleosAssetOwnerShipTypeHelper.getlabelValuePairsForUntilitedAsset(ownerShipTypeLabelValuePairsINGeneral)
+            setOwnerShipTypeLabelValuePairs(ownershipPairs)
+        } else {
+            const ownershipPairs = EleosAssetOwnerShipTypeHelper.getlabelValuePairsForTilitedAsset(ownerShipTypeLabelValuePairsINGeneral)
+            setOwnerShipTypeLabelValuePairs(ownershipPairs)
+        }
+    }
+
     function setOptionalLabels(name: string): any {
         if (name === EleosAssetType.bankAccount) {
             return {locationLabel: LOCATION_LABEL_BANK_BRANCH, totalValueLabel: TOTAl_VALUE_LABEL_VALUE}
@@ -273,7 +293,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                             justifyContent: 'space-between'
                         }
                     }} >
-                <DialogTitle sx={{ backgroundColor: '#d3d3d3', marginBottom: '8px'}}>Add an asset</DialogTitle>
+                <DialogTitle sx={{ backgroundColor: '#d3d3d3', marginBottom: '8px', fontWeight:800}}>Add an asset</DialogTitle>
                 <DialogContent className='grid grid-cols-12 gap-2 pr-3'>
                     <div className='col-span-7'>
                         <EleosLabel text="Type" invalidMessage={state.invalidType} />
@@ -326,9 +346,9 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                             onTextEntered={(value, vliadCode) => dispatch({type: NAME_NAME, value: value}) } />
                          {state.totalValueLabel !== '' && 
                         <> 
-                            <EleosLabel text={state.totalValueLabel} />
-                            <EleosInputBase
-                                value={state.totalValue ? state.totalValue + '' : ''} 
+                            <EleosLabel text={state.totalValueLabel} isOptional={true}/>
+                            <EleosNumberInput
+                                value={state.totalValue} 
                                 mustHave={false} 
                                 name={NAME_TOTAL_VALUE} 
                                 onTextEntered={(value, vliadCode) => dispatch({type: NAME_TOTAL_VALUE, value: value}) } />
@@ -336,7 +356,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                         }
                         {state.locationLabel !== '' && 
                         <> 
-                            <EleosLabel text={state.locationLabel} />
+                            <EleosLabel text={state.locationLabel} isOptional={true} />
                             <EleosInputBase
                                 value={state.location} 
                                 mustHave={false} 
@@ -344,7 +364,7 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
                                 onTextEntered={(value, vliadCode) => dispatch({type: NAME_LOCATION, value: value}) } />
                         </>
                         }
-                        <EleosLabel text="Note" />
+                        <EleosLabel text="Note" isOptional={true}/>
                         <EleosInputBase
                             value={state.note} 
                             mustHave={false} 
@@ -357,16 +377,18 @@ const AddAssetDialog: React.FC<AddAssetProps> = ({buttonText, principal, spouse,
 
                 </DialogContent>
                 <DialogActions>
-                    <Button style={{ backgroundColor: '#F44336', color: 'white' }} onClick={handleClose}>Cancel</Button>
-                    <Button 
+                    <EleosButton 
+                        type='delete' 
+                         text="Cancel"
+                        className="mr-1"
+                        disabled={false}
+                        onClick={handleClose} />
+                    <EleosButton 
                         disabled={!state.valid}
-                        style={{
-                            backgroundColor: state.valid ? '#4CAF50' : '#AAA',
-                            color: 'white',
-                            marginRight: '4px'
-                        }}
-                        onClick={handleSave}>Save
-                    </Button>
+                        type='wizard'
+                         text="Save"
+                        className="mr-6"
+                        onClick={handleSave} />
                 </DialogActions>
             </Dialog>
         </div>

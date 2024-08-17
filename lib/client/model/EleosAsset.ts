@@ -13,7 +13,7 @@ export class EleosAsset extends EleosEntity {
     protected _name: string;
     protected _type: EleosAssetType;
     protected _ownership: EleosAssetOwnerShipType;
-    protected _principalPercentage
+    protected _principalPercentage: number | undefined;
     protected _owner?: EleosPrincipal | EleosSpouse;
     protected _location?: string;
     protected _note?: string;
