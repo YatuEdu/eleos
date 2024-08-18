@@ -20,8 +20,8 @@ const EleosNumberInput: React.FC<EleosInputBaseProps> = (props) => {
     const [isValid, setIsValid] = useState<number>(props.value ? 1 : 0)         // 0 = empty, -1 = invalid, 1 = valid
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        let inputValue = event.target.value.replace(/[^0-9]/g, '')     // Remove non-numeric characters
-        const inputValueNumberLocale = Number(inputValue).toLocaleString()                // Format with commas
+        let inputValue = event.target.value.replace(/[^0-9]/g, '')              // Remove non-numeric characters
+        const inputValueNumberLocale = Number(inputValue).toLocaleString()      // Format with commas
         let validCode = 0
         if (inputValueNumberLocale === 'NaN') {
             validCode = -1;

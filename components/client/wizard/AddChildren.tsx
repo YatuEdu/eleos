@@ -33,7 +33,7 @@ import EleosRole, { EleosRoleId }
                 from '@/lib/client/model/EleosRole';
 import ChildrenTable 
                 from '../functional/ChildrenTable';
-import { ADD_CHILD, MODAL_ID, eleosModalButtonId, focusOnDomElement } 
+import { ADD_CHILD, MODAL_ID, eleosModalButtonId, excludeSetOptionForRadio, focusOnDomElement } 
                 from '@/lib/client/utilies/UIHelper';
 
 
@@ -126,7 +126,7 @@ const AddChildren: React.FC = () => {
 
         // go to the next step
         if (childrenStatus === EleosChildrenStatusValue.hasNoChildren) {
-            ref.current.resetChildren()
+            ref.current.childrenStatus = EleosChildrenStatusValue.hasNoChildren
         } else if (!hasChildrenInit) {
             // first time adding children
             const result = ref.current.addChildren(childrenList)
@@ -191,7 +191,7 @@ const AddChildren: React.FC = () => {
                 <RadioButtonGroup
                     title=''
                     options={childrenOptions}
-                    disabledOptions={hasChildrenInit ? [EleosChildrenStatusValue.hasNoChildren] : []}
+                    disabledOptions={excludeSetOptionForRadio(childrenOptions, childrenStatus)}
                     value={childrenStatus ? childrenStatus : ''}
                     onChange={handleHasChildren}
                     direction='row'

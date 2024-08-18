@@ -181,7 +181,12 @@ class Eleos {
 
     get helpText() { return this._helpText}
 
-    get assetDistributionGrandScheme(): EleosAssetDistributionGrandScheme | undefined { return this._assetDistributionGrandScheme}
+    get assetDistributionGrandScheme(): EleosAssetDistributionGrandScheme | undefined {
+        if (this._marritalStatus !== EleosMaritalStatus.married && this._childrenStatus === EleosChildrenStatusValue.hasNoChildren) {
+            this._assetDistributionGrandScheme = EleosAssetDistributionGrandScheme.complex
+        }
+        return this._assetDistributionGrandScheme
+    }
 
     set assetDistributionGrandScheme(scheme: EleosAssetDistributionGrandScheme) { this._assetDistributionGrandScheme = scheme}
 
@@ -433,7 +438,6 @@ class Eleos {
      * Remove all children from the list if the user reset the "have children" checkbox
      */
     resetChildren() {
-        throw Error('Not implemented')
         /*
         this.removePeople(EleosRoleId.child)
         this.removePeople(EleosRoleId.child_guardian)

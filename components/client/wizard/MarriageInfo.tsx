@@ -16,7 +16,7 @@ import { EleosMaritalStatus, }
                 from '@/lib/client/model/EleosDataTypes';
 import EleosTitle 
                 from '../atoms/EleosTitle';
-import { FIRST_NAME_ELEMENT_ID, focusOnDomElement } 
+import { excludeSetOptionForRadio } 
                 from '@/lib/client/utilies/UIHelper';
 
 const RADIO_GROUP_TITLE = '';
@@ -60,7 +60,7 @@ const MarriageInfo: React.FC = () => {
             setSpouseSuffix('')
             setValid(true)
         } else {
-            focusOnDomElement(FIRST_NAME_ELEMENT_ID)
+            //focusOnDomElement(FIRST_NAME_ELEMENT_ID)
             setValid(testValidness(spouseFirstName, sposeLastName, status as EleosMaritalStatus))
         }
     }
@@ -140,7 +140,7 @@ const MarriageInfo: React.FC = () => {
                 <RadioButtonGroup
                     title={RADIO_GROUP_TITLE}
                     options={maritalOptions}
-                    disabledOptions={maritalSatus === EleosMaritalStatus.married ? [EleosMaritalStatus.single, EleosMaritalStatus.divorced, EleosMaritalStatus.widowed] : []}
+                    disabledOptions={excludeSetOptionForRadio(maritalOptions, maritalSatus)}
                     value={maritalSatus ? maritalSatus : ''}
                     onChange={handleMarriageStatusChange}
                     direction='row'
