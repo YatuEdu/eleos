@@ -275,15 +275,29 @@ Complete Estate Plan: Ensures that all assets, including bank accounts, are cove
         return helpBody
     }
 
-    public getEnumLables<E> (e: E, numName: string): {label: string, value: any}[] {
+    public getEnumtTextValue<E> (e: E, enumName: string): string {
         const lanIndex = this.lang - 1
-        switch (numName) {
+        switch (enumName) {
             case 'EleosAssetDistributionGrandScheme':
-                const enumLabelEntry = ENUM_lABLES.find(e => e.enumName === numName)
+                const enumLabelEntry = ENUM_lABLES.find(e => e.enumName === enumName)
+                if (enumLabelEntry) {
+                    return enumLabelEntry.data.filter(en => en.enum === e )
+                            .map(en => en.text[lanIndex])[0]
+                }
+                throw new Error(`Enum ${enumName} not found`)
+        }
+        return ''
+    }
+
+    public getEnumLables(enumName: string): {label: string, value: any}[] {
+        const lanIndex = this.lang - 1
+        switch (enumName) {
+            case 'EleosAssetDistributionGrandScheme':
+                const enumLabelEntry = ENUM_lABLES.find(e => e.enumName === enumName)
                 if (enumLabelEntry) {
                     return enumLabelEntry.data.map(e => ({label: e.text[lanIndex], value: e.enum}))
                 }
-                throw new Error(`Enum ${numName} not found`)
+                throw new Error(`Enum ${enumName} not found`)
         }
         return []
     }

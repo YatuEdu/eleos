@@ -36,6 +36,8 @@ import BusinessCenter
                 from '@mui/icons-material/BusinessCenter';
 import PlaylistAddCheck 
                 from '@mui/icons-material/PlaylistAddCheck';
+import PlaylistRemoveIcon 
+                from '@mui/icons-material/PlaylistRemove';
 import DirectionsCar 
                 from '@mui/icons-material/DirectionsCar';
 import EleosLabel 
@@ -63,6 +65,7 @@ import { RowData }
 import EleosPrincipal from '@/lib/client/model/EleosPrincipal';
 import EleosSpouse from '@/lib/client/model/EleosSpouse';
 import ConfirmationDialog from '../functional/dialog/ConfirmationDialog';
+import { excludeSetOptionForRadio } from '@/lib/client/utilies/UIHelper';
 
 type RowUpdate = {
     Name: string
@@ -81,7 +84,7 @@ const AddAsset: React.FC = () => {
         throw Error('Eleos is not initialized')  
     }
     const RADIO_GROUP_TITLE = 'Asset Distribution Scheme'
-    const options = ref.current.helpText.getEnumLables(EleosAssetDistributionGrandScheme, 'EleosAssetDistributionGrandScheme')
+    const options = ref.current.helpText.getEnumLables('EleosAssetDistributionGrandScheme')
 
     const {setStep} = useWizard()
     const [showDialog, setShowDialog] = useState(false);
@@ -222,7 +225,7 @@ const AddAsset: React.FC = () => {
         if (asset.isDistributionSet) {
             return {icon: <PlaylistAddCheck style={{ color: '#FFD700' }}/>, toolTip: 'Distribution set'}
         }
-        return {icon: <UpdateIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: 'No distribution set'}
+        return {icon: <PlaylistRemoveIcon style={StaticStypes.TABLE_BK_COLOR} />, toolTip: 'No distribution set'}
 
     }
 
@@ -314,7 +317,7 @@ const AddAsset: React.FC = () => {
                 <RadioButtonGroup
                     title={RADIO_GROUP_TITLE}
                     options={options}
-                    disabledOptions={[]}
+                    disabledOptions={excludeSetOptionForRadio(options, assetDistributionGrandScheme) }
                     value={assetDistributionGrandScheme+''}
                     onChange={onAssetDistributionGrandSchemeChange}
                     direction='row'

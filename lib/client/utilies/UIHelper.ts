@@ -25,3 +25,11 @@ export const focusOnDomElement = (elementId: string) => {
         }
     }, 10)
 }
+
+export const excludeSetOptionForRadio = (options: {label: string, value: string | any} [], selected: string | any | undefined)  => {
+    if (!selected) {
+        return []
+    }
+    return options.filter(option => option.value !== selected)
+                  .map(option => option.value)
+}
