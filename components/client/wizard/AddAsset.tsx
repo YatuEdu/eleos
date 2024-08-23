@@ -84,7 +84,7 @@ const AddAsset: React.FC = () => {
         throw Error('Eleos is not initialized')  
     }
     const RADIO_GROUP_TITLE = 'Asset Distribution Scheme'
-    const options = ref.current.helpText.getEnumLables('EleosAssetDistributionGrandScheme')
+    const options = ref.current.helpText.getEnumLables('EleosAssetDistributionGrandScheme', ref.current.spouse ? true : false, ref.current.childrenNames)
 
     const {setStep} = useWizard()
     const [showDialog, setShowDialog] = useState(false);

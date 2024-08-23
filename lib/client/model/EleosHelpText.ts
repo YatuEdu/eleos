@@ -3,14 +3,27 @@ import { Language, HelpTextId, HelpText, HelpTextObject }
 import { EleosAssetDistributionGrandScheme } 
                 from "./EleosDataTypes";
 
-                
+const MULTIPLE_INHERITOR_PHRASE = 'children evenly'
+const INHERITOR_REPLACEMENT = '%%'
+const MULTIPLE_INHERITOR_PHRASE_CN = '孩子平均分配'
+
+const assetDistributionSchemeText_replacement = [
+    MULTIPLE_INHERITOR_PHRASE,
+    MULTIPLE_INHERITOR_PHRASE_CN
+]
+
 const assetDistributionSchemeText = [
     {
         enum: EleosAssetDistributionGrandScheme.simple, 
         text: [
-            'All assets go to to other spouse when one spouse dies and children evenly when both die',
-            '当夫妻一方去世时，所有资产都归另一方所有；夫妻都去世后，所有资产都由孩子平均分配'
-        ]
+            'All assets go to other spouse when one spouse dies and to %% when both die',
+            '当夫妻一方去世时，所有资产都归另一方所有；夫妻都去世后，所有资产都给%%'
+        ],
+        text2: [
+            'All assets go to %% when the principal dies',
+            '当遗产主人去世后，所有资产都给%%'
+        ],
+        replacement: []
     },   
     {
         enum: EleosAssetDistributionGrandScheme.complex, 
@@ -275,27 +288,38 @@ Complete Estate Plan: Ensures that all assets, including bank accounts, are cove
         return helpBody
     }
 
-    public getEnumtTextValue<E> (e: E, enumName: string): string {
+    /**
+     * The UI labels for the enum values can be complex. They are also often language, marriage-status, and number of children dependent.  This method
+     * returns the labels for the enum values considering all the conditions.
+     * 
+     * @param enumName 
+     * @param isMarried 
+     * @returns 
+     */
+    public getEnumLables(enumName: string, isMarried: boolean, children: string[]): {label: string, value: any}[] {
         const lanIndex = this.lang - 1
         switch (enumName) {
             case 'EleosAssetDistributionGrandScheme':
                 const enumLabelEntry = ENUM_lABLES.find(e => e.enumName === enumName)
                 if (enumLabelEntry) {
-                    return enumLabelEntry.data.filter(en => en.enum === e )
-                            .map(en => en.text[lanIndex])[0]
-                }
-                throw new Error(`Enum ${enumName} not found`)
-        }
-        return ''
-    }
+                    return enumLabelEntry.data.map(e => {
+                        let labelText = isMarried ? e.text[lanIndex] : e.text2 ? e.text2[lanIndex] : e.text[lanIndex]
+                        // replace the %% with the children phrase
+                        if (labelText.includes(INHERITOR_REPLACEMENT)) {
+                            if (children.length === 0) {
+                                throw new Error('Children are required')
+                            } 
+                            
+                            if (children.length === 1) {
+                                labelText = labelText.replace(INHERITOR_REPLACEMENT, children[0])
+                            } else {
+                                // if there are multiple children, replace the %% with the phrase 'children evenly'
+                                labelText = labelText.replace(INHERITOR_REPLACEMENT, assetDistributionSchemeText_replacement[lanIndex])
+                            }
+                        }
 
-    public getEnumLables(enumName: string): {label: string, value: any}[] {
-        const lanIndex = this.lang - 1
-        switch (enumName) {
-            case 'EleosAssetDistributionGrandScheme':
-                const enumLabelEntry = ENUM_lABLES.find(e => e.enumName === enumName)
-                if (enumLabelEntry) {
-                    return enumLabelEntry.data.map(e => ({label: e.text[lanIndex], value: e.enum}))
+                        return {label: labelText, value: e.enum}
+                    })
                 }
                 throw new Error(`Enum ${enumName} not found`)
         }
