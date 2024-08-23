@@ -220,6 +220,8 @@ class Eleos {
 
     get children() {return this.findPeopleByRole(EleosRoleId.child)}
 
+    get childrenNames() { return this.children.map(c => c.display)}
+
     get executors(): EleosEexecutor[] { return this.findPeopleByRole(EleosRoleId.executor) as EleosEexecutor[]}
 
     /**
