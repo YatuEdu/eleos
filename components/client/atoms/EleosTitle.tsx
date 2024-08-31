@@ -3,10 +3,10 @@ interface EleosTitleProps {
     classNames?: string;
 }
 
-const EleosTitle: React.FC<EleosTitleProps> = ({classNames, text }) => {
+const EleosTitle: React.FC<EleosTitleProps> = ({text }) => {
     return (
-    <div className="mb-4 ml-4">
-        <h1 style={{ fontSize: '1.5rem', color: 'inherit' }}>{text}</h1>
+    <div className={"mb-4 ml-4"}>
+        <h1 style={{ fontSize: '2rem', color: 'inherit' }}>{text}</h1>
     </div>
     )
 }

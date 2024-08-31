@@ -21,6 +21,8 @@ import { EleosAsset }
                 from '@/lib/client/model/EleosAsset';
 import { undefined } from 'zod';
 import EleosRole from '@/lib/client/model/EleosRole';
+import EleosLabel from '../atoms/EleosLabel';
+import EleosTitle from '../atoms/EleosTitle';
 
 interface AssetDistributionConfig {
     deceased: EleosRole | null;
@@ -141,7 +143,7 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
 
     return (
         <div>
-            <h2>{title}</h2>
+            <EleosTitle text={title}/>
             {survived !== null && (
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
@@ -157,7 +159,7 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
             {showAddHeirs && (
                 <div>
                     {heirs.length > 0 && assets.length > 0 && (
-                        <div>
+                        <div className='ml-4'>  
                             {assets.map((asset, index) => (
                             <AssetDistributionForm
                                 key={index}

@@ -6,13 +6,6 @@ import { useElos }
                 from '@/lib/providers/EleosAppProvider';
 import { useWizard } 
                 from '@/lib/providers/WizardProvider';
-
-import EleosLabel 
-                from '../atoms/EleosLabel';
-import EleosItemsList 
-                from '../functional/EleosNameList';
-import EleosPerson 
-                from '@/lib/client/model/EleosPerson';
 import AddPersonModal
                 from '../functional/dialog/AddPersonModal';
 import EleosChild 
@@ -35,6 +28,8 @@ import ChildrenTable
                 from '../functional/ChildrenTable';
 import { ADD_CHILD, MODAL_ID, eleosModalButtonId, excludeSetOptionForRadio, focusOnDomElement } 
                 from '@/lib/client/utilies/UIHelper';
+import EleosTitle from '../atoms/EleosTitle';
+import EleosCheckButton from '../atoms/EleosCheckbutton';
 
 
 const AddChildren: React.FC = () => {
@@ -48,6 +43,8 @@ const AddChildren: React.FC = () => {
     const [childrenStatus, setChildrenStatus] = useState(ref.current.childrenStatus);
     const [childrenList, setChildrenList] = useState(childrenExisting ? [...childrenExisting] : []); 
     const [valid, setValid] = useState(ref.current.childrenStatus === EleosChildrenStatusValue.hasNoChildren || hasChildrenInit)
+    const [allChildrenIncluded, setAllChildrenIncluded] = useState(ref.current.allChildrenIncluded)
+
     const {setStep} = useWizard()
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
     const title = ref.current.title
@@ -86,7 +83,7 @@ const AddChildren: React.FC = () => {
         // before child is formally added to Elso, set the childId toa negative number
         newChild.childId = (childrenList.length + 1) * -1
         setChildrenList([...childrenList, newChild])
-        setValid(true)
+        //setValid(true)
      }
 
      const handleConfirmDeletion = () => {
@@ -143,7 +140,10 @@ const AddChildren: React.FC = () => {
                 return
             }
         }  
-         
+        
+        // all children are included
+        ref.current.allChildrenIncluded = true
+
         // move to the next step
         const step = ref.current.nextStep()
         setStep(step)
@@ -167,7 +167,7 @@ const AddChildren: React.FC = () => {
         } else {
             const btnId = eleosModalButtonId(ADD_CHILD)
             focusOnDomElement(btnId)
-            setValid(childrenList.length > 0)
+            //setValid(childrenList.length > 0)
         }
     }
 
@@ -182,11 +182,15 @@ const AddChildren: React.FC = () => {
         setChildrenList(childrenUodated)
     }
 
+    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAllChildrenIncluded(event.target.checked)
+        console.log('Checkbox checked:', event.target.checked)
+        setValid(event.target.checked)
+    }
+
     return (
         <div>
-            <div className="mb-8 ml-4">
-                <h1 className="text-2xl">Add all children</h1>
-            </div>
+             <EleosTitle text="Add all children" />
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
                     title=''
@@ -205,12 +209,20 @@ const AddChildren: React.FC = () => {
             <div className="flex items-left ml-4">
                 {childrenStatus === EleosChildrenStatusValue.hasChildren && (
                     <>
+                    {childrenList.length > 0 && 
+                     <EleosCheckButton 
+                        checked={allChildrenIncluded}
+                        disabled={ref.current.allChildrenIncluded}
+                        label={'All children included'} 
+                        onChange={handleCheckboxChange} />}
+                    {!allChildrenIncluded &&
                     <AddPersonModal 
                         id={ADD_CHILD + MODAL_ID}
                         buttonText={childrenList.length ? 'Add another child' : 'Add a child'}
                         role={EleosRoleId.child}
                         existingPeople={[]}
                         onSave={onAddChild} />
+                    }
                 
                     </>
                 )}

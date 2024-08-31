@@ -66,6 +66,7 @@ import EleosPrincipal from '@/lib/client/model/EleosPrincipal';
 import EleosSpouse from '@/lib/client/model/EleosSpouse';
 import ConfirmationDialog from '../functional/dialog/ConfirmationDialog';
 import { excludeSetOptionForRadio } from '@/lib/client/utilies/UIHelper';
+import EleosTitle from '../atoms/EleosTitle';
 
 type RowUpdate = {
     Name: string
@@ -313,6 +314,7 @@ const AddAsset: React.FC = () => {
                 onConfirm={handleDeleteAsset}
                 onCancel={() => setShowConfirmationDialog(false)}
             />
+            <EleosTitle text="Assets" />
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
                     title={RADIO_GROUP_TITLE}
@@ -339,10 +341,6 @@ const AddAsset: React.FC = () => {
                             Ownership: a.ownership, 
                             Location: a.location ? a.location : '',
                             Value: a.totalValue ? a.totalValue + '' :'', 
-                            Change: 
-                            <Box display="flex" gap={1} alignItems="center">
-                                <EleosIconButton icon={UpdateIcon} onClick={() => onDeleteAsset(a.name)} tooltip='Update the asset'/>
-                            </Box>
                         }
                     })}
                     columns={[
@@ -352,7 +350,6 @@ const AddAsset: React.FC = () => {
                         { label: 'Location', type: 'text' },
                         { label: 'Value', type: 'number' },
                         { label: 'Distribution', type: 'icon2' },
-                        { label: 'Change', type: 'button' },
                     ]} 
                     onChanged={handleRowChange}
                 />

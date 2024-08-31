@@ -18,6 +18,7 @@ import { useWizard }
                 from "@/lib/providers/WizardProvider";
 import { ADD_EXECUTOR, eleosModalButtonId, focusOnDomElement } 
                 from "@/lib/client/utilies/UIHelper";
+import EleosTitle from "../atoms/EleosTitle";
 
 const AddExecutor: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -63,6 +64,7 @@ const AddExecutor: React.FC = () => {
     } 
 
     return  <>
+        <EleosTitle text="Add will executors" />
         <div className="mt-4">
             {executorList && executorList.length > 0 && (
                 <EexecutorTable executors={executorList} className={'ml-4 mr-4'} onEexecutorChange={executorUpdated}/>

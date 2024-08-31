@@ -133,9 +133,7 @@ const MarriageInfo: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '90%' }}>
-             <div className="mb-8 ml-4">
-                <h1 style={{ fontSize: '2rem', color: 'inherit' }}>Your marriage status</h1>
-            </div>
+            <EleosTitle text="Your marriage status" />
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
                     title={RADIO_GROUP_TITLE}

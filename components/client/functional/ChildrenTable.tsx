@@ -83,22 +83,12 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
                     Relation: icon.icon,
                     ToolTip: icon.toolTip,
                     Age: c.age+'', 
-                    '  ': <div className='mt-0'>
-                         <AddPersonModal
-                            buttonText={'Change'}
-                            role={EleosRoleId.child}
-                            existingPeople={[]}
-                            existingPerson={c}
-                            onSave={onUpdateChild} />
-                    </div>
-                        
                 }
             })}
             columns={[
                 { label: 'Name', type: 'text' },
                 { label: 'Relation', type: 'icon',},
                 { label: 'Age', type: 'text' },
-                { label: '  ', type: 'button' },
             ]}
             onChanged={handleRowChange}
         />

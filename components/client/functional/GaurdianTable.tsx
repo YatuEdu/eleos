@@ -84,15 +84,6 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
                     ToolTip: icon.toolTip,
                     Email: g.person.email, 
                     Note: g.isPrimary ? 'Primary guardian' : g.isSecondary ? 'Alternate guardian' : 'Alternate guardian 2',
-                    '   ': <div className='mt-0'>
-                         <AddPersonModal
-                            buttonText={'Change'}
-                            role={EleosRoleId.child_guardian}
-                            existingPeople={[]}
-                            existingPerson={g}
-                            order={g.order}
-                            onSave={onUpdateGuardian} />
-                    </div>
                         
                 }
             })}
@@ -101,7 +92,6 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
                 { label: 'Relation', type: 'icon',},
                 { label: 'Email', type: 'text' },
                 { label: 'Note', type: 'text' },
-                { label: '   ', type: 'button' },
             ]}
             onChanged={handleRowChange}
         />
