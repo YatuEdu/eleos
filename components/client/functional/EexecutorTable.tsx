@@ -91,15 +91,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                     Relation: icon.icon,
                     ToolTip: icon.toolTip,
                     Age: ex.age, 
-                    Order: ex.order+'', 
-                    '  ': <div className='mt-0'>
-                         <AddPersonModal
-                            buttonText={'Change'}
-                            role={EleosRoleId.executor}
-                            existingPeople={[]}
-                            existingPerson={ex}
-                            onSave={onUpdateExecutor} />
-                    </div>
+                    Order: ex.order+''
                         
                 }
             })}
@@ -107,7 +99,6 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                 { label: 'Name', type: 'text' },
                 { label: 'Relation', type: 'icon',},
                 { label: 'Age', type: 'text' },
-                { label: '  ', type: 'button' },
             ]}
             onChanged={handleRowChange}
         />

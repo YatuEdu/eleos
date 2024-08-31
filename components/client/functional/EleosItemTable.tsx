@@ -75,7 +75,7 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, sx }) 
                                 backgroundColor: '#D3D3D3', 
                                 color: 'bleck', 
                                 fontSize: '1rem',
-                                textAlign: 'center'}}>{column.label}
+                                textAlign: 'left'}}>{column.label}
                             </TableCell>
                         ))}
                     </TableRow>

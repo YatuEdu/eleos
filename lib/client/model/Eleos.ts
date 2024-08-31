@@ -44,6 +44,7 @@ class Eleos {
     private _people: Map<string, EleosPerson> = new Map()
     private _marritalStatus: EleosMaritalStatus | undefined = undefined
     private _childrenStatus: EleosChildrenStatusValue | undefined = undefined
+    private _allChildrenIncluded: boolean = false
     private _assetDistributionGrandScheme: EleosAssetDistributionGrandScheme | undefined = undefined
     private _assetDistributionMethods: Map<AssetDistributionTiming, AssetDistributionMethod> = new Map()
     private _steps: number[] = []
@@ -221,6 +222,11 @@ class Eleos {
     get children() {return this.findPeopleByRole(EleosRoleId.child)}
 
     get childrenNames() { return this.children.map(c => c.display)}
+
+    get allChildrenIncluded() { return this._allChildrenIncluded}
+
+    set allChildrenIncluded(allIncluded: boolean) { this._allChildrenIncluded = allIncluded}
+
 
     get executors(): EleosEexecutor[] { return this.findPeopleByRole(EleosRoleId.executor) as EleosEexecutor[]}
 

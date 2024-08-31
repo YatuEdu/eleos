@@ -14,6 +14,7 @@ import AssetDistribution, {AssetDistributionTiming}
                 from '@/lib/client/model/AssetDistribution';
 import EleosRole, { EleosRoleId } from '@/lib/client/model/EleosRole';
 import EleosPerson from '@/lib/client/model/EleosPerson';
+import EleosTitle from '../atoms/EleosTitle';
 
 interface Distribution {
     [key: string]: number; // Maps heir ID to their percentage
@@ -165,7 +166,7 @@ const AssetDistributionForm: React.FC<AssetDistributionProps> = ({ heirs, asset,
                     </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default AssetDistributionForm
