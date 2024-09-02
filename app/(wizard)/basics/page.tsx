@@ -25,6 +25,7 @@ import MarriageInfo
                 from '@/components/client/wizard/MarriageInfo';
 import MarriedPackage 
                 from '@/components/client/wizard/MarriedPackage';
+import Summary from '@/components/client/wizard/Summary';
 import { HelpTextId } 
                 from '@/lib/client/model/EleosMisc';
 import { useElos } 
@@ -95,8 +96,8 @@ export default function Page() {
                     { (currentStep === WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO) && (
                         <EleosWizardParent leftChild={<AssetDistributionIfBothGoes />} rightChild={<div><p>will add help text here</p></div>} />
                     )}
-                    { (currentStep === WizardStep.MARRIED_PACKAGE) && (
-                        <EleosWizardParent leftChild={<MarriedPackage />} rightChild={<div><p>will add help text here</p></div>} />
+                    { (currentStep === WizardStep.WILL_SUMMARY) && (
+                        <EleosWizardParent leftChild={<Summary />} rightChild={<div><p>will add help text here</p></div>} />
                     )}
                     { (currentStep === WizardStep.COMPLETE_AND_PAYMENT) && (
                         <EleosWizardParent leftChild={<CompleteAndPayment />} rightChild={<div><p>will add help text here</p></div>} />

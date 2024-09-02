@@ -141,7 +141,7 @@ class Eleos {
                         this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
                     }
                 } else {
-                    this._steps.push(WizardStep.MARRIED_PACKAGE)
+                    this._steps.push(WizardStep.WILL_SUMMARY)
                 }
                 break
             case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_PRINCIPAL_GOES:
@@ -150,16 +150,16 @@ class Eleos {
                 } else if (this._marritalStatus === EleosMaritalStatus.married) {
                     this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
                 } else {
-                    this._steps.push(WizardStep.MARRIED_PACKAGE)
+                    this._steps.push(WizardStep.WILL_SUMMARY)
                 }
                 break
             case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_SPOUSE_GOES:
                 this._steps.push(WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO)
                 break
             case WizardStep.ASSET_DISTRIBUTION_QUESTIONS_WHEN_BOTH_GO:
-                this._steps.push(WizardStep.MARRIED_PACKAGE)
+                this._steps.push(WizardStep.WILL_SUMMARY)
                 break
-            case WizardStep.MARRIED_PACKAGE:
+            case WizardStep.WILL_SUMMARY:
                 this._steps.push(WizardStep.COMPLETE_AND_PAYMENT)
                 break
             case WizardStep.COMPLETE_AND_PAYMENT:
