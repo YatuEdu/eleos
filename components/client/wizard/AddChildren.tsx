@@ -42,7 +42,7 @@ const AddChildren: React.FC = () => {
     const hasChildrenInit = !!childrenExisting && childrenExisting.length > 0
     const [childrenStatus, setChildrenStatus] = useState(ref.current.childrenStatus);
     const [childrenList, setChildrenList] = useState(childrenExisting ? [...childrenExisting] : []); 
-    const [valid, setValid] = useState(ref.current.childrenStatus === EleosChildrenStatusValue.hasNoChildren || hasChildrenInit)
+    const [valid, setValid] = useState(ref.current.childrenStatus === EleosChildrenStatusValue.hasNoChildren || ref.current.allChildrenIncluded)
     const [allChildrenIncluded, setAllChildrenIncluded] = useState(ref.current.allChildrenIncluded)
 
     const {setStep} = useWizard()
@@ -190,7 +190,7 @@ const AddChildren: React.FC = () => {
 
     return (
         <div>
-             <EleosTitle text="Add all children" />
+            <EleosTitle text="Add all children" />
             <div style={{ margin: 20 }}>
                 <RadioButtonGroup
                     title=''
@@ -213,7 +213,7 @@ const AddChildren: React.FC = () => {
                      <EleosCheckButton 
                         checked={allChildrenIncluded}
                         disabled={ref.current.allChildrenIncluded}
-                        label={'All children included'} 
+                        label={'No more children to add'} 
                         onChange={handleCheckboxChange} />}
                     {!allChildrenIncluded &&
                     <AddPersonModal 

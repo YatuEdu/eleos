@@ -6,24 +6,23 @@ import EleosPerson
 export enum EleosRoleId {
     principal = 'principal',
     spouse = 'spouse',
-    child = 'child',
-    other_benificiary = 'other_benificiary',
-    exSpouse = 'exSpouse',
     executor = 'executor',
+    child = 'child',
     child_guardian = 'child_guardian',
+    other_benificiary = 'other_benificiary',
+    other = 'other',
+    exSpouse = 'exSpouse',
     power_of_attorney = 'power_of_attorney',
     lawyer = 'lawyer',
     witness = 'witness',
-    other = 'other',
 }
    
 
-class EleosRole extends EleosEntity {
+class EleosRole{
     protected _person: EleosPerson
     protected _id: EleosRoleId
 
     constructor(person: EleosPerson, id: EleosRoleId) {
-        super()
         this._id = id
         this._person = person
         person.roles[id] = this
@@ -48,6 +47,10 @@ class EleosRole extends EleosEntity {
     clone(person: EleosPerson): EleosRole {
         throw new Error('Method not implemented.')
     }
+
+    get signature(): string {
+        throw new Error('signature method not implemented. Child Needs to implement this method')
+     }
 }
 
 export default EleosRole
