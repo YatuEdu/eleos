@@ -1,42 +1,39 @@
 import React, { useState } 
                 from 'react';
-import Table 
-                from '@mui/material/Table';
-import TableBody 
-                from '@mui/material/TableBody';
-import TableCell 
-                from '@mui/material/TableCell';
-import TableContainer 
-                from '@mui/material/TableContainer';
-import TableHead 
-                from '@mui/material/TableHead';
-import TableRow 
-                from '@mui/material/TableRow';
-import Paper 
-                from '@mui/material/Paper';
-import TextField 
-                from '@mui/material/TextField';
-import { SxProps, Theme } 
-                from '@mui/system';
-import Tooltip, { tooltipClasses } 
-                from '@mui/material/Tooltip';
+
 import { RowData } 
                 from '@/lib/client/model/EleosMisc';
-
+import {
+        Table,
+        TableBody,
+        TableCell,
+        TableContainer,
+        TableHead,
+        TableRow,
+        Paper,
+        TextField,
+        Tooltip,
+        IconButton
+    } 
+                from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import { SxProps, Theme } from '@mui/system';
+                
 
 type Column = {
         label: string;
-        type: 'text' | 'number' | 'icon' | 'icon2' | 'editable' | 'button';
+        type: 'text' | 'number' | 'icon' | 'icon2' | 'editable' | 'button' | 'pen';
 };
 
 type TableProps = {
     columns: Column[];
     rows: RowData[];
     onChanged: (row: RowData) => void;
+    disableEdit?: boolean;
     sx?: SxProps<Theme>;
 };
 
-const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, sx }) => {
+const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, disableEdit, sx }) => {
     const [editData, setEditData] = useState<{ [key: string]: string }>({});
 
     const handleEditChange = (event: React.ChangeEvent<HTMLInputElement>, rowId: string, columnId: string) => {
@@ -121,7 +118,7 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, sx }) 
                                             </Tooltip>
                                         ) : cellValue;
                                         break;
-                                        case 'icon2':
+                                    case 'icon2':
                                             content = toolTip ? (
                                                 <Tooltip 
                                                     title={toolTip2}
@@ -134,13 +131,25 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, sx }) 
                                                         }
                                                       }}}
                                                 >
-                                                    <span>{cellValue}</span>
+                                                <span>{cellValue}</span>
                                                 </Tooltip>
                                             ) : cellValue;
                                             break;
                                     case 'button':
                                         content = cellValue;
                                         break;
+                                    case 'pen':
+                                        content = (
+                                            <Tooltip title="Edit">
+                                                <IconButton
+                                                    disabled={disableEdit}
+                                                    onClick={() => onChanged(row)}
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )
+                                        break
                                     case 'text':
                                     default:
                                         content = cellValue;

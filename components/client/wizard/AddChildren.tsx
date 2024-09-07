@@ -30,6 +30,7 @@ import { ADD_CHILD, MODAL_ID, eleosModalButtonId, excludeSetOptionForRadio, focu
                 from '@/lib/client/utilies/UIHelper';
 import EleosTitle from '../atoms/EleosTitle';
 import EleosCheckButton from '../atoms/EleosCheckbutton';
+import { BACK_TOOLTIP_EN, NEXT_TOOLTIP_HARD_TO_CHANGE_EN } from '@/lib/common/constant/StringConst';
 
 
 const AddChildren: React.FC = () => {
@@ -203,7 +204,11 @@ const AddChildren: React.FC = () => {
             </div>
             <div className="mt-4">
                 {childrenList.length > 0 && (
-                    <ChildrenTable children={childrenList} className={'ml-4 mr-4'} onChildChange={childUpdated}/>
+                    <ChildrenTable 
+                        children={childrenList} className={'ml-4 mr-4'} 
+                        onChildChange={childUpdated}
+                        editDisabled={allChildrenIncluded}
+                        />
                 )}
             </div>
             <div className="flex items-left ml-4">
@@ -213,7 +218,7 @@ const AddChildren: React.FC = () => {
                      <EleosCheckButton 
                         checked={allChildrenIncluded}
                         disabled={ref.current.allChildrenIncluded}
-                        label={'No more children to add'} 
+                        label={"Each child's information is accurate and no more child to add"} 
                         onChange={handleCheckboxChange} />}
                     {!allChildrenIncluded &&
                     <AddPersonModal 
@@ -235,7 +240,7 @@ const AddChildren: React.FC = () => {
                      text=" < Back" 
                      onClick={onPrev}
                      tipDisable="Enter all the required info and then submit" 
-                     tipEnabled="Click to save and continue" />
+                     tipEnabled={BACK_TOOLTIP_EN} />
             } rightChild={
                 <EleosButton
                     type='wizard'
@@ -244,7 +249,7 @@ const AddChildren: React.FC = () => {
                     text="Save and Continue >" 
                     onClick={onNext}
                     tipDisable="Enter all the required info and then submit" 
-                    tipEnabled="Click to save and continue" />
+                    tipEnabled={NEXT_TOOLTIP_HARD_TO_CHANGE_EN} />
             } />
         </div>
     );

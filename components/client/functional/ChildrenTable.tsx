@@ -26,6 +26,7 @@ interface ChildrenTableProps {
     children: EleosChild[]
     className: string
     onChildChange: (c: EleosChild) => void
+    editDisabled: boolean
 }
 
 interface EleosChildTypIconAndToolTip {
@@ -33,7 +34,7 @@ interface EleosChildTypIconAndToolTip {
     toolTip: string;
 }
 
-const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChildChange}) => {
+const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChildChange, editDisabled}) => {
     const {ref} = useElos() ?? {};
     if (!ref || !ref.current || !ref.current.principal)  {
         throw Error('Eleos is not initialized')  
@@ -70,7 +71,8 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
     }
 
     const handleRowChange = (changedRow: RowData) => {
-       throw new Error('Not implemented')
+       alert(changedRow)
+       console.log(changedRow)
     }
 
     return <div className={className}>
@@ -89,8 +91,10 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
                 { label: 'Name', type: 'text' },
                 { label: 'Relation', type: 'icon',},
                 { label: 'Age', type: 'text' },
+                { label: 'Edit', type: 'pen' }
             ]}
             onChanged={handleRowChange}
+            disableEdit={editDisabled}
         />
       
     </div>

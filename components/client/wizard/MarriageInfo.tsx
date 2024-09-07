@@ -173,7 +173,7 @@ const MarriageInfo: React.FC = () => {
                     text="Save and Continue >" 
                     onClick={onNext}
                     tipDisable="Enter all the required info and then submit" 
-                    tipEnabled="Click to save and continue" />
+                    tipEnabled="Your marriage status cannot be changed after you click this button." />
             } />
         </div>
     )
