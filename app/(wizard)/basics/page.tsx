@@ -4,6 +4,7 @@ import EleosWizardParent
                 from '@/components/client/atoms/EleosWizardParent';
 import EleosHelpPane 
                 from '@/components/client/functional/EleosHelpPane';
+import EleosProgressBar from '@/components/client/functional/EleosProgressBar';
 import AddAsset 
                 from '@/components/client/wizard/AddAsset';
 import AddChildren 
@@ -30,10 +31,11 @@ import { HelpTextId }
                 from '@/lib/client/model/EleosMisc';
 import { useElos } 
                 from '@/lib/providers/EleosAppProvider'
-import { useWizard, WizardStep } 
+import { ProgressSteps, useWizard, WizardStep } 
                 from '@/lib/providers/WizardProvider';
 import { Card } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect } 
+                from 'react';
 
 
 export default function Page() {
@@ -66,13 +68,16 @@ export default function Page() {
     }, [currentStep])  
 
     return (
-        <>
-            <Card className="p-4 mt-4 bg-white text-black" style={{  width: '80%', height: 'auto', overflow: 'auto'}}>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ width: '90%', paddingRight: '4' }}>
+                <EleosProgressBar steps={Object.values(ProgressSteps)} /> 
+            </div>
+            <Card className="p-4 mt-4 bg-white text-black" style={{  width: '95%', height: 'auto', overflow: 'auto'}}>
                 <div>
                     { (currentStep === WizardStep.BASIC_INFO) && (
                         <EleosWizardParent leftChild={<BasicInfo />} rightChild={<EleosHelpPane />} />
                     ) }
-                     { (currentStep === WizardStep.ADD_EXECUTOR) && (
+                    { (currentStep === WizardStep.ADD_EXECUTOR) && (
                         <EleosWizardParent leftChild={<AddExecutor />}  rightChild={<EleosHelpPane />} />
                     ) }
                     { (currentStep === WizardStep.MARRIAGE_INFO) && (
@@ -99,12 +104,11 @@ export default function Page() {
                     { (currentStep === WizardStep.WILL_SUMMARY) && (
                         <EleosWizardParent leftChild={<Summary />} rightChild={<div><p>will add help text here</p></div>} />
                     )}
-                    { (currentStep === WizardStep.COMPLETE_AND_PAYMENT) && (
+                    { (currentStep === WizardStep.PAYMENT) && (
                         <EleosWizardParent leftChild={<CompleteAndPayment />} rightChild={<div><p>will add help text here</p></div>} />
                     )}
                 </div>
             </Card>
-          
-        </>
+        </div>
     )
 }

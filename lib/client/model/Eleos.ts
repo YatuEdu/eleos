@@ -113,9 +113,6 @@ class Eleos {
                 this._steps.push(WizardStep.BASIC_INFO)
                 break
             case WizardStep.BASIC_INFO: 
-                this._steps.push(WizardStep.ADD_EXECUTOR)
-                break
-            case WizardStep.ADD_EXECUTOR:
                 this._steps.push(WizardStep.MARRIAGE_INFO)
                 break
             case WizardStep.MARRIAGE_INFO:
@@ -125,12 +122,15 @@ class Eleos {
                 if (this.minors.length > 0) {
                     this._steps.push(WizardStep.CHILDREN_GUARDIAN)
                 } else {
-                    this._steps.push(WizardStep.ADD_ASSET)
+                    this._steps.push(WizardStep.ADD_EXECUTOR)
                 }
                 break
             case WizardStep.CHILDREN_GUARDIAN:
-                this._steps.push(WizardStep.ADD_ASSET)
+                this._steps.push(WizardStep.ADD_EXECUTOR)
                 break
+            case WizardStep.ADD_EXECUTOR:
+                    this._steps.push(WizardStep.ADD_ASSET)
+                    break
             case WizardStep.ADD_ASSET:
                 if (this.assetsNeedDistribution.length > 0) {
                     if (this.assetsSurvidedByPrincipal.length > 0) {
@@ -160,9 +160,9 @@ class Eleos {
                 this._steps.push(WizardStep.WILL_SUMMARY)
                 break
             case WizardStep.WILL_SUMMARY:
-                this._steps.push(WizardStep.COMPLETE_AND_PAYMENT)
+                this._steps.push(WizardStep.PAYMENT)
                 break
-            case WizardStep.COMPLETE_AND_PAYMENT:
+            case WizardStep.PAYMENT:
                 break
         }
         return this.step

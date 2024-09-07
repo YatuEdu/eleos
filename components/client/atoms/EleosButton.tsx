@@ -33,7 +33,7 @@ const EleosButton: React.FC<EleosButtonProps> = ({ref, type, className, disabled
     }, [disabled]);
 
     return (
-        <Tooltip title={disabledState ? tipDisable : tipEnabled} disableHoverListener={true}>
+        <Tooltip title={disabledState ? tipDisable : tipEnabled} disableHoverListener={false}>
             <span>
             <Button
                 id={id ? id + '_btn': ''}
