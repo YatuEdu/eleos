@@ -8,6 +8,7 @@ export enum EleosRelationshipType {
     spouse = 'Spouse',
     son = 'Son',
     daughter = 'Daughter',
+    siblng = 'Sibling',
     grandson = 'Grandson',
     granddaughter = 'Granddaughter',
     grandfather = 'Grandfather',
@@ -25,6 +26,7 @@ const RELATIONSHIP_CHILDREN_LIST: EleosRelationshipType[] = [
 ]
 
 const RELATIONSHIP_ADDITIONAL_HEIR_LIST: EleosRelationshipType[] = [
+    EleosRelationshipType.siblng,
     EleosRelationshipType.grandson,
     EleosRelationshipType.granddaughter,
     EleosRelationshipType.other_relative,
@@ -32,6 +34,7 @@ const RELATIONSHIP_ADDITIONAL_HEIR_LIST: EleosRelationshipType[] = [
 ]
 
 const RELATIONSHIP_GUARDIAN_LIST: EleosRelationshipType[] = [
+    EleosRelationshipType.siblng,
     EleosRelationshipType.grandfather,
     EleosRelationshipType.grandmother,
     EleosRelationshipType.uncle,
@@ -42,8 +45,7 @@ const RELATIONSHIP_GUARDIAN_LIST: EleosRelationshipType[] = [
 ]
 
 const RELATIONSHIP_EXECUTOR_LIST: EleosRelationshipType[] = [
-    EleosRelationshipType.son,
-    EleosRelationshipType.daughter,
+    EleosRelationshipType.siblng,
     EleosRelationshipType.other_relative,
     EleosRelationshipType.friend,
     EleosRelationshipType.lawyer,

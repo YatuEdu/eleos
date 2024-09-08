@@ -73,6 +73,8 @@ class EleosPerson extends EleosEntity {
     get relationship() { return this._relationship }
 
     set relationship(relationship: EleosRelationshipType) { this._relationship = relationship }
+
+    get birthYear() { return this._roles[EleosRoleId.child] ? (this._roles[EleosRoleId.child] as EleosChild).birthYear : undefined }
     
     get roles() { return this._roles }  
 
@@ -114,6 +116,10 @@ class EleosPerson extends EleosEntity {
 
     get isChild() {
         return this._roles[EleosRoleId.child] !== undefined
+    }
+
+    get toChild() {
+        return this._roles[EleosRoleId.child] as EleosChild
     }
 
     get isChildAndMinor() {

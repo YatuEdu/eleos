@@ -193,6 +193,8 @@ class Eleos {
 
     get principal() { return this.findOnePersonByRole(EleosRoleId.principal) as EleosPrincipal}
 
+    get qualifiedExecutors() { return Array.from(this._people.values()).filter(p => !p.isExecutor && !p.isPrincipal && !p.isSpouse && !p.isChildAndMinor) }
+
     get marritalStatus(): EleosMaritalStatus | undefined { return this._marritalStatus}
 
     set marritalStatus(status: EleosMaritalStatus) { this._marritalStatus = status} 
