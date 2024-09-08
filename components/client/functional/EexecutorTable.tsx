@@ -28,11 +28,12 @@ import EleosEexecutor
                 from "@/lib/client/model/EleosEexcutor";
 import { RowData } 
                 from "@/lib/client/model/EleosMisc";
+import EleosPerson from "@/lib/client/model/EleosPerson";
 
 interface EexecutorTableProps {
     executors: EleosEexecutor[]
     className: string
-    onEexecutorChange: (ex: EleosEexecutor) => void
+    onEexecutorChange: (ex: EleosPerson) => void
 }
 
 interface EleosChildTypIconAndToolTip {
@@ -73,10 +74,9 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
     }
 
     const onUpdateExecutor = (ex: EleosRole) => {
-        onEexecutorChange(ex as EleosEexecutor)
+        onEexecutorChange(ex.person)
     }
     
-
     const handleRowChange = (changedRow: RowData) => {
         throw new Error('Not implemented')
      }
@@ -99,6 +99,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                 { label: 'Name', type: 'text' },
                 { label: 'Relation', type: 'icon',},
                 { label: 'Age', type: 'text' },
+                { label: 'Edit', type: 'pen' }
             ]}
             onChanged={handleRowChange}
         />

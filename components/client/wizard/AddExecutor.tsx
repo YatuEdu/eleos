@@ -19,6 +19,7 @@ import { useWizard }
 import { ADD_EXECUTOR, eleosModalButtonId, focusOnDomElement } 
                 from "@/lib/client/utilies/UIHelper";
 import EleosTitle from "../atoms/EleosTitle";
+import EleosPerson from "@/lib/client/model/EleosPerson";
 
 const AddExecutor: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -26,12 +27,14 @@ const AddExecutor: React.FC = () => {
         throw Error('Eleos is not initialized')  
     }
 
-    const [executorList, setExecutorList] = useState(ref.current.executors ? [...ref.current.executors] : []);
+    const qualifiedExecutors = ref.current.qualifiedExecutors
+    const [existingPeople, setExistingPeople] = useState(qualifiedExecutors)
+    const [executorList, setExecutorList] = useState(ref.current.executors ? [...ref.current.executors] : [])
     const [valid, setValid] = useState(ref.current.executors.length > 0 )
     const {setStep} = useWizard()
 
-    const executorUpdated = (value: EleosRole) => {
-        const executor =  value as EleosEexecutor 
+    const executorUpdated = (value: EleosPerson) => {
+        const executor =  value.getRole(EleosRoleId.executor) as EleosEexecutor
         setExecutorList([...executorList, executor])
         setValid(true)
     }
@@ -41,6 +44,10 @@ const AddExecutor: React.FC = () => {
         console.log('focusOnDomElement', modalBtnId)
         focusOnDomElement(modalBtnId)
     }, [])
+
+    useEffect(() => {
+        setExistingPeople(qualifiedExecutors.filter(p => !executorList.find(e => e.person.id === p.id)))
+    }, [executorList])
 
     const onPrev = () => {
         if (!ref || !ref.current)  {
@@ -76,7 +83,7 @@ const AddExecutor: React.FC = () => {
                 id={ADD_EXECUTOR}
                 buttonText={executorList.length ? 'Add alternate executor' : 'Add an executor'}
                 role={EleosRoleId.executor}
-                existingPeople={executorList}
+                existingPeople={existingPeople}
                 order={executorList.length + 1}
                 onSave={executorUpdated} />
             }

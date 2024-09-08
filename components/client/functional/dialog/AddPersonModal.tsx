@@ -57,11 +57,11 @@ import { StaticStypes }
 type AddPersonModalProps = {
     buttonText: string,
     role: EleosRoleId,
-    existingPeople: EleosRole[],
-    existingPerson?: EleosRole,
+    existingPeople: EleosPerson[],
+    existingPerson?: EleosPerson,
     order? : number,
     id?: string,
-    onSave: (newRole: EleosRole) => void
+    onSave: (newRole: EleosPerson) => void
 };
 
 const NAME_DOB = 'dob'
@@ -71,14 +71,14 @@ const NAME_PHONE = 'phone'
 const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, existingPeople, existingPerson, order, id, onSave }) => {
     const [open, setOpen] = useState(false)
     // console.log('existingPerson', existingPerson)
-    const [firstName, setFirstName] = useState(existingPerson ? existingPerson.person.firstName : '')
-    const [lastName, setLastName] = useState(existingPerson ? existingPerson.person.lastName : '')
-    const [midtName, setMidName] = useState(existingPerson ? existingPerson.person.middleName : '')
+    const [firstName, setFirstName] = useState(existingPerson ? existingPerson.firstName : '')
+    const [lastName, setLastName] = useState(existingPerson ? existingPerson.lastName : '')
+    const [midtName, setMidName] = useState(existingPerson ? existingPerson.middleName : '')
     // @ts-ignore
     const [birthYear, setBirthYear] = useState(existingPerson && existingPerson.birthYear ? existingPerson.birthYear.toString() : '')
-    const [emailOrPhone, setEmailOrPhone] = useState(existingPerson ? existingPerson.person.emailOrPhone : undefined)
-    const [suffix, setSuffix] = useState(existingPerson ? existingPerson.person.suffix : '')
-    const [relationShip, setRelationShip] = useState(existingPerson ? existingPerson.person.relationship : '')
+    const [emailOrPhone, setEmailOrPhone] = useState(existingPerson ? existingPerson.emailOrPhone : undefined)
+    const [suffix, setSuffix] = useState(existingPerson ? existingPerson.suffix : '')
+    const [relationShip, setRelationShip] = useState(existingPerson ? existingPerson.relationship : '')
     const [needDob, setNeedDob] = useState(role === EleosRoleId.child)
     const [needEmailOrPhone, setNeedEmailOrPhone] = useState(role === EleosRoleId.child_guardian || role === EleosRoleId.executor)
     const [invalidEmailOrPhone, setInvalidEmailOrPhone] = useState((needEmailOrPhone && emailOrPhone || !emailOrPhone) ? '' : WARNING_REQUIRED)
@@ -147,7 +147,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
         if (!existingPerson) {
             throw new Error('Existing person is not found, impossible scenario!')
         }
-        setEmailOrPhone(existingPerson.person.emailOrPhone)
+        setEmailOrPhone(existingPerson.emailOrPhone)
         setExistingPersonName(value)
         setValid(!!value)
     }
@@ -164,12 +164,12 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
         setOpen(false);
     }
 
-    const convertToRole = (personWithRole: EleosRole, role: EleosRoleId) => {
+    const convertToRole = (personWithRole: EleosPerson, role: EleosRoleId) => {
         switch(role) {
             case EleosRoleId.child:
                 throw new Error('cannot convert a person to a child')
             case EleosRoleId.child_guardian:
-                const child = personWithRole instanceof EleosChild ? personWithRole as EleosChild : null
+                const child = personWithRole.isChild ? personWithRole.toChild : null
                 if (child) {
                     if (child.isMinor) {
                         throw new Error('A minor cannot be a guardian')
@@ -178,17 +178,27 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 if (order === undefined) {
                     throw new Error('Order is undefined')
                 }
-                return new EleosGuardian(personWithRole.person, emailOrPhone as EmailOrPhone, order)
+                return new EleosGuardian(personWithRole, emailOrPhone as EmailOrPhone, order).person
                 
             case EleosRoleId.other_benificiary:
-                if (personWithRole instanceof OtherBenificiary) {
+                if (personWithRole.isOtherBenificiary) {
                     return personWithRole
-                } else if (personWithRole instanceof EleosChild) {
+                } else if (personWithRole.isChild) {
                     throw new Error('A child cannot be another benificiary')
                 } else {
-                    return new OtherBenificiary(personWithRole.person)
+                    return new OtherBenificiary(personWithRole).person
                 }
             case EleosRoleId.executor:
+                if (personWithRole.isExecutor) {
+                    return personWithRole
+                } else if (personWithRole.isChildAndMinor) {
+                    throw new Error('A MINOR child cannot be an executor')
+                } else {
+                    if (order === undefined) {
+                        throw new Error('Order is undefined')
+                    }
+                    return EleosEexecutor.createFromUiFromExistingPerson(personWithRole, order).person
+                }
             default:
                 throw new Error('Unimplemented')
 
@@ -220,12 +230,12 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 if (!order) {
                     throw new Error("Order is needed for a guardian")
                 }
-                newRole = EleosEexecutor.createFromUi(firstName, midtName, lastName, suffix, emailOrPhone, order, relation, birthYear)
+                newRole = EleosEexecutor.createFromUi(firstName, midtName, lastName, suffix, emailOrPhone, order, relation, undefined)
                 break
             default:
                 throw new Error("Unknown role for a person")
         }
-        return newRole
+        return newRole ? newRole.person : undefined
     }
      
     const handleSave = () => {
@@ -238,15 +248,10 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
                 newPerson.order = existingPerson.order
             }
         } else {
-            // if the person is a child, his age must be 18 or older
-            if (role === EleosRoleId.executor && EleosPerson.isChildRetaionship(relationShip as EleosRelationshipType) && (new Date().getFullYear()) - birthYear < 18) {
-                alert('The child must be 18 or older to be an executor')
-                return
-            }
             newPerson = createNewPerson()
         }
 
-        onSave(newPerson)
+        newPerson && onSave(newPerson)
         setOpen(false)
     }
 

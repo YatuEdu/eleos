@@ -31,6 +31,7 @@ import { ADD_CHILD, MODAL_ID, eleosModalButtonId, excludeSetOptionForRadio, focu
 import EleosTitle from '../atoms/EleosTitle';
 import EleosCheckButton from '../atoms/EleosCheckbutton';
 import { BACK_TOOLTIP_EN, NEXT_TOOLTIP_HARD_TO_CHANGE_EN } from '@/lib/common/constant/StringConst';
+import EleosPerson from '@/lib/client/model/EleosPerson';
 
 
 const AddChildren: React.FC = () => {
@@ -51,14 +52,14 @@ const AddChildren: React.FC = () => {
     const title = ref.current.title
     const childrenOptions = EleosChildrenStatus.childrenStatusLabeledValues(title)
 
-    const onAddChild = (child: EleosRole) => {
+    const onAddChild = (child: EleosPerson) => {
         if (!ref || !ref.current || !ref.current.principal)  {
             throw Error('Eleos is not initialized')  
         }
 
         let newChild = null
-        if (child instanceof EleosChild) {
-            newChild = child as EleosChild
+        if (child.isChild) {
+            newChild = child.getRole(EleosRoleId.child)  as EleosChild
         } else {
             throw new Error('Not a child object')
         }

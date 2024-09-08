@@ -17,7 +17,7 @@ class EleosEexecutor extends EleosRole {
 
     static createFromUi(firstName: string, middleName:string, lastName: string, suffix: string, 
                         emailOrPhone: EmailOrPhone | undefined, orddr: number, relationship: EleosRelationshipType, 
-                        birthYear: number): EleosEexecutor {
+                        birthYear: number | undefined): EleosEexecutor {
         const age = birthYear ? new Date().getFullYear() - birthYear : 18
         if (EleosRelationshipTypeHelper.isChild(relationship) && age < 18){
             throw new Error('Executor cannot be a minor')
@@ -28,17 +28,19 @@ class EleosEexecutor extends EleosRole {
 
         let person = null
         if (EleosPerson.isChildRetaionship(relationship)) { 
-            const child  = EleosChild.createFromUi(firstName, middleName, lastName, suffix, birthYear, relationship)
-            if (child.isMinor) {
-                throw new Error('Executor cannot be a minor')
-            }
-            child.person.emailOrPhone = emailOrPhone
-            person = child.person
+                throw new Error('Executor cannot be a new child')
         } else {
             person = new EleosPerson(firstName, middleName, lastName, suffix, relationship)
             person.emailOrPhone = emailOrPhone
         }
        
+        return new EleosEexecutor(person, orddr)
+    }
+
+    static createFromUiFromExistingPerson(person: EleosPerson, orddr: number): EleosEexecutor {
+        if (person.isChildAndMinor) {
+            throw new Error('Executor cannot be a minor')
+        }
         return new EleosEexecutor(person, orddr)
     }
 
