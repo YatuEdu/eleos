@@ -16,8 +16,8 @@ import PersonIcon
                 from '@mui/icons-material/Person';
 import WomanIcon 
                 from '@mui/icons-material/Woman'; 
-import AddPersonModal 
-                from "./dialog/AddPersonModal";
+import ModifyChild 
+                from "./dialog/ModifyChild";
 import EleosRole, { EleosRoleId } 
                 from "@/lib/client/model/EleosRole";
 import { RowData } from "@/lib/client/model/EleosMisc";
@@ -41,6 +41,8 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
     }
 
     const [existingChildren, setexistingChildren] = useState<EleosChild[]>(children)
+    const [modifyChild, setModifyChild] = useState<EleosChild | null>(null)
+    const [openModifyChild, setOpenModifyChild] = useState(false)
 
     useEffect(() => {
         setexistingChildren(children)
@@ -70,12 +72,21 @@ const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChi
         onChildChange(c as EleosChild)
     }
 
+    const closeModifyChildDialog = () => {
+        setOpenModifyChild(false)   
+    }
+
     const handleRowChange = (changedRow: RowData) => {
-       alert(changedRow)
-       console.log(changedRow)
+        const child = existingChildren.find(c => c.display === changedRow.Name)
+        if (!child) {
+           throw new Error('Child not found')
+        }
+        setModifyChild(child)
+        setOpenModifyChild(true)
     }
 
     return <div className={className}>
+        <ModifyChild open={openModifyChild} close={closeModifyChildDialog} existingPerson={modifyChild} onSave={onUpdateChild} />
         <EleosLabel classNames='mb-2 mt-0'  text={`${ref.current.possessivePronouns} Children`} />
         <EleosItemTable
             rows={existingChildren.map((c) => {

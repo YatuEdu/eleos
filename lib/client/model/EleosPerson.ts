@@ -56,13 +56,23 @@ class EleosPerson extends EleosEntity {
 
     get firstName() { return this._firstName }
 
+    set firstName(firstName: string) { this._firstName = normalizeName(firstName) }
+
     get middleName() { return this._middleName }
+
+    set middleName(middleName: string) { this._middleName = middleName ? normalizeName(middleName) : '' }
 
     get lastName() { return this._lastName }
 
+    set lastName(lastName: string) { this._lastName = normalizeName(lastName) }
+
     get suffix() { return this._suffix }
 
+    set suffix(suffix: string) { this._suffix = suffix ? normalizeName(suffix) : '' }
+
     get relationship() { return this._relationship }
+
+    set relationship(relationship: EleosRelationshipType) { this._relationship = relationship }
     
     get roles() { return this._roles }  
 
