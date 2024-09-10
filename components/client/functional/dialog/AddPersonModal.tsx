@@ -257,7 +257,7 @@ const AddPersonModal: React.FC<AddPersonModalProps> = ({ buttonText, role, exist
 
     const onEmailOrPhoneCahnged = (emailOrPhone: EmailOrPhone, validCode: number) => {
         setEmailOrPhone(emailOrPhone)
-        const newValid = (needDob && birthYear || !needDob) && firstName && lastName && (validCode === 1)  ? true : false
+        const newValid = (needDob && birthYear || !needDob) && (firstName && lastName || existingPersonName) && (validCode === 1)  ? true : false
         setValid(newValid)
     }
 

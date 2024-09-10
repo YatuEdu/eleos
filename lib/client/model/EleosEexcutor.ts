@@ -54,14 +54,18 @@ class EleosEexecutor extends EleosRole {
         return new EleosEexecutor(person, this._order)
     }
 
-    get order(): number {
-        return this._order
+    get type(): string {
+        return this._order === 1 ? 'Primary' : this._order === 2 ? 'Alternate 1' : 'Alternate 2'
     }
 
     get age(): string {
         return this.person.isChild ? (this.person.getRole(EleosRoleId.child) as EleosChild).age+'' : 'Adult'
     }
 
+    get order(): number {
+        return this._order
+    }
+    
     set order(order: number) {
         this._order = order
     }

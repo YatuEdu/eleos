@@ -13,6 +13,7 @@ interface EleosNameProps {
     lastNameInput: string;
     suffixInput?: string;
     controlName?: string;
+    disabled?: boolean;
     id?: string;
     onNameChange: (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => void;
 }
@@ -28,7 +29,7 @@ const NAME_LASTNAME = 'lastname'
 const NAME_SUFFIX = 'suffix'
 const WARNING_SUFFIX_INVALID = 'suffix invalid'
 
-const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, lastNameInput, suffixInput, controlName, id, onNameChange}) => {
+const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, lastNameInput, suffixInput, disabled, id, onNameChange}) => {
     const [suffix, setSuffix] = useState(suffixInput ?? '');
     const [lastName, setLastName] = useState(lastNameInput);
     const [middleName, setMiddleName] = useState(middleNameInput ?? '');
@@ -103,7 +104,8 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
         <div className="grid grid-cols-2 gap-1 ml-4 mr-4">
             
             <div>
-                <EleosInputBase 
+                <EleosInputBase
+                    disabled={disabled}
                     id={id ? id + '_firstname' : ''   }
                     placeholder='First Name'
                     value={firstName} 
@@ -114,6 +116,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
             </div>
             <div>
                 <EleosInputBase
+                    disabled={disabled}
                     value={lastName} 
                     placeholder='Last Name'
                     mustHave={true} 
@@ -123,6 +126,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
             </div>
             <div>
                 <EleosInputBase 
+                    disabled={disabled}
                     value={middleName} 
                     placeholder='Middle Name'
                     mustHave={false}  
@@ -132,6 +136,7 @@ const EleosName: React.FC<EleosNameProps> = ({firstNameInput, middleNameInput, l
             </div>
             <div>
                 <EleosInputBase 
+                    disabled={disabled}
                     value={suffix} 
                     placeholder='Suffix'
                     mustHave={false} 

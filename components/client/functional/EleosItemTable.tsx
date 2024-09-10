@@ -13,54 +13,49 @@ import {
         Paper,
         TextField,
         Tooltip,
-        IconButton
+        IconButton,
     } 
                 from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import { SxProps, Theme } from '@mui/system';
-                
+import EditIcon from 
+                '@mui/icons-material/Edit'
+import DeleteIcon 
+                from '@mui/icons-material/Delete'
+import ArrowUpwardIcon 
+                from '@mui/icons-material/ArrowUpward';
+import { SxProps, Theme } 
+                from '@mui/system'
 
 type Column = {
         label: string;
-        type: 'text' | 'number' | 'icon' | 'icon2' | 'editable' | 'button' | 'pen';
-};
+        type: 'text' | 'number' | 'icon' | 'icon2' | 'button' | 'pen' | 'delete' | 'switch-up';
+}
+
+export enum TableRowAction {
+    EDIT = 'edit',
+    DELETE = 'delete',
+    MOVE_UP = 'move_up',
+}
 
 type TableProps = {
     columns: Column[];
     rows: RowData[];
-    onChanged: (row: RowData) => void;
+    onChanged: (row: RowData, action: TableRowAction) => void;
     disableEdit?: boolean;
     sx?: SxProps<Theme>;
 };
 
 const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, disableEdit, sx }) => {
-    const [editData, setEditData] = useState<{ [key: string]: string }>({});
-
-    const handleEditChange = (event: React.ChangeEvent<HTMLInputElement>, rowId: string, columnId: string) => {
-        const newEditData = {
-            ...editData,
-            [`${rowId}-${columnId}`]: event.target.value,
-        };
-        setEditData(newEditData);
-        const modifiedRow = {
-            ...rows[parseInt(rowId, 10)],
-            [columnId]: event.target.value,
-        };
-        onChanged(modifiedRow);  
-    };
-
     const tableCellStyles = {
         fontWeight: 'bold', 
         fontSize: '1rem'
-    };
+    }
 
     const tableRowStyles = {
         '& td': {
             padding: '6px 16px', // Reducing vertical padding to make rows shorter
             fontSize: '0.875rem' // Optional: Adjust font size if necessary
         }
-    };
-
+    }
 
     return (
         <TableContainer component={Paper} sx={sx}>
@@ -91,15 +86,6 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, disabl
                                 switch (column.type) {
                                     case 'number':
                                         content = Number(cellValue).toLocaleString() 
-                                        break;
-                                    case 'editable':
-                                        content = (
-                                            <TextField
-                                                value={editData[cellKey] ?? cellValue}
-                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleEditChange(event, `${idx}`, column.label)}
-                                                size="small"
-                                            />
-                                        );
                                         break;
                                     case 'icon':
                                         content = toolTip ? (
@@ -143,13 +129,35 @@ const EleosItemTable: React.FC<TableProps> = ({ columns, rows, onChanged, disabl
                                             <Tooltip title="Edit">
                                                 <IconButton
                                                     disabled={disableEdit}
-                                                    onClick={() => onChanged(row)}
+                                                    onClick={() => onChanged(row, TableRowAction.EDIT)}
                                                 >
                                                     <EditIcon />
                                                 </IconButton>
                                             </Tooltip>
                                         )
                                         break
+                                    case 'delete':
+                                        content = (
+                                            <Tooltip title="Delete">
+                                                <IconButton
+                                                    disabled={disableEdit}
+                                                    onClick={() => onChanged(row, TableRowAction.DELETE)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>)
+                                        break
+                                    case 'switch-up':
+                                            content = (
+                                                <Tooltip title="Move up">
+                                                    <IconButton
+                                                        disabled={disableEdit}
+                                                        onClick={() => onChanged(row, TableRowAction.MOVE_UP)}
+                                                    >
+                                                        <ArrowUpwardIcon />
+                                                    </IconButton>
+                                                </Tooltip>)
+                                            break
                                     case 'text':
                                     default:
                                         content = cellValue;

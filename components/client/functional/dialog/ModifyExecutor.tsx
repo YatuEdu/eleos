@@ -1,4 +1,4 @@
-import React, { useEffect, useState } 
+import React, { use, useEffect, useState } 
                 from 'react';
 import Dialog 
                 from '@mui/material/Dialog';
@@ -12,48 +12,46 @@ import EleosName
                 from '../EleosName';
 import EleosButton 
                 from '../../atoms/EleosButton';
-import EleosInputBase 
-                from '../../atoms/EleosInputBase';
 import EleosLabel 
                 from '../../atoms/EleosLabel';
-import { WARNING_INVALID, WARNING_REQUIRED } 
-                from '@/lib/common/constant/StringConst';
-import { checkBirthYear } 
-                from '@/lib/common/constant/IntegerConst';
-import { ELEOS_RELATIONSHIP_TYPE_HELPER, EleosRelationshipType } 
+import EleosRelationshipTypeHelper, { ELEOS_RELATIONSHIP_TYPE_HELPER, EleosRelationshipType } 
                 from '@/lib/client/model/EleosRelationshipType';
 import EleosSelect 
                 from '../../atoms/EleosSelect';
-import EleosChild 
-                from '@/lib/client/model/EleosChild';
-import { StaticStypes } 
-                from '@/lib/client/styles/globalStyles';
-import { ELEOS_NAME_ID } 
+import EleosGuardian 
+                from '@/lib/client/model/EleosGuardian';
+import { ELEOS_BTN_ID, FIRST_NAME_INPUT_ID, ELEOS_NAME_ID, focusOnDomElement, INPUT_ID } 
                 from '@/lib/client/utilies/UIHelper';
+import EmailOrPhoneInput 
+                from '../EmailOrPhoneInput'
+import EmailOrPhone 
+                from '@/lib/client/model/EmailOrPhone'
+import { EmailOrPhoneRequirementType } 
+                from '@/lib/client/model/EleosDataTypes'
+import { StaticStypes } 
+                from '@/lib/client/styles/globalStyles'
+import EleosEexecutor from '@/lib/client/model/EleosEexcutor';
 
-
-type ModifyChildProps = {
+type ModifyExecutorProps = {
     open: boolean
     close: () => void
-    existingPerson: EleosChild | null
-    onSave: (newRole: EleosChild) => void
+    existingPerson: EleosEexecutor | null
+    onSave: (newRole: EleosEexecutor) => void
 };
 
 const NAME_DOB = 'dob'
 
-const ModifyChild: React.FC<ModifyChildProps> = ({ open, close, existingPerson, onSave }) => {
-    const id = existingPerson ?   existingPerson.id : 0
+const ModifyExecutor: React.FC<ModifyExecutorProps> = ({ open, close, existingPerson, onSave }) => {
+    const id = existingPerson ?   existingPerson.order : 0
     // console.log('existingPerson', existingPerson)
     const [firstName, setFirstName] = useState(existingPerson ? existingPerson.person.firstName : '')
     const [lastName, setLastName] = useState(existingPerson ? existingPerson.person.lastName : '')
     const [midtName, setMidName] = useState(existingPerson ? existingPerson.person.middleName : '')
     const [suffix, setSuffix] = useState(existingPerson ? existingPerson.person.suffix : '')
-    // @ts-ignore
-    const [birthYear, setBirthYear] = useState(existingPerson && existingPerson.birthYear ? existingPerson.birthYear.toString() : '')
     const [relationShip, setRelationShip] = useState(existingPerson ? existingPerson.person.relationship : '')
-    const [invalidDob, setInvalidDob] = useState('')
+    const [emailOrPhone, setEmailOrPhone] = useState(existingPerson ? existingPerson.person.emailOrPhone: undefined)
     const [valid, setValid] = useState(true)
-    const titleText = 'Update a child' 
+    const titleText = 'Update an executor' 
 
     useEffect(() => {
         if (existingPerson) {
@@ -61,16 +59,11 @@ const ModifyChild: React.FC<ModifyChildProps> = ({ open, close, existingPerson, 
             setMidName(existingPerson.person.middleName)
             setLastName(existingPerson.person.lastName)
             setSuffix(existingPerson.person.suffix)
-            setBirthYear(existingPerson.birthYear.toString())
             setRelationShip(existingPerson.person.relationship)
         }
     }, [existingPerson])
         
-    const relationSelection = ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForChildren() 
-
-    function setValidBasedOnState() {
-        return (birthYear ) && firstName && lastName && relationShip ? true : false
-    }
+    const relationSelection = ELEOS_RELATIONSHIP_TYPE_HELPER.getlabelValuePairsForExecutor() 
 
     const handleRelationShipChange = (value: string) => {
         const newValid = firstName && lastName && value ? true : false
@@ -88,7 +81,7 @@ const ModifyChild: React.FC<ModifyChildProps> = ({ open, close, existingPerson, 
             throw Error('Existing person must be set')
         }
 
-        existingPerson.birthYear = parseInt(birthYear)
+        existingPerson.person.emailOrPhone = emailOrPhone
         existingPerson.person.firstName = firstName
         existingPerson.person.middleName = midtName
         existingPerson.person.lastName = lastName
@@ -97,25 +90,18 @@ const ModifyChild: React.FC<ModifyChildProps> = ({ open, close, existingPerson, 
         close()
     }
 
-    const onOptionalFieldChange = (name: string, value: string, isValid: boolean) => {
-        if (name === NAME_DOB) {
-            setBirthYear(value)
-            if (value) {
-               isValid = checkBirthYear(value)
-               setInvalidDob(isValid ? '' : WARNING_INVALID)
-            } else {
-                setInvalidDob(WARNING_REQUIRED)
-            }
-        } 
-        setValid(isValid )
+    const onEmailOrPhoneCahnged = (emailOrPhoneInpuy: EmailOrPhone, validCode: number) => {
+        setEmailOrPhone(emailOrPhoneInpuy)
+        const newValid = firstName && lastName && (validCode === 1)  ? true : false
+        setValid(newValid)
     }
 
-    const onChildNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
+    const onNameChange = (firstName: string, middleName: string, lastName: string, suffix: string, isValid: boolean) => {
         setFirstName(firstName)
         setMidName(middleName)
         setLastName(lastName)
         setSuffix(suffix)
-        setValid(valid)
+        setValid(firstName && lastName && isValid ? true : false)
      }
 
     return (
@@ -134,27 +120,26 @@ const ModifyChild: React.FC<ModifyChildProps> = ({ open, close, existingPerson, 
                 <DialogContent>
                     <div>
                         <EleosName
+                            disabled={EleosRelationshipTypeHelper.isChild(relationShip as EleosRelationshipType)}
                             id={id ? id + ELEOS_NAME_ID : ELEOS_NAME_ID}
                             firstNameInput={firstName}
                             middleNameInput={midtName}
                             lastNameInput={lastName}
                             suffixInput={suffix}
-                            onNameChange={onChildNameChange}
+                            onNameChange={onNameChange}
                         /> 
                         <div className='ml-4 mr-4'>
                             <EleosLabel text="Relationship"/>
                             <EleosSelect name={'RELATIONSHIP'} 
+                                        disabled={EleosRelationshipTypeHelper.isChild(relationShip as EleosRelationshipType)}
                                         options={relationSelection}
                                         onChange={(selectedOption) => handleRelationShipChange(selectedOption ? selectedOption.value : '')}
                                         value={{label:relationShip, value: relationShip}} />
                         </div>
                         <div className='ml-4 mr-4'>
-                            <EleosLabel text="Birth Year" invalidMessage={invalidDob} />
-                            <EleosInputBase
-                                value={birthYear} 
-                                mustHave={true} 
-                                name={NAME_DOB} 
-                                onTextEntered={(value, vliadCode) => onOptionalFieldChange(NAME_DOB, value, vliadCode === 1)} />
+                                <EmailOrPhoneInput emailOrPhone={emailOrPhone } 
+                                    onChanged={onEmailOrPhoneCahnged} 
+                                    requirement={EmailOrPhoneRequirementType.optional} />
                         </div>
                     </div>
                 </DialogContent>
@@ -181,4 +166,4 @@ const ModifyChild: React.FC<ModifyChildProps> = ({ open, close, existingPerson, 
     );
 }
 
-export default ModifyChild;
+export default ModifyExecutor;

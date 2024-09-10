@@ -193,7 +193,15 @@ class Eleos {
 
     get principal() { return this.findOnePersonByRole(EleosRoleId.principal) as EleosPrincipal}
 
+    /**
+     * get a list of people can be potential executors
+     */
     get qualifiedExecutors() { return Array.from(this._people.values()).filter(p => !p.isExecutor && !p.isPrincipal && !p.isSpouse && !p.isChildAndMinor) }
+
+     /**
+     * get a list of people can be potential guardians
+     */
+    get potentialGuardians() { return Array.from(this._people.values()).filter(p => !p.isGuardian && !p.isPrincipal && !p.isSpouse && !p.isChildAndMinor) }
 
     get marritalStatus(): EleosMaritalStatus | undefined { return this._marritalStatus}
 
@@ -229,22 +237,7 @@ class Eleos {
 
     set allChildrenIncluded(allIncluded: boolean) { this._allChildrenIncluded = allIncluded}
 
-
     get executors(): EleosEexecutor[] { return this.findPeopleByRole(EleosRoleId.executor) as EleosEexecutor[]}
-
-    /**
-     * get a list a principal's children who are not minors and potential guardians
-     */
-    get potentialGuardians(): EleosChild[] {
-        return Array.from(this._people.values()).filter(p => {
-            const child = p.getRole(EleosRoleId.child) as EleosChild
-            if (child) {
-                return child.isMinor === false && !p.isGuardian
-            } else {
-                return false 
-            }
-        }).map(p => p .getRole(EleosRoleId.child) as EleosChild)
-    }
 
     get adultChildren(): EleosChild[] {
         return this.children.filter(c => !((c as EleosChild).isMinor)) as  EleosChild[]
@@ -259,6 +252,30 @@ class Eleos {
     }
 
     get assets() { return this._assets}
+
+    removeExecutor(executor: EleosEexecutor): EleosApiResult {
+        return this.removeRoleFrom(executor.person, EleosRoleId.executor)
+    }
+
+    /**
+     * Remove a role from a person and if the person has no more roles, remove the person from the people list
+     * 
+     * @param person 
+     * @param role 
+     * @returns 
+     */
+    removeRoleFrom(person: EleosPerson, role: EleosRoleId): EleosApiResult {
+        const existingPerson = Array.from(this._people.values()).find(p => p.entityId === person.entityId)
+        if (existingPerson) {
+            existingPerson.removeRole(EleosRoleId.executor)
+            if (Object.keys(person.roles).length === 0) {
+                // this person has no more roles, remove it from the list
+                this._people.delete(person.display)
+                return {succeeded: true}
+            }
+        }
+        return {succeeded: false, error: 'Executor not found'}
+    }
 
     getAssetDistributionMethod(timing: AssetDistributionTiming) : AssetDistributionMethod | undefined{
         return this._assetDistributionMethods.get(timing)
@@ -573,7 +590,8 @@ class Eleos {
     addEexutors(executors: EleosEexecutor[]): EleosApiResult {
         // make sure that none of the benificiaries is principal or spouse himself
         executors.forEach(ex => {
-            const existingPerson = this._people.get(ex.display)
+            // update the existing executor
+            const existingPerson = Array.from(this._people.values()).find(p => p.entityId === ex.person.entityId)
             if (existingPerson) {
                 if (!existingPerson.isExecutor) {
                     if (existingPerson.isPrincipal || existingPerson.isSpouse) {                     

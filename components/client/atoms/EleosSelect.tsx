@@ -10,10 +10,11 @@ type SelectProps = {
     options: SelectOption[];
     value: SelectOption | null;
     name: string;
+    disabled?: boolean;
     onChange: (selectedOption: SingleValue<SelectOption> | null) => void;
 };
 
-const EleosSelect: React.FC<SelectProps> = ({ name, options, value, onChange }) => {
+const EleosSelect: React.FC<SelectProps> = ({ name, options, value, disabled, onChange }) => {
     const customStyles = {
         menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
         control: (provided: any, state: any) => ({
@@ -52,6 +53,7 @@ const EleosSelect: React.FC<SelectProps> = ({ name, options, value, onChange }) 
 
     return (
         <Select
+            isDisabled={disabled}
             key={'select_' + name}
             menuPortalTarget={document.body}
             options={options}

@@ -1,5 +1,3 @@
-import EleosEntity 
-                from "./EleosEntity";
 import EleosPerson 
                 from "./EleosPerson";
 

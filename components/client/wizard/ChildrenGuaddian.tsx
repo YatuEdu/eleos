@@ -76,14 +76,14 @@ const ChildrenGuardian: React.FC = () => {
         setStep(step)
     };
 
-    const onAddGaudian = (person: EleosRole) => {
+    const onAddGaudian = (person: EleosPerson) => {
         if (!ref || !ref.current)  {
             throw Error('Eleos is not initialized')  
         }
 
         let newGuardian = null
-        if (person instanceof EleosGuardian) {
-            newGuardian = person as EleosGuardian
+        if (person.hasRole(EleosRoleId.child_guardian)) {
+            newGuardian = person.getRole(EleosRoleId.child_guardian) as EleosGuardian
         } else {
             throw new Error('Not a guardian object')
         }

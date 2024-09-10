@@ -10,3 +10,5 @@ export const BACK_TOOLTIP_EN = 'Click to go back to previous page'
 export const BACK_TOOLTIP_CN = '点击返回上一页'
 export const NEXT_TOOLTIP_HARD_TO_CHANGE_EN = 'Children information cannot be changed once submitted. Please make sure all information is accurate.'
 export const NEXT_TOOLTIP_HARD_TO_CHANGE_CN = '孩子信息一旦提交将无法更改，请确保所有信息准确无误。'
+
+export const DEL_EXE_CONFIRMATION_MSG = 'Are you sure you want to delete this executor?'

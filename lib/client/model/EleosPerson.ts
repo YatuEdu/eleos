@@ -185,6 +185,10 @@ class EleosPerson extends EleosEntity {
         // we need to clone the role's data and assign it to the person
         this._roles[role.roleId] = role.clone(this)
     }  
+
+    removeRole(roleId: EleosRoleId) {
+        delete this._roles[roleId]
+    }
 }
 
 export default EleosPerson
