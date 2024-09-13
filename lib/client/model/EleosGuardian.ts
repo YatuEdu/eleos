@@ -6,9 +6,10 @@ import { EleosRelationshipType }
                 from './EleosRelationshipType';
 import  EmailOrPhone from 
                 './EmailOrPhone';
+import { WillExecutorBase } from './EleosMisc';
 
 
-class EleosGuardian extends EleosRole {
+class EleosGuardian extends EleosRole implements WillExecutorBase{
     private _order: number
 
     constructor(person: EleosPerson, emailOrPhone: EmailOrPhone | undefined, order: number) {
@@ -39,6 +40,10 @@ class EleosGuardian extends EleosRole {
      */
 
     get order() { return this._order } 
+
+    type(): string {
+        return this._order === 1 ? 'Primary' : this._order === 2 ? 'Alternate 1' : 'Alternate 2'
+    }
 
     set order(order: number) { this._order = order } 
 

@@ -1,3 +1,4 @@
+import EleosPerson from "./EleosPerson"
 import { EleosState } from "./EleosState"
 
 export interface EleosApiResult {
@@ -50,5 +51,12 @@ export interface HelpTextObject {
 
 export type RowData = {
     [key: string]: string | JSX.Element;
-};
+}
+
+export interface WillExecutorBase { 
+    order: number, 
+    display: string, 
+    person: EleosPerson,
+    type: () => string
+}
 

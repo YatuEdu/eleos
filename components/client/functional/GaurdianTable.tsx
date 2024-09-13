@@ -82,16 +82,17 @@ const GuadianTable: React.FC<GuadianTableProps> = ({guardians, className, onGuar
                     Name: g.display, 
                     Relation: icon.icon,
                     ToolTip: icon.toolTip,
-                    Email: g.person.email, 
-                    Note: g.isPrimary ? 'Primary guardian' : g.isSecondary ? 'Alternate guardian' : 'Alternate guardian 2',
+                    Type: g.isPrimary ? 'Primary guardian' : g.isSecondary ? 'Alternate guardian' : 'Alternate guardian 2',
                         
                 }
             })}
             columns={[
                 { label: 'Name', type: 'text' },
                 { label: 'Relation', type: 'icon',},
-                { label: 'Email', type: 'text' },
-                { label: 'Note', type: 'text' },
+                { label: 'Type', type: 'text' },
+                { label: 'Edit', type: 'pen' },
+                { label: 'Change order', type: 'switch-up' },
+                { label: 'Delete', type: 'delete' },
             ]}
             onChanged={handleRowChange}
         />

@@ -30,18 +30,21 @@ import { EmailOrPhoneRequirementType }
                 from '@/lib/client/model/EleosDataTypes'
 import { StaticStypes } 
                 from '@/lib/client/styles/globalStyles'
-import EleosEexecutor from '@/lib/client/model/EleosEexcutor';
+import { WillExecutorBase }
+                from '@/lib/client/model/EleosMisc';
 
-type ModifyExecutorProps = {
+type ModifyExecutorProps<T>= {
+    title: string,
     open: boolean
     close: () => void
-    existingPerson: EleosEexecutor | null
-    onSave: (newRole: EleosEexecutor) => void
+    existingPerson: T | null
+    onSave: (newRole: T) => void
 };
 
 const NAME_DOB = 'dob'
 
-const ModifyExecutor: React.FC<ModifyExecutorProps> = ({ open, close, existingPerson, onSave }) => {
+const ModifyExecutor = <T extends WillExecutorBase>({ 
+    title, open, close, existingPerson, onSave }: ModifyExecutorProps<T>) => {
     const id = existingPerson ?   existingPerson.order : 0
     // console.log('existingPerson', existingPerson)
     const [firstName, setFirstName] = useState(existingPerson ? existingPerson.person.firstName : '')
@@ -49,9 +52,8 @@ const ModifyExecutor: React.FC<ModifyExecutorProps> = ({ open, close, existingPe
     const [midtName, setMidName] = useState(existingPerson ? existingPerson.person.middleName : '')
     const [suffix, setSuffix] = useState(existingPerson ? existingPerson.person.suffix : '')
     const [relationShip, setRelationShip] = useState(existingPerson ? existingPerson.person.relationship : '')
-    const [emailOrPhone, setEmailOrPhone] = useState(existingPerson ? existingPerson.person.emailOrPhone: undefined)
+    const [emailOrPhone, setEmailOrPhone] = useState(existingPerson ? existingPerson.person.emailOrPhone : undefined)
     const [valid, setValid] = useState(true)
-    const titleText = 'Update an executor' 
 
     useEffect(() => {
         if (existingPerson) {
@@ -60,6 +62,7 @@ const ModifyExecutor: React.FC<ModifyExecutorProps> = ({ open, close, existingPe
             setLastName(existingPerson.person.lastName)
             setSuffix(existingPerson.person.suffix)
             setRelationShip(existingPerson.person.relationship)
+            setEmailOrPhone(existingPerson.person.emailOrPhone)
         }
     }, [existingPerson])
         
@@ -115,7 +118,7 @@ const ModifyExecutor: React.FC<ModifyExecutorProps> = ({ open, close, existingPe
                         height: 'auto', 
                     }}}>
                 <DialogTitle sx={{ backgroundColor: StaticStypes.DIALOG_TITLE_COLOR, marginBottom: '8px',  fontWeight: 800}}>
-                    {titleText}
+                    {title}
                 </DialogTitle>
                 <DialogContent>
                     <div>
@@ -137,7 +140,8 @@ const ModifyExecutor: React.FC<ModifyExecutorProps> = ({ open, close, existingPe
                                         value={{label:relationShip, value: relationShip}} />
                         </div>
                         <div className='ml-4 mr-4'>
-                                <EmailOrPhoneInput emailOrPhone={emailOrPhone } 
+                                <EmailOrPhoneInput 
+                                    emailOrPhone={emailOrPhone} 
                                     onChanged={onEmailOrPhoneCahnged} 
                                     requirement={EmailOrPhoneRequirementType.optional} />
                         </div>

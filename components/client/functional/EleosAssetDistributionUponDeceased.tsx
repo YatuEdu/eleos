@@ -156,10 +156,9 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
             </div>)
             }
 
-            {showAddHeirs && (
+            {showAddHeirs && 
                 <div>
-                    {heirs.length > 0 && assets.length > 0 && (
-                        <div className='ml-4'>  
+                    <div className='ml-4'>  
                             {assets.map((asset, index) => (
                             <AssetDistributionForm
                                 key={index}
@@ -169,11 +168,9 @@ const EleosAssetDistributionUponDeceased: React.FC<AssetDistributionConfig> = ({
                                 onVlidation={(distribution) => setAssetDistribution(asset, distribution)}
                             />
                             ))}
-                        </div>
-                    )}
-                  
+                   </div>
                 </div>
-            )}
+            }
        
          <EleosWizardButtonLayout leftChild={
             <EleosButton

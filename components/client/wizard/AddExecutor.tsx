@@ -108,7 +108,9 @@ const AddExecutor: React.FC = () => {
         <EleosTitle text="Add will executors" />
         <div className="mt-4">
             {executorList && executorList.length > 0 && (
-                <EexecutorTable executors={executorList} 
+                <EexecutorTable<EleosEexecutor> 
+                                title="Eidt executor"
+                                executors={executorList} 
                                 className={'ml-4 mr-4'} 
                                 onEexecutorChange={executorUpdated} 
                                 onEexecutorRemove={deleteExecutor}/>

@@ -92,11 +92,11 @@ const AddAsset: React.FC = () => {
     const [assetList, setAssetList] = useState<EleosEntity[]>(ref.current.assets);
     const [assetDistributionGrandScheme, setAssetDistributionGrandScheme] = useState(ref.current.assetDistributionGrandScheme)
     const [valid, setValid] = useState(ref.current.assets.length > 0 || ref.current.assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.simple)
-    const [changed, setChanged] = useState(false)
     const [changedRows, setchangedRows] = useState<RowUpdate[]>([])
     const [assetToDelete, setAssetToDelete] = useState('')
     const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
     const [deleteAssetConfirmationMsg, setDeleteAssetConfirmationMsg] = useState('')
+    const showAssetDistributionOption = ref.current.children.length > 0
 
     /**
      * Initialize the changedRows array with the assets we already have
@@ -315,16 +315,18 @@ const AddAsset: React.FC = () => {
                 onCancel={() => setShowConfirmationDialog(false)}
             />
             <EleosTitle text="Assets" />
-            <div style={{ margin: 20 }}>
-                <RadioButtonGroup
-                    title={RADIO_GROUP_TITLE}
-                    options={options}
-                    disabledOptions={excludeSetOptionForRadio(options, assetDistributionGrandScheme) }
-                    value={assetDistributionGrandScheme+''}
-                    onChange={onAssetDistributionGrandSchemeChange}
-                    direction='row'
-                />
-            </div>
+            {showAssetDistributionOption &&
+                <div style={{ margin: 20 }}>
+                    <RadioButtonGroup
+                        title={RADIO_GROUP_TITLE}
+                        options={options}
+                        disabledOptions={excludeSetOptionForRadio(options, assetDistributionGrandScheme) }
+                        value={assetDistributionGrandScheme+''}
+                        onChange={onAssetDistributionGrandSchemeChange}
+                        direction='row'
+                    />
+                </div>
+            }
             {assetList.length > 0 && 
              <div className="mt-4 mr-3 ml-3 mb-2">
                 <EleosLabel classNames='mb-2 mt-0'  text={`${ref.current.possessivePronouns} Assets`} />
@@ -354,7 +356,7 @@ const AddAsset: React.FC = () => {
                     onChanged={handleRowChange}
                 />
             </div> }
-            {assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.complex &&
+            {(assetDistributionGrandScheme === EleosAssetDistributionGrandScheme.complex || !showAssetDistributionOption) &&
                 <div className="flex items-center space-x-2 ml-3">
                     <AddAssetDialog
                         principal={ref.current.principal.display}

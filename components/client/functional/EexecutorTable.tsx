@@ -19,19 +19,22 @@ import WomanIcon
                 from '@mui/icons-material/Woman'; 
 import EleosEexecutor 
                 from "@/lib/client/model/EleosEexcutor";
-import { RowData } 
+import { RowData, WillExecutorBase } 
                 from "@/lib/client/model/EleosMisc";
 import ModifyExecutor 
                 from "./dialog/ModifyExecutor";
 import ConfirmationDialog 
                 from "./dialog/ConfirmationDialog";
 import { DEL_EXE_CONFIRMATION_MSG } from "@/lib/common/constant/StringConst";
+import EleosGuardian from "@/lib/client/model/EleosGuardian";
+import EleosPerson from "@/lib/client/model/EleosPerson";
 
-interface EexecutorTableProps {
-    executors: EleosEexecutor[]
+interface EexecutorTableProps<T> {
+    title: string
+    executors: T[]
     className: string
-    onEexecutorChange: (ex: EleosEexecutor) => void
-    onEexecutorRemove: (ex: EleosEexecutor) => void
+    onEexecutorChange: (ex: T) => void
+    onEexecutorRemove: (ex: T) => void
 }
 
 interface EleosChildTypIconAndToolTip {
@@ -39,14 +42,20 @@ interface EleosChildTypIconAndToolTip {
     toolTip: string;
 }
 
-const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, onEexecutorChange, onEexecutorRemove}) => {
+const EexecutorTable = <T extends WillExecutorBase>({ 
+    title,
+    executors, 
+    className, 
+    onEexecutorChange, 
+    onEexecutorRemove 
+}: EexecutorTableProps<T>) => {
     const {ref} = useElos() ?? {};
     if (!ref || !ref.current || !ref.current.principal)  {
         throw Error('Eleos is not initialized')  
     }
 
-    const [executorList, setExecutorList] = useState<EleosEexecutor[]>(executors.sort((a, b) => a.order - b.order))
-    const [currentEexcutor, setCurrentExecutor] = useState<EleosEexecutor | null>(null)
+    const [executorList, setExecutorList] = useState<T[] >(executors.sort((a, b) => a.order - b.order))
+    const [currentEexcutor, setCurrentExecutor] = useState<T | null>(null)
     const [showModificationDialog, setShowModificationDialog] = useState(false)
     const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
 
@@ -54,7 +63,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
         setExecutorList(executors.sort((a, b) => a.order - b.order))
     }, [executors])
 
-    const getIconByRelation = (exe: EleosEexecutor): EleosChildTypIconAndToolTip => {
+    const getIconByRelation = (exe: T): EleosChildTypIconAndToolTip => {
         // Add a return statement at the end of the function
         if (exe.person.relationship === EleosRelationshipType.son) {
             return {icon: <PersonIcon />, toolTip: 'Adult Son'}
@@ -78,7 +87,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
         return {icon: <HandshakeIcon />, toolTip: 'Friend'}
     }
 
-    const onUpdateExecutor = (ex: EleosEexecutor) => {
+    const onUpdateExecutor = (ex: T) => {
         onEexecutorChange(ex)
     }
     
@@ -114,7 +123,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
      * @param ex 
      * @returns 
      */
-    const moveUpEecutor = (ex: EleosEexecutor) => {
+    const moveUpEecutor = (ex: T) => {
         if (executorList.length < 2) {
             return
         }
@@ -161,6 +170,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                 onCancel={() => setShowConfirmationDialog(false)}
         />
         <ModifyExecutor 
+                title={title}
                 open={showModificationDialog} 
                 close={() => setShowModificationDialog(false)} 
                 existingPerson={currentEexcutor} onSave={onUpdateExecutor} 
@@ -173,7 +183,7 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                     Name: ex.display, 
                     Relation: icon.icon,
                     ToolTip: icon.toolTip,
-                    Type: ex.type,     
+                    Type: ex.type(),     
                 }
             })}
             columns={[
@@ -181,8 +191,8 @@ const EexecutorTable: React.FC<EexecutorTableProps> = ({executors, className, on
                 { label: 'Relation', type: 'icon',},
                 { label: 'Type', type: 'text' },
                 { label: 'Edit', type: 'pen' },
+                { label: 'Change order', type: 'switch-up' },
                 { label: 'Delete', type: 'delete' },
-                { label: 'Change order', type: 'switch-up' }
             ]}
             onChanged={handleRowChange}
         />
