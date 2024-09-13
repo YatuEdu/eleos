@@ -1,4 +1,5 @@
 import EleosChild from "./EleosChild";
+import { WillExecutorBase } from "./EleosMisc";
 import EleosPerson 
                 from "./EleosPerson";
 import EleosRelationshipTypeHelper, { ELEOS_RELATIONSHIP_TYPE_HELPER, EleosRelationshipType } 
@@ -7,7 +8,7 @@ import EleosRole, { EleosRoleId }
                 from "./EleosRole";
 import EmailOrPhone from "./EmailOrPhone";
 
-class EleosEexecutor extends EleosRole {
+class EleosEexecutor extends EleosRole implements WillExecutorBase {
     private _order: number
 
     private constructor(person: EleosPerson, order: number) {
@@ -54,7 +55,7 @@ class EleosEexecutor extends EleosRole {
         return new EleosEexecutor(person, this._order)
     }
 
-    get type(): string {
+    type(): string {
         return this._order === 1 ? 'Primary' : this._order === 2 ? 'Alternate 1' : 'Alternate 2'
     }
 

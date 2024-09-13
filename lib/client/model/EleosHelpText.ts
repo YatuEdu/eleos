@@ -307,7 +307,7 @@ Complete Estate Plan: Ensures that all assets, including bank accounts, are cove
                         // replace the %% with the children phrase
                         if (labelText.includes(INHERITOR_REPLACEMENT)) {
                             if (children.length === 0) {
-                                throw new Error('Children are required')
+                                console.log('Children are required')
                             } 
                             
                             if (children.length === 1) {

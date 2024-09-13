@@ -7,8 +7,7 @@ import EleosAssetDistributionUponDeceased
 
 const AssetDistributionIfSpouseGoes: React.FC = () => {
     const {ref} = useElos() ?? {};
-    if (!ref || !ref.current || !ref.current.principal || 
-        !ref.current.spouse || !ref.current.children.length || !ref.current.assets)  {
+    if (!ref || !ref.current || !ref.current.principal || !ref.current.spouse )  {
         throw Error('Eleos is not initialized for this page')  
     }
 

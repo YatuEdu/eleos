@@ -24,6 +24,7 @@ import EleosRole, { EleosRoleId }
                 from '@/lib/client/model/EleosRole';
 import GuadianTable from '../functional/GaurdianTable';
 import EleosWizardButtonLayout from '../atoms/EleosWizardButtonLayout';
+import EexecutorTable from '../functional/EexecutorTable';
 
 const ChildrenGuardian: React.FC = () => {
     const {ref} = useElos() ?? {};
@@ -116,6 +117,19 @@ const ChildrenGuardian: React.FC = () => {
         setGuardians(guardiansUpdated)
     }
 
+    const deleteGuardian= (guardian: EleosGuardian) => {
+        if (!ref || !ref.current || !ref.current.principal)  {
+            throw Error('Eleos is not initialized')  
+        }
+
+        // find the executor and remove it
+        ref.current.removeGuardian(guardian)
+        
+        // remove the executor from the UI
+        const newGuardianList = guardians.filter(g => g.person.entityId !== guardian.person.entityId)
+        setGuardians(newGuardianList)
+    }
+
     const miniros = ref.current.minors.map((m) => m.display).join(', ')
 
     return (
@@ -124,11 +138,15 @@ const ChildrenGuardian: React.FC = () => {
                 <EleosLabel classNames='mb-2 mt-0'  text={`Guardians for ${ref.current.possessivePronouns.toLowerCase()} minors (${miniros})`} />
                 {/* List of all guadians */}
                 {guardians.length > 0 && (
-                    <div >
-                       <GuadianTable guardians={guardians} className="mt-2" onGuardianChange={onGaudianChange} />
+                    <div className="mt-4">
+                        <EexecutorTable<EleosGuardian> 
+                                title="Edit guardian"
+                                executors={guardians} 
+                                className={'ml-4 mr-4'} 
+                                onEexecutorChange={onGaudianChange} 
+                                onEexecutorRemove={deleteGuardian}/>
                     </div>
-                )}
-                {/* Add your controls here */}
+            )}
             </div>
             <div className="flex items-left ml-4">
                 {guardians.length < 3 && (

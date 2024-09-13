@@ -203,6 +203,11 @@ class Eleos {
      */
     get potentialGuardians() { return Array.from(this._people.values()).filter(p => !p.isGuardian && !p.isPrincipal && !p.isSpouse && !p.isChildAndMinor) }
 
+    /**
+     * get a list of people can be potential heirs
+     */
+    get potentialHeirs() { return Array.from(this._people.values()).filter(p => p.isOtherBenificiary || !p.isPrincipal && !p.isSpouse) }
+
     get marritalStatus(): EleosMaritalStatus | undefined { return this._marritalStatus}
 
     set marritalStatus(status: EleosMaritalStatus) { this._marritalStatus = status} 
@@ -257,6 +262,11 @@ class Eleos {
         return this.removeRoleFrom(executor.person, EleosRoleId.executor)
     }
 
+    
+    removeGuardian(guardian: EleosGuardian): EleosApiResult {
+        return this.removeRoleFrom(guardian.person, EleosRoleId.child_guardian)
+    }
+
     /**
      * Remove a role from a person and if the person has no more roles, remove the person from the people list
      * 
@@ -267,7 +277,7 @@ class Eleos {
     removeRoleFrom(person: EleosPerson, role: EleosRoleId): EleosApiResult {
         const existingPerson = Array.from(this._people.values()).find(p => p.entityId === person.entityId)
         if (existingPerson) {
-            existingPerson.removeRole(EleosRoleId.executor)
+            existingPerson.removeRole(role)
             if (Object.keys(person.roles).length === 0) {
                 // this person has no more roles, remove it from the list
                 this._people.delete(person.display)
@@ -308,8 +318,8 @@ class Eleos {
         return this._assets.filter(asset => 
             asset.type !== EleosAssetType.lifeInsurance && 
             asset.ownership !== EleosAssetOwnerShipType.trust
-           )
-        }
+        )
+    }
 
     /**
      * The following assets are the assets that need to be distributed if the spouse is deceased

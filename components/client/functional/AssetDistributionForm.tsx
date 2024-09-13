@@ -71,21 +71,22 @@ const AssetDistributionForm: React.FC<AssetDistributionProps> = ({ heirs, asset,
         return assetDistribution
     }
 
-    const addNewHeir = (person: EleosRole) => {
+    const addNewHeir = (person: EleosPerson) => {
         if (!ref || !ref.current || !ref.current.principal || !ref.current.marritalStatus)  {
             throw Error('Eleos is not initialized')  
         }
 
-        if (person instanceof OtherBenificiary) {
+        if (person.hasRole(EleosRoleId.other_benificiary)) {
             if (addedHeirs.find(heir => heir.display === person.display) !== undefined) {
                 alert('This heir already exists')
                 return;
             }
-            
-            ref.current.addOtherBenificiaries([person])
-            setAddedHeirs([...addedHeirs, person])
+
+            const newRole = person.getRole(EleosRoleId.other_benificiary) as OtherBenificiary
+            ref.current.addOtherBenificiaries([newRole])
+            setAddedHeirs([...addedHeirs, newRole])
         } else {
-            throw new Error('Not a valid enificiary')
+            throw new Error('Not a valid benificiary')
         }
 
         setDistribution(prev => {
@@ -100,11 +101,11 @@ const AssetDistributionForm: React.FC<AssetDistributionProps> = ({ heirs, asset,
      * 
      * @returns 
      */
-    const addPotentialHeir = (): EleosRole[] => {
+    const addPotentialHeir = (): EleosPerson[] => {
         if (!ref || !ref.current || !ref.current.principal || !ref.current.marritalStatus)  {
             throw Error('Eleos is not initialized')  
         }
-       return ref.current.findPeopleByRole(EleosRoleId.other_benificiary)
+       return ref.current.potentialHeirs
                         //.filter(heir => !addedHeirs.find(added => added.display === heir.display))
                         .filter(heir => !Object.keys(distribution).includes(heir.display))
     }

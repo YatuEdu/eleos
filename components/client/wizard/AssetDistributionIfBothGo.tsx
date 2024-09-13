@@ -16,7 +16,7 @@ import { EleosAssetOwnerShipType } from '@/lib/client/model/EleosAssetOwnerShipT
 const AssetDistributionIfBothGoes: React.FC = () => {
     const {ref} = useElos() ?? {};
     if (!ref || !ref.current || !ref.current.principal || 
-        !ref.current.spouse || !ref.current.children.length || !ref.current.assets)  {
+        !ref.current.spouse || !ref.current.assets)  {
         throw Error('Eleos is not initialized for this page')  
     }
 
