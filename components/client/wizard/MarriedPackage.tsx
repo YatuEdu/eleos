@@ -66,7 +66,7 @@ const MarriedPackage: React.FC = () => {
 
     return (
         <div>
-            <EleosPhoneInput />
+           
             <label>
                 Are you married?
                 <input type="checkbox" checked={isMarried} onChange={handleMarriageStatusChange} />

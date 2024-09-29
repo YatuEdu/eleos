@@ -206,7 +206,8 @@ const AddChildren: React.FC = () => {
             <div className="mt-4">
                 {childrenList.length > 0 && (
                     <ChildrenTable 
-                        children={childrenList} className={'ml-4 mr-4'} 
+                        childrenList={childrenList} 
+                        className={'ml-4 mr-4'} 
                         onChildChange={childUpdated}
                         editDisabled={allChildrenIncluded}
                         />

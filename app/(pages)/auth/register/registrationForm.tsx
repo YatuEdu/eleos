@@ -1,6 +1,6 @@
 'use client'
 
-import { RegistrationForm } from '@/lib/server/model/authenticatedUser'
+import { RegistrationForm } from '@/lib/server/model/AuthenticatedUser'
 import { YatuResponse } from '@/lib/server/model/sysType'
 import { Label }            from '@mui/icons-material'
 import { Checkbox }         from '@mui/material'

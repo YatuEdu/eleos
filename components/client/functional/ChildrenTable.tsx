@@ -23,7 +23,7 @@ import EleosRole, { EleosRoleId }
 import { RowData } from "@/lib/client/model/EleosMisc";
 
 interface ChildrenTableProps {
-    children: EleosChild[]
+    childrenList: EleosChild[]
     className: string
     onChildChange: (c: EleosChild) => void
     editDisabled: boolean
@@ -34,19 +34,19 @@ interface EleosChildTypIconAndToolTip {
     toolTip: string;
 }
 
-const ChildrenTable: React.FC<ChildrenTableProps> = ({children, className, onChildChange, editDisabled}) => {
+const ChildrenTable: React.FC<ChildrenTableProps> = ({childrenList, className, onChildChange, editDisabled}) => {
     const {ref} = useElos() ?? {};
     if (!ref || !ref.current || !ref.current.principal)  {
         throw Error('Eleos is not initialized')  
     }
 
-    const [existingChildren, setexistingChildren] = useState<EleosChild[]>(children)
+    const [existingChildren, setexistingChildren] = useState<EleosChild[]>(childrenList)
     const [modifyChild, setModifyChild] = useState<EleosChild | null>(null)
     const [openModifyChild, setOpenModifyChild] = useState(false)
 
     useEffect(() => {
-        setexistingChildren(children)
-    }, [children])
+        setexistingChildren(childrenList)
+    }, [childrenList])
 
     const getIconByRelation = (child: EleosChild): EleosChildTypIconAndToolTip => {
         // Add a return statement at the end of the function

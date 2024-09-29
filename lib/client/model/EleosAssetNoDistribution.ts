@@ -6,6 +6,8 @@ import { EleosAssetType } from
                 "./EleosAssetType";
 import EleosPerson 
                 from "./EleosPerson";
+import EleosPrincipal from "./EleosPrincipal";
+import EleosSpouse from "./EleosSpouse";
 
 class EleosAssetNoDistribution extends EleosAsset{
     
@@ -14,8 +16,8 @@ class EleosAssetNoDistribution extends EleosAsset{
         note: string, 
         type: EleosAssetType, 
         ownership: EleosAssetOwnerShipType, 
-        owner?: EleosPerson) {
-            super(name, location, note, type, ownership, owner)
+        owner?: EleosPrincipal | EleosSpouse) {
+            super(name, location, note, type, ownership, 100, owner)
     }
 
 }

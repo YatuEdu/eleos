@@ -50,7 +50,7 @@ export class EleosAssetFactory {
         }
 
         // case for trust and prenuptial
-        return new EleosAssetNoDistribution(assetName, location, note, assetType, ownershipType, owner)
+        return new EleosAssetNoDistribution(assetName, location, note, assetType, ownershipType, ownerRole)
     }
 }
 

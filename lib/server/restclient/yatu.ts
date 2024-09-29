@@ -1,8 +1,8 @@
-import { sysConstants }     from "@/lib/server/const/sysConst";
-import { YatuRequest, YatuResponse }      
-							from "@/lib/server/model/sysType";
-import CryptoJS           	from 'crypto-js'
-import { YatuUser } 		from "@/lib/server/model/authenticatedUser";
+import { YatuResponse }      
+				from "@/lib/server/model/sysType";
+import CryptoJS           	
+				from 'crypto-js'
+
 
 // REMOVE THIS BEFORE PRODUCT SHIPMENT
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'

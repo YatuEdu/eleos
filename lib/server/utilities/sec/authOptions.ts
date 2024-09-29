@@ -1,7 +1,7 @@
 import { NextAuthOptions }  from 'next-auth'
 import CredentialsProvider  from 'next-auth/providers/credentials'
 import Yatu                 from '@/lib/server/restclient/yatu';
-import { YatuUser }         from '@/lib/server/model/authenticatedUser';
+import { YatuUser }         from '@/lib/server/model/AuthenticatedUser';
 
 /**
  * authOptions is the configuration info for the entire app auth
