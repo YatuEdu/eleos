@@ -1,4 +1,4 @@
-import { AuthenticatedResponse, Credentials } from "@/lib/server/model/AuthenticatedUser"
+import { AuthenticatedResponse, Credentials } from "@/lib/server/model/authenticatedUser"
 
 class AuthService {
     static async authenticate(credentials: Credentials): Promise<AuthenticatedResponse> {
