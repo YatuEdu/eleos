@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, {Suspense} from 'react';
 import styled from 'styled-components';
 
 const MainPage = () => {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <Container>
       <VideoButton href="/basics">
         <VideoBackground autoPlay loop muted>
@@ -18,6 +19,7 @@ const MainPage = () => {
         </ButtonText>
       </VideoButton>
     </Container>
+    </Suspense>
   );
 };
 

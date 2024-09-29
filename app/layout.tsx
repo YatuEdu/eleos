@@ -5,8 +5,8 @@ import { Inter }
 import './globals.css'
 import { NextAuthProvider }   
         from './providers'
-import { Card } 
-        from '@mui/material'
+import { Suspense } 
+        from 'react';
 import { EleosAppProvider } 
         from '@/lib/providers/EleosAppProvider'
 import { WizardProvider } 
@@ -28,22 +28,24 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-      <NextAuthProvider>
-          <EleosAppProvider>
-            <TitleBar />
-              <div id="outer" 
-                style={{ 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  alignItems: 'flex-start', 
-                  height: '100vh', 
-                 }}>
-                <WizardProvider>
-                  {children}
-                </WizardProvider>
-              </div>
-            </EleosAppProvider>
-        </NextAuthProvider>
+      <Suspense fallback={<div>Loading content...</div>}>
+        <NextAuthProvider>
+            <EleosAppProvider>
+              <TitleBar />
+                <div id="outer" 
+                  style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'flex-start', 
+                    height: '100vh', 
+                  }}>
+                  <WizardProvider>
+                    {children}
+                  </WizardProvider>
+                </div>
+              </EleosAppProvider>
+          </NextAuthProvider>
+      </Suspense>
       </body>
     </html>
   )

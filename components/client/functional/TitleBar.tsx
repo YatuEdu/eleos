@@ -14,6 +14,8 @@ import { Language }
         from '@/lib/client/model/EleosMisc';
 import { useSearchParams } 
         from 'next/navigation'
+import { Suspense } 
+        from 'react'
 
 // Styled components
 const StyledTitleBar = styled.div`
@@ -70,11 +72,13 @@ const TitleBar: React.FC = () => {
   }
 
   return (
-    <StyledTitleBar>
-      <Logo src="/image/logo.png" alt="Site Logo" />
-      <EleosLanguageButton language={inoputLang} setLanguage={handleLanguageChange} />
-      <LoginButton />
-    </StyledTitleBar>
+    <Suspense fallback={<div>Loading...</div>}>
+      <StyledTitleBar>
+        <Logo src="/image/logo.png" alt="Site Logo" />
+        <EleosLanguageButton language={inoputLang} setLanguage={handleLanguageChange} />
+        <LoginButton />
+      </StyledTitleBar>
+    </Suspense>
   );
 }
 
